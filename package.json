@@ -1,0 +1,66 @@
+{
+  "name": "agent-provider-registry",
+  "version": "0.3.3",
+  "description": "可校验、可渲染表单的 AI Provider 配置注册表（Schema v2）：多接入面、鉴权模式、计费、风险与运行时契约，供 Agent 面板 / ACP 网关 / 代码代理直接消费。",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./src/index.mjs",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./src/index.mjs"
+    },
+    "./node": "./src/node.mjs",
+    "./schema": "./schemas/provider.schema.json",
+    "./data/providers.json": "./data/providers.json",
+    "./data/agents.json": "./data/agents.json",
+    "./data/tiers.json": "./data/tiers.json"
+  },
+  "bin": {
+    "provider-registry": "./bin/cli.mjs"
+  },
+  "files": [
+    "src",
+    "bin",
+    "data",
+    "schemas",
+    "types",
+    "README.md",
+    "LICENSE",
+    "scripts",
+    "skills",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "validate": "node bin/cli.mjs validate",
+    "list": "node bin/cli.mjs list",
+    "demo": "node scripts/build-demo.mjs && node scripts/serve.mjs",
+    "build:demo": "node scripts/build-demo.mjs",
+    "export:json": "node bin/cli.mjs export --format json --out dist/providers.json",
+    "export:ts": "node bin/cli.mjs export --format ts --out dist/providers.ts",
+    "test": "node scripts/smoke.mjs",
+    "scaffold": "node scripts/scaffold.mjs",
+    "test:scaffold": "node scripts/test-scaffold.mjs",
+    "test:demo": "node scripts/test-demo-config.mjs",
+    "test:all": "npm test && npm run test:demo && npm run test:scaffold"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "provider",
+    "registry",
+    "json-schema",
+    "form-schema",
+    "acp",
+    "agent",
+    "configuration"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/agent-provider-registry"
+  }
+}

@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-11-14",
+  "agents": [
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "vendor": "Anthropic",
+      "kind": "cli",
+      "protocols": [
+        "mcp"
+      ],
+      "install": {
+        "npm": "@anthropic-ai/claude-code",
+        "docs": "https://docs.anthropic.com/en/docs/claude-code"
+      },
+      "session": {
+        "persistent": true,
+        "resumeAfterRestart": true,
+        "credential": "oauth"
+      },
+      "quota": {
+        "type": "subscription",
+        "note": "订阅额度与 API Key 余额分开"
+      },
+      "notes": [
+        "通过 stdio 与终端交互，外围面板通常靠 PTY / 日志接入",
+        "ACP 需要额外适配器，不是原生协议"
+      ],
+      "links": [
+        {
+          "label": "文档",
+          "url": "https://docs.anthropic.com/en/docs/claude-code"
+        }
+      ],
+      "transports": [
+        "stdio"
+      ],
+      "runtime": {
+        "binary": "claude",
+        "versionArgs": [
+          "--version"
+        ],
+        "backendMode": "stdio-adapter"
+      },
+      "configure": {
+        "paths": {
+          "linux": [
+            ".claude/settings.json"
+          ],
+          "darwin": [
+            ".claude/settings.json"
+          ],
+          "win32": [
+            ".claude/settings.json"
+          ]
+        }
+      },
+      "surfaces": [
+        "catalog",
+        "detect",
+        "run",
+        "configure"
+      ],
+      "providerAlias": "claude"
+    },
+    {
+      "id": "codex-cli",
+      "name": "Codex CLI",
+      "vendor": "OpenAI",
+      "kind": "cli",
+      "protocols": [
+        "mcp"
+      ],
+      "install": {
+        "npm": "@openai/codex",
+        "docs": "https://github.com/openai/codex"
+      },
+      "session": {
+        "persistent": true,
+        "resumeAfterRestart": true,
+        "credential": "oauth"
+      },
+      "quota": {
+        "type": "mixed",
+        "note": "登录账号额度与 API Key 额度分开"
+      },
+      "notes": [
+        "可在本地或远程主机运行，适合与 SSH / 持久终端配合",
+        "需要面板能读取 JSONL 事件流"
+      ],
+      "links": [
+        {
+          "label": "仓库",
+          "url": "https://github.com/openai/codex"
+        }
+      ],
+      "transports": [
+        "stdio"
+      ],
+      "runtime": {
+        "binary": "codex",
+        "versionArgs": [
+          "--version"
+        ],
+        "spawnArgs": [
+          "--quiet"
+        ],
+        "backendMode": "stdio-adapter"
+      },
+      "configure": {
+        "paths": {
+          "linux": [
+            ".codex/config.toml"
+          ],
+          "darwin": [
+            ".codex/config.toml"
+          ],
+          "win32": [
+            ".codex/config.toml"
+          ]
+        }
+      },
+      "surfaces": [
+        "catalog",
+        "detect",
+        "run",
+        "configure"
+      ],
+      "providerAlias": "codex"
+    },
+    {
+      "id": "codebuddy-code",
+      "name": "CodeBuddy Code",
+      "vendor": "腾讯",
+      "kind": "cli",
+      "protocols": [
+        "acp",
+        "mcp"
+      ],
+      "install": {
+        "npm": "@tencent-ai/codebuddy-code",
+        "docs": "https://cnb.cool/codebuddy"
+      },
+      "session": {
+        "persistent": true,
+        "resumeAfterRestart": true,
+        "credential": "oauth"
+      },
+      "quota": {
+        "type": "mixed",
+        "note": "桌面会员与独立 CLI 配置需要分别确认"
+      },
+      "notes": [
+        "支持以 ACP 模式启动，供编辑器 / 编排面板接入（以当前版本命令为准）",
+        "ACP 是客户端-智能体协议，不等于 Agent 间协作协议"
+      ],
+      "links": [
+        {
+          "label": "文档",
+          "url": "https://cnb.cool/codebuddy"
+        }
+      ],
+      "transports": [
+        "stdio"
+      ],
+      "runtime": {
+        "binary": "codebuddy",
+        "versionArgs": [
+          "--version"
+        ],
+        "backendMode": "acp"
+      },
+      "surfaces": [
+        "catalog",
+        "detect",
+        "run"
+      ]
+    },
+    {
+      "id": "zcode",
+      "name": "zcode",
+      "vendor": "Z.ai",
+      "kind": "cli",
+      "protocols": [
+        "acp"
+      ],
+      "install": {
+        "npm": "zcode-agent",
+        "docs": "https://z.ai"
+      },
+      "session": {
+        "persistent": true,
+        "resumeAfterRestart": true,
+        "credential": "jwt-session"
+      },
+      "quota": {
+        "type": "session",
+        "note": "Coding Plan 额度绑定登录会话，与 API Key 余额互不抵扣"
+      },
+      "notes": [
+        "zcode-agent-acp 默认走 API Key 计费，不识别桌面登录的套餐额度",
+        "要复用 Coding Plan，需要保持已登录客户端 / app-server 存活并由其刷新会话",
+        "不要把 zcodejwttoken 手工导出长期使用"
+      ],
+      "links": [
+        {
+          "label": "官网",
+          "url": "https://z.ai"
+        }
+      ],
+      "transports": [
+        "stdio"
+      ],
+      "runtime": {
+        "binary": "zcode-agent-acp",
+        "versionArgs": [
+          "--version"
+        ],
+        "backendMode": "acp"
+      },
+      "surfaces": [
+        "catalog",
+        "detect",
+        "run"
+      ]
+    },
+    {
+      "id": "doubao-desktop",
+      "name": "豆包（桌面端）",
+      "vendor": "字节跳动",
+      "kind": "desktop",
+      "protocols": [],
+      "install": {
+        "docs": "https://www.doubao.com"
+      },
+      "session": {
+        "persistent": false,
+        "resumeAfterRestart": false,
+        "credential": "jwt-session"
+      },
+      "quota": {
+        "type": "session",
+        "note": "桌面会员额度与方舟 API 独立"
+      },
+      "notes": [
+        "没有公开模型 API，也没有原生 ACP 服务端",
+        "桥接只能依赖本机已登录客户端，稳定性受登录态影响",
+        "需要稳定接口时改用火山方舟 API"
+      ],
+      "links": [
+        {
+          "label": "官网",
+          "url": "https://www.doubao.com"
+        }
+      ],
+      "transports": [
+        "desktop"
+      ],
+      "surfaces": [
+        "catalog",
+        "detect"
+      ]
+    },
+    {
+      "id": "herdr",
+      "name": "Herdr",
+      "vendor": "herdrdev",
+      "kind": "runtime",
+      "protocols": [
+        "pty",
+        "rest"
+      ],
+      "install": {
+        "docs": "https://github.com/herdrdev/herdr"
+      },
+      "session": {
+        "persistent": true,
+        "resumeAfterRestart": true,
+        "credential": "none"
+      },
+      "quota": {
+        "type": "none",
+        "note": "自身不消耗模型额度，只托管终端会话"
+      },
+      "notes": [
+        "终端多路复用 + 状态感知，负责让 Agent 会话跨断开 / 重启存活",
+        "不自带 Provider、模型路由、审批面板，需要与 T3 Code / 自有面板组合"
+      ],
+      "links": [
+        {
+          "label": "仓库",
+          "url": "https://github.com/herdrdev/herdr"
+        }
+      ],
+      "transports": [
+        "ssh",
+        "http"
+      ],
+      "surfaces": [
+        "catalog",
+        "detect",
+        "run"
+      ]
+    },
+    {
+      "id": "t3code",
+      "name": "T3 Code",
+      "vendor": "pingdotgg",
+      "kind": "panel",
+      "protocols": [
+        "acp",
+        "rest"
+      ],
+      "install": {
+        "docs": "https://github.com/pingdotgg/t3code"
+      },
+      "session": {
+        "persistent": false,
+        "resumeAfterRestart": false,
+        "credential": "none"
+      },
+      "quota": {
+        "type": "none",
+        "note": "控制 / 审批平面，模型额度由被接管的 Provider 决定"
+      },
+      "notes": [
+        "通过 Provider / ACP 接入各类 Agent，强项是审批、Diff 与远程访问",
+        "不是持久终端运行时，不能替代 Herdr 的会话恢复能力"
+      ],
+      "links": [
+        {
+          "label": "仓库",
+          "url": "https://github.com/pingdotgg/t3code"
+        }
+      ],
+      "transports": [
+        "http"
+      ],
+      "surfaces": [
+        "catalog"
+      ]
+    },
+    {
+      "id": "goose",
+      "name": "Goose",
+      "vendor": "Block",
+      "kind": "cli",
+      "transports": [
+        "stdio"
+      ],
+      "protocols": [
+        "mcp"
+      ],
+      "install": {
+        "docs": "https://block.github.io/goose/"
+      },
+      "session": {
+        "persistent": true,
+        "resumeAfterRestart": true,
+        "credential": "none"
+      },
+      "quota": {
+        "type": "none",
+        "note": "自身不提供模型额度，额度由所接 Provider 决定"
+      },
+      "runtime": {
+        "binary": "goose",
+        "versionArgs": [
+          "--version"
+        ],
+        "backendMode": "stdio-adapter"
+      },
+      "configure": {
+        "paths": {
+          "linux": [
+            ".config/goose/config.yaml"
+          ],
+          "darwin": [
+            ".config/goose/config.yaml"
+          ],
+          "win32": [
+            "AppData/Roaming/goose/config.yaml"
+          ]
+        }
+      },
+      "surfaces": [
+        "catalog",
+        "detect",
+        "run",
+        "configure"
+      ],
+      "notes": [
+        "MCP 原生，适合把工具 / 资源直接挂到会话上",
+        "模型与额度来自所接 Provider，不由 Goose 自己提供"
+      ],
+      "links": [
+        {
+          "label": "文档",
+          "url": "https://block.github.io/goose/"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Provider Key 配置页</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow" id="eyebrow">Provider Registry</div>
+        <h1>把 Key 配置页接进你的项目</h1>
+        <p class="lede">表单字段由 <code>getFormFields()</code> 推导，请求配置由 <code>buildRequestConfig()</code> 生成；预览中的密钥已脱敏。</p>
+      </div>
+      <div class="tier-card">
+        <b id="tier-count">—</b>
+        <span id="tier-label">Providers</span>
+        <small id="tier-warning"></small>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="provider-picker">
+        <label class="provider-select">
+          <span id="provider-count">Provider</span>
+          <input id="search" type="search" placeholder="搜索 id / 名称…" autocomplete="off">
+          <select id="provider-select"></select>
+        </label>
+      </div>
+
+      <div class="provider-head">
+        <div>
+          <h2 id="provider-name">—</h2>
+          <p id="provider-meta"></p>
+        </div>
+        <div class="status-line" id="status-line"></div>
+      </div>
+      <div id="risk"></div>
+      <div id="form"></div>
+      <div class="actions">
+        <button type="button" id="validate">校验配置</button>
+      </div>
+      <pre class="preview" id="preview">{}</pre>
+      <footer>
+        <span>数据来自 <code>data/providers.json</code>；生成器不联网、不写入 Key。</span>
+        <span>Provider Registry</span>
+      </footer>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

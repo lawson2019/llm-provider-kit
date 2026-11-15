@@ -1,0 +1,348 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/your-org/agent-provider-registry/schemas/provider.schema.json",
+  "title": "Agent Provider Registry v2",
+  "description": "AI Provider 配置注册表：catalog、端点多接入面、鉴权模式、计费、表单字段、能力、风险与运行时契约。",
+  "type": "object",
+  "required": ["schemaVersion", "updatedAt", "providers"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "updatedAt": { "type": "string", "format": "date" },
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/provider" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "field": {
+      "type": "object",
+      "required": ["key", "label", "type"],
+      "properties": {
+        "key": { "type": "string", "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$" },
+        "label": { "type": "string", "minLength": 1 },
+        "type": {
+          "enum": ["text", "password", "url", "select", "number", "boolean", "json", "textarea"]
+        },
+        "group": { "enum": ["auth", "endpoint", "model", "runtime", "advanced"] },
+        "required": { "type": "boolean" },
+        "secret": { "type": "boolean" },
+        "advanced": { "type": "boolean" },
+        "order": { "type": "number" },
+        "placeholder": { "type": "string" },
+        "help": { "type": "string" },
+        "default": { "type": ["string", "number", "boolean"] },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": {
+              "label": { "type": "string" },
+              "value": { "type": "string" },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "validate": {
+          "type": "object",
+          "properties": {
+            "pattern": { "type": "string" },
+            "min": { "type": "number" },
+            "max": { "type": "number" },
+            "message": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "if": { "properties": { "type": { "const": "password" } } },
+      "then": { "required": ["secret"], "properties": { "secret": { "const": true } } },
+      "additionalProperties": false
+    },
+    "oauth": {
+      "type": "object",
+      "properties": {
+        "authUrl": { "type": "string", "format": "uri" },
+        "tokenUrl": { "type": "string", "format": "uri" },
+        "refreshUrl": { "type": "string", "format": "uri" },
+        "initiateUrl": { "type": "string", "format": "uri" },
+        "pollUrlBase": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "required": ["mode", "scheme"],
+      "properties": {
+        "mode": {
+          "enum": ["api-key", "oauth", "device-code", "browser-cookie", "local-session", "none"]
+        },
+        "scheme": {
+          "enum": [
+            "bearer",
+            "api-key-header",
+            "query-param",
+            "aws-sigv4",
+            "azure-api-key",
+            "cookie",
+            "jwt-session",
+            "none"
+          ]
+        },
+        "headerName": { "type": "string" },
+        "queryName": { "type": "string" },
+        "extraHeaders": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "oauth": { "$ref": "#/$defs/oauth" }
+      },
+      "additionalProperties": false
+    },
+    "endpoint": {
+      "type": "object",
+      "required": ["id", "label", "protocol", "baseURL", "billing"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "label": { "type": "string", "minLength": 1 },
+        "value": { "type": "string", "minLength": 1 },
+        "protocol": {
+          "enum": [
+            "openai-chat",
+            "openai-responses",
+            "anthropic-messages",
+            "gemini-native",
+            "native",
+            "web-session",
+            "local-session",
+            "unknown"
+          ]
+        },
+        "baseURL": { "type": ["string", "null"] },
+        "path": { "type": "string", "pattern": "^/" },
+        "billing": { "enum": ["payg", "subscription", "free", "mixed", "unknown"] },
+        "default": { "type": "boolean" },
+        "headers": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "auth": { "$ref": "#/$defs/endpointAuth" },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "endpointAuth": {
+      "type": "object",
+      "required": ["scheme"],
+      "description": "接入面级鉴权覆盖：同一个 Provider 的不同接入面可能要求不同的 header 名（例如 Anthropic 兼容面用 x-api-key、OpenAI 兼容面用 bearer）。缺省时继承 Provider 级 auth。",
+      "properties": {
+        "mode": { "enum": ["api-key", "oauth", "device-code", "browser-cookie", "local-session", "none"] },
+        "scheme": { "enum": ["bearer", "api-key-header", "query-param", "aws-sigv4", "azure-api-key", "cookie", "jwt-session", "none"] },
+        "headerName": { "type": "string", "minLength": 1 },
+        "queryName": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "billing": {
+      "type": "object",
+      "required": ["mode"],
+      "properties": {
+        "mode": { "enum": ["payg", "subscription", "free", "mixed", "unknown"] },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "risk": {
+      "type": "object",
+      "required": ["level", "variant", "note"],
+      "properties": {
+        "level": { "enum": ["low", "medium", "high"] },
+        "variant": {
+          "enum": [
+            "official-api",
+            "subscription",
+            "oauth",
+            "browser-cookie",
+            "local-session",
+            "deprecated",
+            "unsupported"
+          ]
+        },
+        "note": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "properties": {
+        "forceStream": { "type": "boolean" },
+        "strictChatHistory": { "type": "boolean" },
+        "passthroughModels": { "type": "boolean" },
+        "requiresReasoningEcho": { "type": "boolean" },
+        "bodyStringReplacements": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "probe": {
+      "type": "object",
+      "properties": {
+        "modelsUrl": { "type": "string", "minLength": 1 },
+        "authTestUrl": { "type": "string", "minLength": 1 },
+        "method": { "enum": ["GET", "POST"] }
+      },
+      "additionalProperties": false
+    },
+    "session": {
+      "type": "object",
+      "required": ["refreshable", "desktopOnly", "note"],
+      "properties": {
+        "refreshable": { "type": "boolean" },
+        "desktopOnly": { "type": "boolean" },
+        "note": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "provider": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind",
+        "category",
+        "authType",
+        "baseURL",
+        "docs",
+        "status",
+        "icon",
+        "capabilities",
+        "quota",
+        "auth",
+        "billing",
+        "endpoints",
+        "fields"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "kind": { "enum": ["api", "gateway", "local", "session"] },
+        "category": { "enum": ["global", "china", "aggregator", "local", "agent"] },
+        "authType": {
+          "enum": [
+            "bearer",
+            "api-key-header",
+            "query-param",
+            "aws-sigv4",
+            "azure-api-key",
+            "cookie",
+            "jwt-session",
+            "none"
+          ]
+        },
+        "baseURL": { "type": ["string", "null"] },
+        "baseURLTemplate": { "type": "string" },
+        "baseURLEditable": { "type": "boolean" },
+        "endpoints": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/endpoint" }
+        },
+        "docs": { "type": "string", "format": "uri" },
+        "status": { "enum": ["verified", "reference", "stale"] },
+        "verifiedAt": { "type": "string", "format": "date" },
+        "icon": {
+          "type": "object",
+          "required": ["slug", "source"],
+          "properties": {
+            "slug": { "type": "string" },
+            "source": { "const": "lobe-icons" },
+            "color": { "type": "string" },
+            "url": { "type": "string", "format": "uri" }
+          },
+          "additionalProperties": false
+        },
+        "brandColor": { "type": "string" },
+        "auth": { "$ref": "#/$defs/auth" },
+        "billing": { "$ref": "#/$defs/billing" },
+        "capabilities": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "streaming",
+              "toolCalling",
+              "vision",
+              "embeddings",
+              "audio",
+              "reasoning",
+              "promptCaching"
+            ]
+          },
+          "additionalProperties": { "type": "boolean" }
+        },
+        "quota": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "enum": ["api-key", "subscription", "session", "free", "mixed"] },
+            "note": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "session": { "$ref": "#/$defs/session" },
+        "probe": { "$ref": "#/$defs/probe" },
+        "risk": { "$ref": "#/$defs/risk" },
+        "runtime": { "$ref": "#/$defs/runtime" },
+        "externalIds": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/field" }
+        },
+        "notes": { "type": "array", "items": { "type": "string" } },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "session" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "authType": { "enum": ["jwt-session", "cookie", "none"] },
+              "baseURL": { "type": "null" },
+              "quota": {
+                "properties": { "type": { "enum": ["session", "subscription"] } },
+                "required": ["type"]
+              }
+            },
+            "required": ["session"]
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "verified" } }, "required": ["status"] },
+          "then": { "required": ["verifiedAt"] }
+        },
+        {
+          "if": {
+            "properties": { "auth": { "properties": { "mode": { "enum": ["oauth", "device-code"] } } } },
+            "required": ["auth"]
+          },
+          "then": { "properties": { "auth": { "required": ["oauth"] } } }
+        }
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Provider Registry · 配置页预览</title>
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --panel: #ffffff;
+    --panel-2: #fbfaf8;
+    --ink: #1c1f1e;
+    --muted: #6b716e;
+    --line: #e3e0da;
+    --accent: #0f766e;
+    --accent-soft: #e6f4f1;
+    --warn: #b45309;
+    --warn-soft: #fef3c7;
+    --danger: #b91c1c;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(20, 24, 22, .06), 0 8px 24px rgba(20, 24, 22, .06);
+  }
+  html[data-theme="dark"] {
+    --bg: #121413;
+    --panel: #1a1d1b;
+    --panel-2: #202421;
+    --ink: #e8ece9;
+    --muted: #98a29c;
+    --line: #2d332f;
+    --accent: #5eead4;
+    --accent-soft: #12312c;
+    --warn: #fbbf24;
+    --warn-soft: #3a2c0c;
+    --danger: #f87171;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .24);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 14px; line-height: 1.55;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 20px 28px 14px; max-width: 1280px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .mark { width: 38px; height: 38px; border-radius: 11px; background: var(--accent); color: #fff;
+    display: grid; place-items: center; font-weight: 700; letter-spacing: .5px; }
+  html[data-theme="dark"] .mark { color: #06201c; }
+  h1 { font-size: 19px; margin: 0; letter-spacing: .2px; }
+  .sub { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+  .top-right { display: flex; align-items: center; gap: 10px; }
+  .stat { font-size: 12px; color: var(--muted); border: 1px solid var(--line);
+    background: var(--panel); padding: 4px 9px; border-radius: 999px; }
+  .icon-btn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line);
+    background: var(--panel); display: grid; place-items: center; }
+  .toolbar { max-width: 1280px; margin: 0 auto; padding: 0 28px 14px; display: flex;
+    flex-wrap: wrap; gap: 10px; align-items: center; }
+  .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 10px; padding: 3px; }
+  .seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 8px; color: var(--muted); }
+  .seg button.on { background: var(--accent); color: #fff; }
+  html[data-theme="dark"] .seg button.on { color: #06201c; }
+  .search { flex: 1; min-width: 220px; padding: 9px 12px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--panel); outline: none; }
+  .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  select.status { padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
+  .chip { border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+    padding: 4px 11px; border-radius: 999px; font-size: 12px; }
+  .chip.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  main { max-width: 1280px; margin: 0 auto; padding: 0 28px 40px;
+    display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; align-items: start; }
+  .list { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden; box-shadow: var(--shadow); max-height: calc(100vh - 190px); overflow-y: auto; }
+  .item { display: flex; gap: 10px; padding: 11px 13px; border-bottom: 1px solid var(--line);
+    align-items: center; text-align: left; width: 100%; background: transparent; border-left: 0; border-right: 0; border-top: 0; }
+  .item:last-child { border-bottom: 0; }
+  .item:hover { background: var(--panel-2); }
+  .item.on { background: var(--accent-soft); }
+  .item.on .name { color: var(--accent); }
+  .item .body { min-width: 0; flex: 1; }
+  .name { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta { color: var(--muted); font-size: 11.5px; display: flex; gap: 7px; flex-wrap: wrap; margin-top: 2px; }
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--panel-2);
+    display: grid; place-items: center; flex: none; position: relative; overflow: hidden;
+    border: 1px solid var(--line); }
+  .logo img { width: 22px; height: 22px; object-fit: contain; }
+  .logo.fallback { background: var(--brand, var(--accent)); color: #fff; font-weight: 700; font-size: 12px; border: 0; }
+  .badge { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+  .badge.ok { color: var(--accent); border-color: var(--accent); }
+  .badge.ref { color: var(--warn); border-color: var(--warn); }
+  .badge.ses { color: #fff; background: var(--warn); border-color: transparent; }
+  .detail { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 22px; min-height: 420px; }
+  .d-head { display: flex; gap: 14px; align-items: flex-start; }
+  .d-head .logo { width: 46px; height: 46px; border-radius: 12px; }
+  .d-head .logo img { width: 32px; height: 32px; }
+  .d-title { flex: 1; min-width: 0; }
+  .d-title h2 { margin: 0; font-size: 20px; letter-spacing: .2px; }
+  .d-id { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .d-link { border: 1px solid var(--line); border-radius: 9px; padding: 6px 11px; text-decoration: none;
+    color: var(--accent); font-size: 12px; white-space: nowrap; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0 4px; }
+  .banner { margin: 14px 0 4px; padding: 11px 13px; border-radius: 10px; font-size: 12.5px;
+    border: 1px solid var(--line); background: var(--panel-2); }
+  .banner.warn { border-color: var(--warn); background: var(--warn-soft); color: var(--warn); }
+  .banner strong { display: block; font-size: 13px; margin-bottom: 2px; }
+  .section-title { display: flex; align-items: center; justify-content: space-between;
+    margin: 20px 0 10px; font-size: 13px; color: var(--muted); }
+  .section-title h3 { margin: 0; font-size: 13px; color: var(--ink); letter-spacing: .3px; }
+  .group { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-bottom: 12px; background: var(--panel-2); }
+  .group-head { padding: 8px 12px; font-size: 12px; color: var(--muted); background: var(--panel);
+    border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  .group-body { padding: 12px; display: grid; gap: 12px; }
+  .field label { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 12.5px; margin-bottom: 5px; }
+  .req { color: var(--danger); font-size: 11px; font-weight: 500; }
+  .tag { font-size: 10px; border: 1px solid var(--line); color: var(--muted); padding: 0 5px; border-radius: 4px; font-weight: 500; }
+  .tag.secret { color: var(--warn); border-color: var(--warn); }
+  .control { display: flex; gap: 6px; }
+  .control input, .control select, .control textarea { width: 100%; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel); outline: none; }
+  .control input:focus, .control select:focus, .control textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .control input.bad, .control select.bad { border-color: var(--danger); }
+  .control textarea { min-height: 74px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+  .peek { border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 0 10px; font-size: 12px; white-space: nowrap; }
+  .help { color: var(--muted); font-size: 11.5px; margin-top: 4px; }
+  .switch { display: flex; align-items: center; gap: 8px; }
+  .switch input { width: auto; }
+  .adv-toggle { border: 0; background: transparent; color: var(--muted); font-size: 12px; padding: 2px 0; }
+  .output { margin-top: 20px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .output-head { display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 12px; background: var(--panel-2); border-bottom: 1px solid var(--line); font-size: 12px; }
+  .output-head .acts { display: flex; gap: 8px; }
+  .mini { border: 1px solid var(--line); background: var(--panel); border-radius: 7px; padding: 3px 8px; font-size: 11.5px; }
+  pre { margin: 0; padding: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; line-height: 1.6; overflow: auto; background: var(--panel); }
+  .problems { padding: 10px 13px; border-top: 1px solid var(--line); font-size: 12px; color: var(--danger); display: none; }
+  .problems.on { display: block; }
+  .notes { margin-top: 18px; }
+  .notes ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; }
+  .notes li { margin: 3px 0; }
+  .empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+  .agent-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; background: var(--panel-2); }
+  .agent-card h3 { margin: 0 0 4px; font-size: 15px; }
+  .agent-card .proto { display: flex; gap: 5px; flex-wrap: wrap; margin: 7px 0; }
+  .proto span { font-size: 11px; border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; color: var(--muted); }
+  .kv { display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px; font-size: 12.5px; margin-top: 8px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; }
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    .list { max-height: 260px; }
+    .topbar { padding: 16px 16px 10px; }
+    .toolbar, main { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="mark">PR</span>
+    <div>
+      <h1>Provider Registry</h1>
+      <p class="sub">一份可校验、可直接渲染表单的 Provider 配置注册表 · schema v2</p>
+    </div>
+  </div>
+  <div class="top-right">
+    <span class="stat" id="stats">—</span>
+    <button class="icon-btn" id="themeBtn" title="切换深浅色">◐</button>
+  </div>
+</header>
+
+<section class="toolbar">
+  <div class="seg" id="modeSeg">
+    <button data-mode="providers" class="on">Providers</button>
+    <button data-mode="agents">Agents</button>
+  </div>
+  <input class="search" id="search" placeholder="搜索 id / 名称 / 别名，例如 kimi、acp、local…">
+  <select class="status" id="statusFilter">
+    <option value="">全部状态</option>
+    <option value="verified">verified</option>
+    <option value="reference">reference</option>
+    <option value="stale">stale</option>
+  </select>
+  <div class="chips" id="chips"></div>
+</section>
+
+<main>
+  <aside class="list" id="list"></aside>
+  <section id="detail"></section>
+</main>
+
+<script>
+const DATA = /*__REGISTRY__*/ {};
+
+const CATEGORY_LABEL = {
+  global: '海外', china: '国内', aggregator: '聚合', local: '本地', agent: '会话 / Agent'
+};
+const KIND_LABEL = { api: '直连 API', gateway: '聚合网关', local: '本地运行时', session: '会话型' };
+const GROUP_LABEL = { auth: '鉴权', endpoint: '端点', model: '模型', runtime: '运行时 / 会话', advanced: '高级' };
+const STATUS_LABEL = { verified: 'verified', reference: 'reference', stale: 'stale' };
+
+const DEMO_PARAMS = new URLSearchParams(location.search);
+
+const state = {
+  mode: DEMO_PARAMS.get('agent') ? 'agents' : 'providers',
+  category: '',
+  status: '',
+  query: '',
+  selectedProvider: DEMO_PARAMS.get('provider') ?? DATA.providers?.[0]?.id ?? null,
+  selectedAgent: DEMO_PARAMS.get('agent') ?? DATA.agents?.[0]?.id ?? null,
+  values: {},
+  showAdvanced: false,
+  errors: {},
+};
+
+for (const p of DATA.providers ?? []) {
+  const v = {};
+  for (const f of p.formFields ?? []) {
+    if (f.default !== undefined) v[f.key] = f.default;
+  }
+  state.values[p.id] = v;
+}
+
+const el = (tag, cls, text) => {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined) node.textContent = text;
+  return node;
+};
+
+function initials(name) {
+  const latin = name.replace(/[^A-Za-z0-9]/g, '');
+  if (latin) return latin.slice(0, 2).toUpperCase();
+  return name.slice(0, 1);
+}
+
+function logoNode(provider, big = false) {
+  const wrap = el('span', big ? 'logo' : 'logo');
+  wrap.style.setProperty('--brand', provider.icon?.color || provider.brandColor || '#0f766e');
+  const img = new Image();
+  img.alt = '';
+  img.loading = 'lazy';
+  img.src = `https://unpkg.com/@lobehub/icons-static-svg@latest/icons/${provider.icon.slug}.svg`;
+  img.addEventListener('error', () => {
+    img.remove();
+    wrap.classList.add('fallback');
+    wrap.textContent = initials(provider.name);
+  });
+  wrap.appendChild(img);
+  return wrap;
+}
+
+function currentProviders() {
+  if (!DATA.providers) return [];
+  return DATA.providers.filter((p) => {
+    if (state.category && p.category !== state.category) return false;
+    if (state.status && p.status !== state.status) return false;
+    if (!state.query) return true;
+    const hay = [
+      p.id, p.name, ...(p.aliases ?? []), p.kind,
+      p.authType, p.auth?.mode, p.auth?.scheme,
+      p.billing?.mode, p.quota?.type,
+      ...(p.endpoints ?? []).flatMap((e) => [e.id, e.label, e.protocol, e.baseURL]),
+    ].join(' ').toLowerCase();
+    return hay.includes(state.query.toLowerCase());
+  });
+}
+
+function renderChips() {
+  const chips = document.getElementById('chips');
+  chips.replaceChildren();
+  chips.style.display = state.mode === 'agents' ? 'none' : 'flex';
+  const all = el('button', `chip${state.category === '' ? ' on' : ''}`, `全部 ${DATA.providers.length}`);
+  all.onclick = () => { state.category = ''; renderChips(); renderList(); renderDetail(); };
+  chips.appendChild(all);
+  for (const [key, label] of Object.entries(CATEGORY_LABEL)) {
+    const count = DATA.providers.filter((p) => p.category === key).length;
+    if (!count) continue;
+    const chip = el('button', `chip${state.category === key ? ' on' : ''}`, `${label} ${count}`);
+    chip.onclick = () => { state.category = state.category === key ? '' : key; renderChips(); renderList(); renderDetail(); };
+    chips.appendChild(chip);
+  }
+}
+
+function providerBadges(p) {
+  const box = el('div', 'badges');
+  box.appendChild(el('span', `badge${p.kind === 'session' ? ' ses' : ''}`, KIND_LABEL[p.kind] ?? p.kind));
+  box.appendChild(el('span', 'badge', p.auth?.mode ?? p.authType));
+  box.appendChild(el('span', 'badge', `${p.auth?.scheme ?? p.authType}`));
+  box.appendChild(el('span', 'badge', `billing: ${p.billing?.mode ?? p.quota?.type ?? '-'}`));
+  if (p.endpoints?.length > 1) box.appendChild(el('span', 'badge', `${p.endpoints.length} 个接入面`));
+  const st = el('span', `badge ${p.status === 'verified' ? 'ok' : p.status === 'reference' ? 'ref' : ''}`, STATUS_LABEL[p.status]);
+  box.appendChild(st);
+  return box;
+}
+
+function renderList() {
+  const list = document.getElementById('list');
+  list.replaceChildren();
+
+  if (state.mode === 'agents') {
+    const agents = (DATA.agents ?? []).filter((agent) => {
+      if (!state.query) return true;
+      const hay = [agent.id, agent.name, agent.vendor, ...(agent.transports ?? []), ...(agent.protocols ?? []), ...(agent.notes ?? [])]
+        .join(' ').toLowerCase();
+      return hay.includes(state.query.toLowerCase());
+    });
+    if (!agents.some((a) => a.id === state.selectedAgent)) {
+      state.selectedAgent = agents[0]?.id ?? null;
+    }
+    if (agents.length === 0) {
+      list.appendChild(el('div', 'empty', '没有匹配的 Agent'));
+      return;
+    }
+    for (const agent of agents) {
+      const btn = el('button', `item${state.selectedAgent === agent.id ? ' on' : ''}`);
+      const body = el('div', 'body');
+      body.appendChild(el('div', 'name', agent.name));
+      const meta = el('div', 'meta');
+      meta.appendChild(el('span', '', (agent.transports ?? (agent.transport ? [agent.transport] : [])).join('+') || agent.kind));
+      meta.appendChild(el('span', '', (agent.protocols ?? []).join(' · ') || '—'));
+      if (agent.runtime?.backendMode) meta.appendChild(el('span', '', agent.runtime.backendMode));
+      body.appendChild(meta);
+      const badge = el('span', 'badge', agent.vendor ?? '');
+      btn.append(body, badge);
+      btn.onclick = () => { state.selectedAgent = agent.id; renderList(); renderDetail(); };
+      list.appendChild(btn);
+    }
+    return;
+  }
+
+  const providers = currentProviders();
+  if (providers.length === 0) {
+    list.appendChild(el('div', 'empty', '没有匹配的 Provider'));
+    return;
+  }
+  if (!providers.some((p) => p.id === state.selectedProvider)) {
+    state.selectedProvider = providers[0].id;
+  }
+  for (const p of providers) {
+    const btn = el('button', `item${state.selectedProvider === p.id ? ' on' : ''}`);
+    btn.appendChild(logoNode(p));
+    const body = el('div', 'body');
+    body.appendChild(el('div', 'name', p.name));
+    const meta = el('div', 'meta');
+    meta.appendChild(el('span', '', p.kind));
+    meta.appendChild(el('span', '', p.auth?.mode ?? p.authType));
+    const st = el('span', '', p.status);
+    if (p.status === 'verified') st.style.color = 'var(--accent)';
+    if (p.status === 'reference') st.style.color = 'var(--warn)';
+    meta.appendChild(st);
+    body.appendChild(meta);
+    btn.appendChild(body);
+    btn.onclick = () => { state.selectedProvider = p.id; state.errors = {}; renderList(); renderDetail(); };
+    list.appendChild(btn);
+  }
+}
+
+function currentProvider() {
+  return (DATA.providers ?? []).find((p) => p.id === state.selectedProvider) ?? null;
+}
+
+function fieldControl(field, value, onChange, hasError) {
+  const wrap = el('div', 'control');
+  let input;
+
+  if (field.type === 'select') {
+    input = el('select');
+    for (const option of field.options ?? []) {
+      const opt = el('option', '', option.label);
+      opt.value = option.value;
+      if (option.description) opt.title = option.description;
+      input.appendChild(opt);
+    }
+    input.value = value ?? field.default ?? '';
+  } else if (field.type === 'boolean') {
+    input = el('input');
+    input.type = 'checkbox';
+    input.checked = Boolean(value ?? field.default);
+    input.style.width = 'auto';
+    wrap.classList.add('switch');
+  } else if (field.type === 'textarea' || field.type === 'json') {
+    input = el('textarea');
+    input.value = value ?? field.default ?? '';
+    input.placeholder = field.placeholder ?? '';
+  } else if (field.type === 'number') {
+    input = el('input');
+    input.type = 'number';
+    if (field.validate?.min !== undefined) input.min = field.validate.min;
+    if (field.validate?.max !== undefined) input.max = field.validate.max;
+    input.value = value ?? field.default ?? '';
+  } else {
+    input = el('input');
+    input.type = field.type === 'password' ? 'password' : field.type === 'url' ? 'url' : 'text';
+    input.value = value ?? field.default ?? '';
+    input.placeholder = field.placeholder ?? '';
+    input.autocomplete = 'off';
+    input.spellcheck = false;
+  }
+
+  if (hasError) input.classList.add('bad');
+  input.addEventListener('input', () => {
+    const v = field.type === 'boolean' ? input.checked : input.value;
+    onChange(v);
+  });
+  input.addEventListener('change', () => {
+    const v = field.type === 'boolean' ? input.checked : input.value;
+    onChange(v);
+  });
+  wrap.appendChild(input);
+
+  if (field.type === 'password') {
+    const peek = el('button', 'peek', '显示');
+    peek.type = 'button';
+    peek.onclick = () => {
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      peek.textContent = showing ? '显示' : '隐藏';
+    };
+    wrap.appendChild(peek);
+  }
+  return wrap;
+}
+
+function renderForm(provider) {
+  const box = el('div');
+
+  if (provider.quotaWarning) {
+    const banner = el('div', `banner ${provider.quotaWarning.level === 'warning' ? 'warn' : ''}`);
+    banner.appendChild(el('strong', '', provider.quotaWarning.title));
+    banner.appendChild(document.createTextNode(provider.quotaWarning.detail));
+    box.appendChild(banner);
+  }
+
+  const values = state.values[provider.id] ?? (state.values[provider.id] = {});
+  const groups = {};
+  for (const f of provider.formFields ?? []) (groups[f.group ?? 'advanced'] ??= []).push(f);
+
+  const basicGroups = Object.entries(groups).filter(([g]) => g !== 'advanced');
+  const advanced = groups.advanced ?? [];
+
+  for (const [group, fields] of basicGroups) {
+    box.appendChild(renderGroup(provider, group, fields, values));
+  }
+  if (advanced.length) {
+    const toggle = el('button', 'adv-toggle', `${state.showAdvanced ? '▾ 收起高级项' : `▸ 显示高级项（${advanced.length}）`}`);
+    toggle.onclick = () => { state.showAdvanced = !state.showAdvanced; renderDetail(); };
+    box.appendChild(toggle);
+    if (state.showAdvanced) box.appendChild(renderGroup(provider, 'advanced', advanced, values));
+  }
+
+  const out = el('div', 'output');
+  const head = el('div', 'output-head');
+  head.appendChild(el('span', '', '生成的请求配置（密钥已脱敏）'));
+  const acts = el('div', 'acts');
+  const gen = el('button', 'mini', '校验配置');
+  const copy = el('button', 'mini', '复制脱敏 JSON');
+  acts.append(gen, copy);
+  head.appendChild(acts);
+  out.appendChild(head);
+
+  const pre = el('pre');
+  const problems = el('div', 'problems');
+  out.append(pre, problems);
+
+  const update = () => {
+    const config = buildConfig(provider, values);
+    pre.textContent = JSON.stringify(config, null, 2);
+    if (Object.keys(state.errors).length) {
+      problems.classList.add('on');
+      problems.textContent = `缺少必填项：${Object.keys(state.errors).join('、')}`;
+    } else {
+      problems.classList.remove('on');
+      problems.textContent = '';
+    }
+  };
+
+  gen.onclick = () => {
+    state.errors = {};
+    for (const f of provider.formFields ?? []) {
+      if (f.required && !String(values[f.key] ?? '').trim()) state.errors[f.key] = true;
+    }
+    renderDetail();
+  };
+  copy.onclick = async () => {
+    const text = JSON.stringify(buildConfig(provider, values), null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      copy.textContent = '已复制';
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      copy.textContent = '已复制';
+    }
+    setTimeout(() => (copy.textContent = '复制脱敏 JSON'), 1400);
+  };
+
+  update();
+  box.appendChild(out);
+
+  if (provider.notes?.length) {
+    const notes = el('div', 'notes');
+    const title = el('div', 'section-title');
+    title.appendChild(el('h3', '', '接入备注'));
+    notes.appendChild(title);
+    const ul = el('ul');
+    for (const note of provider.notes) ul.appendChild(el('li', '', note));
+    notes.appendChild(ul);
+    box.appendChild(notes);
+  }
+
+  return box;
+}
+
+function renderGroup(provider, group, fields, values) {
+  const wrap = el('div', 'group');
+  const head = el('div', 'group-head');
+  head.appendChild(el('span', '', GROUP_LABEL[group] ?? group));
+  head.appendChild(el('span', '', `${fields.length} 项`));
+  const body = el('div', 'group-body');
+
+  for (const field of fields) {
+    const row = el('div', 'field');
+    const label = el('label');
+    label.appendChild(document.createTextNode(field.label));
+    if (field.required) label.appendChild(el('span', 'req', '必填'));
+    if (field.secret) label.appendChild(el('span', 'tag secret', '密钥'));
+    if (field.advanced) label.appendChild(el('span', 'tag', '高级'));
+    body.appendChild(row);
+    row.appendChild(label);
+
+    const control = fieldControl(field, values[field.key], (v) => {
+      values[field.key] = v;
+      if (state.errors[field.key] && String(v).trim()) {
+        delete state.errors[field.key];
+      }
+      refreshOutput(provider, values);
+    }, Boolean(state.errors[field.key]));
+    row.appendChild(control);
+
+    if (field.help) row.appendChild(el('div', 'help', field.help));
+    if (field.type === 'select' && field.options) {
+      const active = field.options.find((o) => o.value === (values[field.key] ?? field.default));
+      if (active?.description) row.appendChild(el('div', 'help', `当前：${active.description}`));
+    }
+  }
+
+  wrap.append(head, body);
+  return wrap;
+}
+
+function refreshOutput(provider, values) {
+  const pre = document.querySelector('.output pre');
+  if (!pre) return;
+  pre.textContent = JSON.stringify(buildConfig(provider, values), null, 2);
+}
+
+function interpolate(template, values) {
+  return template.replace(/\{([a-zA-Z0-9_]+)\}/g, (_, key) => {
+    const v = values[key];
+    return v === undefined || v === null || v === '' ? `{${key}}` : String(v);
+  });
+}
+
+function resolveEndpoint(provider, values) {
+  const endpoints = provider.endpoints ?? [];
+  const selectedValue = values.endpoint ?? values.endpointId;
+  if (selectedValue !== undefined && selectedValue !== null && selectedValue !== '') {
+    const selected = endpoints.find((e) => e.id === selectedValue || e.value === selectedValue);
+    if (selected) return selected;
+  }
+  return endpoints.find((e) => e.default === true) ?? endpoints[0] ?? null;
+}
+
+const DEFAULT_ENDPOINT_PATH = {
+  'openai-chat': '/chat/completions',
+  'openai-responses': '/responses',
+  'anthropic-messages': '/v1/messages',
+};
+
+function endpointPath(endpoint) {
+  return endpoint?.path ?? (DEFAULT_ENDPOINT_PATH[endpoint?.protocol] ?? '');
+}
+
+function endpointURL(endpoint) {
+  if (!endpoint?.baseURL) return '本地会话';
+  const base = String(endpoint.baseURL).replace(/\/+$/, '');
+  const path = endpointPath(endpoint);
+  if (!path || base.endsWith(path)) return base;
+  return `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+}
+
+function maskCredential(value) {
+  const raw = String(value ?? '');
+  if (!raw) return '';
+  if (raw.length <= 8) return '••••';
+  return `${raw.slice(0, 4)}…${raw.slice(-4)}`;
+}
+
+function buildConfig(provider, values) {
+  const headers = {};
+  const query = {};
+  const missing = [];
+  const warnings = [];
+
+  for (const f of provider.formFields ?? []) {
+    const value = values[f.key] ?? f.default;
+    if (f.required && !String(value ?? '').trim()) missing.push(f.key);
+  }
+
+  const endpoint = resolveEndpoint(provider, values);
+  let baseURL = values.baseURL || endpoint?.baseURL || provider.baseURL || '';
+  if (provider.baseURLTemplate) baseURL = interpolate(provider.baseURLTemplate, values);
+  else if (baseURL.includes('{')) baseURL = interpolate(baseURL, values);
+  if (provider.kind === 'session') baseURL = '（由已登录客户端动态签发，无公开端点）';
+
+  const auth = provider.auth ?? {};
+  const endpointAuth = endpoint?.auth ?? {};
+  const authMode = endpointAuth.mode ?? auth.mode ?? (provider.kind === 'session' ? 'local-session' : provider.authType === 'none' ? 'none' : 'api-key');
+  const scheme = endpointAuth.scheme ?? auth.scheme ?? provider.authType;
+  const headerName = endpointAuth.headerName ?? auth.headerName;
+  const queryName = endpointAuth.queryName ?? auth.queryName;
+  const credentialField = (provider.formFields ?? []).find((f) => f.secret === true);
+  const credential = credentialField ? (values[credentialField.key] || '') : '';
+  const masked = maskCredential(credential);
+
+  const defaultPath = DEFAULT_ENDPOINT_PATH[endpoint?.protocol] ?? '';
+  const path = endpoint?.path ?? defaultPath;
+  let requestURL = baseURL ? String(baseURL).replace(/\/+$/, '') : '';
+  if (requestURL && path && !requestURL.endsWith(path)) {
+    requestURL = `${requestURL}${path.startsWith('/') ? '' : '/'}${path}`;
+  }
+
+  if (authMode === 'oauth' || authMode === 'device-code') {
+    warnings.push('OAuth / 设备码：先在面板完成登录，不要把 access token 写进配置文件或 Prompt');
+  }
+  if (authMode === 'browser-cookie') {
+    warnings.push('浏览器 Cookie：只应存在本地凭据库，不能提交到仓库或日志');
+  }
+  if (authMode === 'local-session') {
+    warnings.push('本地登录态：凭证由已登录客户端 / CLI 动态签发，不能导出为静态 Key');
+  }
+
+  switch (scheme) {
+    case 'bearer':
+      headers.Authorization = credential ? `Bearer ${masked}` : 'Bearer <未填写>';
+      break;
+    case 'api-key-header':
+      headers[headerName ?? 'x-api-key'] = credential ? masked : '<未填写>';
+      break;
+    case 'query-param':
+      query[queryName ?? 'key'] = credential ? masked : '<未填写>';
+      break;
+    case 'azure-api-key':
+      headers['api-key'] = credential ? masked : '<未填写>';
+      query['api-version'] = values.apiVersion || '2024-10-21';
+      break;
+    case 'aws-sigv4':
+      headers['X-Amz-Date'] = '由 SDK 生成';
+      headers.Authorization = 'AWS4-HMAC-SHA256 …（需 SDK 计算签名）';
+      break;
+    case 'cookie':
+      headers.Cookie = credential ? masked : '<未填写>';
+      break;
+    case 'jwt-session':
+      headers.Authorization = 'Bearer <由已登录会话动态签发>';
+      break;
+  }
+
+  for (const [name, value] of Object.entries(auth.extraHeaders ?? {})) {
+    const resolved = interpolate(value, values);
+    if (!resolved.includes('{')) headers[name] = resolved;
+  }
+  for (const [name, value] of Object.entries(endpoint?.headers ?? {})) {
+    const resolved = interpolate(value, values);
+    if (!resolved.includes('{')) headers[name] = resolved;
+  }
+
+  if (provider.status === 'reference') warnings.push('该条目标记为 reference，接入前请按官方文档核对端点与鉴权。');
+  if (provider.kind === 'session') warnings.push('会话型：不能把 JWT 写进配置文件或 Prompt，额度跟随登录状态。');
+  if (provider.risk && ['medium', 'high'].includes(provider.risk.level)) {
+    warnings.push(`风险提示（${provider.risk.level}）：${provider.risk.note}`);
+  }
+  if (provider.runtime?.forceStream) warnings.push('该网关只接受流式请求；非流式调用需要先聚合 SSE。');
+  if (provider.runtime?.strictChatHistory) warnings.push('该网关要求严格回放 tool_call / reasoning 历史，否则会断在多轮。');
+
+  return {
+    baseURL,
+    endpoint: endpoint?.id ?? 'default',
+    protocol: endpoint?.protocol ?? 'unknown',
+    path,
+    requestURL,
+    headers,
+    query,
+    missing,
+    warnings,
+    quota: provider.quota?.type,
+    billing: provider.billing?.mode ?? provider.quota?.type,
+    authMode,
+    runtime: provider.runtime ?? null,
+  };
+}
+
+function renderProviderDetail() {
+  const detail = document.getElementById('detail');
+  detail.replaceChildren();
+  const provider = currentProvider();
+  if (!provider) {
+    detail.appendChild(el('div', 'empty', '选择左侧的 Provider 查看可渲染的配置表单'));
+    return;
+  }
+
+  const panel = el('div', 'detail');
+  const head = el('div', 'd-head');
+  head.appendChild(logoNode(provider, true));
+  const title = el('div', 'd-title');
+  title.appendChild(el('h2', '', provider.name));
+  title.appendChild(el('div', 'd-id', `${provider.id} · ${CATEGORY_LABEL[provider.category] ?? provider.category}`));
+  head.appendChild(title);
+  const link = el('a', 'd-link', '官方文档 ↗');
+  link.href = provider.docs;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  head.appendChild(link);
+  panel.appendChild(head);
+  panel.appendChild(providerBadges(provider));
+
+  const desc = el('div', 'd-id');
+  desc.style.marginTop = '6px';
+  desc.textContent = `Base URL：${provider.baseURL ?? '—'}　鉴权：${provider.auth?.mode ?? provider.authType}/${provider.auth?.scheme ?? provider.authType}　计费：${provider.billing?.mode ?? provider.quota?.type ?? '—'}`;
+  panel.appendChild(desc);
+
+  if (provider.endpoints?.length) {
+    const ep = el('div', 'notes');
+    const title = el('div', 'section-title');
+    title.appendChild(el('h3', '', `接入面（${provider.endpoints.length}）`));
+    ep.appendChild(title);
+    const ul = el('ul');
+    for (const endpoint of provider.endpoints) {
+      const li = el('li', '', `${endpoint.label} · ${endpoint.protocol} · ${endpoint.billing} · ${endpointURL(endpoint)}`);
+      if (endpoint.default) li.appendChild(el('span', 'tag', '默认'));
+      ul.appendChild(li);
+    }
+    ep.appendChild(ul);
+    panel.appendChild(ep);
+  }
+
+  if (provider.auth?.oauth && (provider.auth.mode === 'oauth' || provider.auth.mode === 'device-code')) {
+    const oauth = el('div', 'banner');
+    oauth.appendChild(el('strong', '', `OAuth / ${provider.auth.mode}`));
+    oauth.appendChild(document.createTextNode(
+      `　登录发起：${provider.auth.oauth.initiateUrl ?? provider.auth.oauth.authUrl ?? '—'}　轮询：${provider.auth.oauth.pollUrlBase ?? provider.auth.oauth.tokenUrl ?? '—'}`
+    ));
+    panel.appendChild(oauth);
+  }
+
+  if (provider.risk) {
+    const risk = el('div', `banner ${provider.risk.level === 'high' ? 'warn' : ''}`);
+    risk.appendChild(el('strong', '', `风险 ${provider.risk.level} / ${provider.risk.variant}`));
+    risk.appendChild(document.createTextNode(`　${provider.risk.note}`));
+    panel.appendChild(risk);
+  }
+
+  panel.appendChild(renderForm(provider));
+  detail.appendChild(panel);
+}
+
+function renderAgentDetail() {
+  const detail = document.getElementById('detail');
+  detail.replaceChildren();
+  const agent = (DATA.agents ?? []).find((a) => a.id === state.selectedAgent);
+  if (!agent) {
+    detail.appendChild(el('div', 'empty', '选择左侧的 Agent / 运行时'));
+    return;
+  }
+  const panel = el('div', 'detail');
+  const h = el('div', 'd-head');
+  const title = el('div', 'd-title');
+  title.appendChild(el('h2', '', agent.name));
+  title.appendChild(el('div', 'd-id', `${agent.id} · ${agent.vendor ?? ''}`));
+  h.appendChild(title);
+  if (agent.links?.[0]) {
+    const link = el('a', 'd-link', `${agent.links[0].label} ↗`);
+    link.href = agent.links[0].url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    h.appendChild(link);
+  }
+  panel.appendChild(h);
+
+  const proto = el('div', 'proto');
+  for (const t of agent.transports ?? (agent.transport ? [agent.transport] : [])) proto.appendChild(el('span', '', `transport: ${t}`));
+  for (const p of agent.protocols ?? []) proto.appendChild(el('span', '', p));
+  panel.appendChild(proto);
+
+  const kv = el('div', 'kv');
+  const row = (k, v) => {
+    kv.appendChild(el('dt', '', k));
+    kv.appendChild(el('dd', '', v));
+  };
+  row('类型', agent.kind);
+  row('传输', (agent.transports ?? (agent.transport ? [agent.transport] : [])).join(' + ') || '—');
+  row('应用协议', (agent.protocols ?? []).join(' · ') || '—');
+  row('后端模式', agent.runtime?.backendMode ?? '—');
+  row('可执行文件', agent.runtime?.binary ?? '—');
+  row('安装', agent.install?.npm ? `npm i -g ${agent.install.npm}` : agent.install?.docs ?? '—');
+  const paths = agent.configure?.paths;
+  row('配置路径', paths ? Object.entries(paths).map(([platform, list]) => `${platform}: ${list.join(', ')}`).join('；') : '—');
+  row('能力面', (agent.surfaces ?? []).join(' · ') || '—');
+  row('持久会话', agent.session?.persistent ? '是' : '否');
+  row('重启恢复', agent.session?.resumeAfterRestart ? '是' : '否');
+  row('凭证', agent.session?.credential ?? '—');
+  row('额度', agent.quota?.note ?? agent.quota?.type ?? '—');
+  panel.appendChild(kv);
+
+  const notes = el('div', 'notes');
+  const title2 = el('div', 'section-title');
+  title2.appendChild(el('h3', '', '说明'));
+  notes.appendChild(title2);
+  const ul = el('ul');
+  for (const n of agent.notes ?? []) ul.appendChild(el('li', '', n));
+  notes.appendChild(ul);
+  panel.appendChild(notes);
+
+  const banner = el('div', 'banner');
+  banner.textContent = '这里列的是 Agent / 运行时，不是模型供应商。它们负责执行任务；模型额度仍由上面 Provider 的配置决定。';
+  panel.insertBefore(banner, panel.querySelector('.proto'));
+
+  detail.appendChild(panel);
+}
+
+function renderDetail() {
+  if (state.mode === 'providers') renderProviderDetail();
+  else renderAgentDetail();
+}
+
+function renderAll() {
+  document.getElementById('stats').textContent =
+    `${DATA.providers.length} providers · ${DATA.agents.length} agents`;
+  renderChips();
+  renderList();
+  renderDetail();
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  state.query = e.target.value;
+  renderList();
+  renderDetail();
+});
+document.getElementById('statusFilter').addEventListener('change', (e) => {
+  state.status = e.target.value;
+  renderList();
+  renderDetail();
+});
+document.getElementById('modeSeg').addEventListener('click', (e) => {
+  const mode = e.target.dataset?.mode;
+  if (!mode) return;
+  state.mode = mode;
+  state.errors = {};
+  document.querySelectorAll('#modeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
+  renderChips();
+  renderList();
+  renderDetail();
+});
+document.querySelectorAll('#modeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === state.mode));
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  root.dataset.theme = next;
+  localStorage.setItem('pr-theme', next);
+});
+if (localStorage.getItem('pr-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+
+renderAll();
+</script>
+</body>
+</html>
