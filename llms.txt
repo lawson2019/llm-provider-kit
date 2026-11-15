@@ -1,0 +1,15 @@
+# llm-provider-kit
+
+> 108 LLM providers / 7 agent runtimes as plain JSON. Generate a provider configuration UI for any project without cloning this repo.
+
+## Data
+- https://lawson2019.github.io/llm-provider-kit/data/providers.json
+- https://lawson2019.github.io/llm-provider-kit/data/agents.json
+- https://lawson2019.github.io/llm-provider-kit/data/tiers.json
+
+## Skill
+- https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md
+- https://github.com/lawson2019/llm-provider-kit/tree/main/skills/llm-provider-kit
+
+## Demo
+- https://lawson2019.github.io/llm-provider-kit/

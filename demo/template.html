@@ -64,6 +64,8 @@
     font-size: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--muted);
     padding: 6px 10px; border-radius: 9px; }
   .repo-link:hover { border-color: var(--accent); color: var(--accent); }
+  .lang-btn { font-family: inherit; }
+  .lang-btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
   .toolbar { max-width: 1280px; margin: 0 auto; padding: 0 28px 14px; display: flex;
     flex-wrap: wrap; gap: 10px; align-items: center; }
   .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
@@ -182,6 +184,7 @@
   </div>
   <div class="top-right">
     <span class="stat" id="stats">—</span>
+    <button class="repo-link lang-btn" id="langBtn" type="button"></button>
     <a class="repo-link" href="https://github.com/lawson2019/llm-provider-kit" target="_blank" rel="noopener">GitHub ↗</a>
     <button class="icon-btn" id="themeBtn" title="切换深浅色">◐</button>
   </div>
@@ -189,10 +192,10 @@
 
 <section class="toolbar">
   <div class="seg" id="modeSeg">
-    <button data-mode="providers" class="on">Providers</button>
-    <button data-mode="agents">Agents</button>
+    <button data-mode="providers" class="on" id="tabProviders"></button>
+    <button data-mode="agents" id="tabAgents"></button>
   </div>
-  <input class="search" id="search" placeholder="搜索 id / 名称 / 别名，例如 kimi、acp、local…">
+  <input class="search" id="search" placeholder="">
   <div class="chips" id="chips"></div>
 </section>
 
@@ -201,18 +204,221 @@
   <section id="detail"></section>
 </main>
 <footer class="foot">
-  <span>LLM Provider Kit · 数据来自 <a href="https://github.com/lawson2019/llm-provider-kit/blob/main/data/providers.json" target="_blank" rel="noopener">data/providers.json</a> · MIT</span>
-  <span>接入前请按厂商官方文档复核端点、鉴权与计费。</span>
+  <span id="footLeft"></span>
+  <span id="footRight"></span>
 </footer>
 
 <script>
 const DATA = /*__REGISTRY__*/ {};
 
-const CATEGORY_LABEL = {
-  global: '海外', china: '国内', aggregator: '聚合', local: '本地', agent: '会话 / Agent'
+// ============ 语言机制：URL ?lang= 优先 → localStorage(lpk-lang) → 默认中文 ============
+const LANG_KEY = 'lpk-lang';
+const SUPPORTED_LANGS = ['zh', 'en'];
+
+function detectLang() {
+  const urlLang = new URLSearchParams(location.search).get('lang');
+  if (urlLang === 'zh' || urlLang === 'en') return urlLang;
+  let stored = null;
+  try { stored = localStorage.getItem(LANG_KEY); } catch { /* 隐私模式下忽略 */ }
+  if (stored === 'zh' || stored === 'en') return stored;
+  return 'zh';
+}
+
+const I18N = {
+  zh: {
+    title: 'LLM Provider Kit · Provider 配置页',
+    metaDesc: 'AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。',
+    ogDesc: '一份可校验、可直接渲染配置表单的 AI Provider 配置注册表。',
+    subtitle: '可校验、可直接渲染配置表单的 Provider 元数据 · schema v2',
+    stats: '{n} 个 Provider / {m} 个 Agent',
+    themeTitle: '切换深浅色',
+    langSwitchTo: '切换为 English',
+    tabProviders: 'Provider',
+    tabAgents: 'Agent',
+    searchPlaceholder: '搜索 id / 名称 / 别名，例如 kimi、acp、local…',
+    chipAll: '全部 {n}',
+    catGlobal: '海外',
+    catChina: '国内',
+    catAggregator: '聚合',
+    catLocal: '本地',
+    catAgent: '会话 / Agent',
+    kindApi: '直连 API',
+    kindGateway: '聚合网关',
+    kindLocal: '本地运行时',
+    kindSession: '会话型',
+    groupAuth: '鉴权',
+    groupEndpoint: '端点',
+    groupModel: '模型',
+    groupRuntime: '运行时 / 会话',
+    groupAdvanced: '高级',
+    emptyAgent: '没有匹配的 Agent',
+    emptyProvider: '没有匹配的 Provider',
+    emptyDetailProvider: '选择左侧的 Provider 查看可渲染的配置表单',
+    emptyDetailAgent: '选择左侧的 Agent / 运行时',
+    billingBadge: '计费：{mode}',
+    endpointCount: '{n} 个接入面',
+    show: '显示',
+    hide: '隐藏',
+    advHide: '▾ 收起高级项',
+    advShow: '▸ 显示高级项（{n}）',
+    outputTitle: '生成的请求配置（密钥已脱敏）',
+    validateBtn: '校验配置',
+    copyBtn: '复制脱敏 JSON',
+    copied: '已复制',
+    missingFields: '缺少必填项：{keys}',
+    notesTitle: '接入备注',
+    fieldCount: '{n} 项',
+    fieldCountOne: '{n} 项',
+    tagRequired: '必填',
+    tagSecret: '密钥',
+    tagAdvanced: '高级',
+    current: '当前：{desc}',
+    docsLink: '官方文档 ↗',
+    detailDesc: 'Base URL：{base}　鉴权：{auth}　计费：{billing}',
+    endpointsTitle: '接入面（{n}）',
+    defaultTag: '默认',
+    oauthDetail: '　登录发起：{initiate}　轮询：{poll}',
+    riskTitle: '风险 {level} / {variant}',
+    kvType: '类型',
+    kvTransport: '传输',
+    kvProtocol: '应用协议',
+    kvBackendMode: '后端模式',
+    kvBinary: '可执行文件',
+    kvInstall: '安装',
+    kvConfigPaths: '配置路径',
+    kvSurfaces: '能力面',
+    kvPersistent: '持久会话',
+    kvResume: '重启恢复',
+    kvCredential: '凭证',
+    kvQuota: '额度',
+    yes: '是',
+    no: '否',
+    transportBadge: '传输：{t}',
+    agentNotesTitle: '说明',
+    agentBanner: '这里列的是 Agent / 运行时，不是模型供应商。它们负责执行任务；模型额度仍由上面 Provider 的配置决定。',
+    pathSep: '；',
+    footLeft: 'LLM Provider Kit · 数据来自 {link} · MIT',
+    footRight: '接入前请按厂商官方文档复核端点、鉴权与计费。',
+    listSep: '、',
+  },
+  en: {
+    title: 'LLM Provider Kit · Provider Registry',
+    metaDesc: 'Configuration metadata for AI providers: baseURL, auth headers, multiple endpoints, form fields and request preview. Zero dependencies, MIT.',
+    ogDesc: 'A verifiable AI provider registry that renders configuration forms directly.',
+    subtitle: 'Verifiable provider metadata that renders configuration forms · schema v2',
+    stats: '{n} Providers / {m} Agents',
+    themeTitle: 'Toggle light/dark theme',
+    langSwitchTo: 'Switch to 中文',
+    tabProviders: 'Providers',
+    tabAgents: 'Agents',
+    searchPlaceholder: 'Search id / name / alias, e.g. kimi, acp, local…',
+    chipAll: 'All {n}',
+    catGlobal: 'Global',
+    catChina: 'China',
+    catAggregator: 'Aggregator',
+    catLocal: 'Local',
+    catAgent: 'Session / Agent',
+    kindApi: 'Direct API',
+    kindGateway: 'Aggregator Gateway',
+    kindLocal: 'Local Runtime',
+    kindSession: 'Session',
+    groupAuth: 'Auth',
+    groupEndpoint: 'Endpoint',
+    groupModel: 'Model',
+    groupRuntime: 'Runtime / Session',
+    groupAdvanced: 'Advanced',
+    emptyAgent: 'No matching agents',
+    emptyProvider: 'No matching providers',
+    emptyDetailProvider: 'Select a provider on the left to view the configurable form',
+    emptyDetailAgent: 'Select an agent / runtime on the left',
+    billingBadge: 'billing: {mode}',
+    endpointCount: '{n} endpoints',
+    show: 'Show',
+    hide: 'Hide',
+    advHide: '▾ Hide advanced',
+    advShow: '▸ Show advanced ({n})',
+    outputTitle: 'Generated request config (credentials masked)',
+    validateBtn: 'Validate config',
+    copyBtn: 'Copy masked JSON',
+    copied: 'Copied',
+    missingFields: 'Missing required fields: {keys}',
+    notesTitle: 'Integration notes',
+    fieldCount: '{n} fields',
+    fieldCountOne: '1 field',
+    tagRequired: 'Required',
+    tagSecret: 'Secret',
+    tagAdvanced: 'Advanced',
+    current: 'Current: {desc}',
+    docsLink: 'Docs ↗',
+    detailDesc: 'Base URL: {base}  Auth: {auth}  Billing: {billing}',
+    endpointsTitle: 'Endpoints ({n})',
+    defaultTag: 'Default',
+    oauthDetail: '  Initiate: {initiate}  Poll: {poll}',
+    riskTitle: 'Risk {level} / {variant}',
+    kvType: 'Type',
+    kvTransport: 'Transport',
+    kvProtocol: 'Protocol',
+    kvBackendMode: 'Backend mode',
+    kvBinary: 'Binary',
+    kvInstall: 'Install',
+    kvConfigPaths: 'Config paths',
+    kvSurfaces: 'Surfaces',
+    kvPersistent: 'Persistent session',
+    kvResume: 'Resume after restart',
+    kvCredential: 'Credential',
+    kvQuota: 'Quota',
+    yes: 'Yes',
+    no: 'No',
+    transportBadge: 'transport: {t}',
+    agentNotesTitle: 'Notes',
+    agentBanner: 'These are agents / runtimes, not model providers. They execute tasks; model quota is still governed by the provider configuration above.',
+    pathSep: '; ',
+    footLeft: 'LLM Provider Kit · Data from {link} · MIT',
+    footRight: 'Before integrating, verify endpoints, auth and billing against the vendor\u2019s official docs.',
+    listSep: ', ',
+  },
 };
-const KIND_LABEL = { api: '直连 API', gateway: '聚合网关', local: '本地运行时', session: '会话型' };
-const GROUP_LABEL = { auth: '鉴权', endpoint: '端点', model: '模型', runtime: '运行时 / 会话', advanced: '高级' };
+
+let lang = detectLang();
+
+function t(key, vars) {
+  const dict = I18N[lang] ?? I18N.zh;
+  let s = dict[key] ?? I18N.zh[key] ?? key;
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v));
+  return s;
+}
+
+function countLabel(key, n) {
+  if (lang === 'en' && n === 1) return t(`${key}One`, { n });
+  return t(key, { n });
+}
+
+function applyLangState() {
+  const url = new URL(location.href);
+  url.searchParams.set('lang', lang);
+  // 保留 ?provider= / ?agent= 等既有深链参数，仅更新 lang。
+  history.replaceState(null, '', url.pathname + url.search);
+  try { localStorage.setItem(LANG_KEY, lang); } catch { /* 隐私模式下忽略 */ }
+  document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
+}
+
+const CATEGORY_LABEL = {
+  zh: { global: I18N.zh.catGlobal, china: I18N.zh.catChina, aggregator: I18N.zh.catAggregator, local: I18N.zh.catLocal, agent: I18N.zh.catAgent },
+  en: { global: I18N.en.catGlobal, china: I18N.en.catChina, aggregator: I18N.en.catAggregator, local: I18N.en.catLocal, agent: I18N.en.catAgent },
+};
+const KIND_LABEL = {
+  zh: { api: I18N.zh.kindApi, gateway: I18N.zh.kindGateway, local: I18N.zh.kindLocal, session: I18N.zh.kindSession },
+  en: { api: I18N.en.kindApi, gateway: I18N.en.kindGateway, local: I18N.en.kindLocal, session: I18N.en.kindSession },
+};
+const GROUP_LABEL = {
+  zh: { auth: I18N.zh.groupAuth, endpoint: I18N.zh.groupEndpoint, model: I18N.zh.groupModel, runtime: I18N.zh.groupRuntime, advanced: I18N.zh.groupAdvanced },
+  en: { auth: I18N.en.groupAuth, endpoint: I18N.en.groupEndpoint, model: I18N.en.groupModel, runtime: I18N.en.groupRuntime, advanced: I18N.en.groupAdvanced },
+};
+const catLabel = (key) => CATEGORY_LABEL[lang][key] ?? key;
+const kindLabel = (key) => KIND_LABEL[lang][key] ?? key;
+const groupLabel = (key) => GROUP_LABEL[lang][key] ?? key;
+
+const FOOT_LINK_HTML = '<a href="https://github.com/lawson2019/llm-provider-kit/blob/main/data/providers.json" target="_blank" rel="noopener">data/providers.json</a>';
 
 const DEMO_PARAMS = new URLSearchParams(location.search);
 
@@ -291,10 +497,10 @@ function renderChips() {
   const chips = document.getElementById('chips');
   chips.replaceChildren();
   chips.style.display = state.mode === 'agents' ? 'none' : 'flex';
-  const all = el('button', `chip${state.category === '' ? ' on' : ''}`, `全部 ${DATA.providers.length}`);
+  const all = el('button', `chip${state.category === '' ? ' on' : ''}`, t('chipAll', { n: DATA.providers.length }));
   all.onclick = () => { state.category = ''; renderChips(); renderList(); renderDetail(); };
   chips.appendChild(all);
-  for (const [key, label] of Object.entries(CATEGORY_LABEL)) {
+  for (const [key, label] of Object.entries(CATEGORY_LABEL[lang])) {
     const count = DATA.providers.filter((p) => p.category === key).length;
     if (!count) continue;
     const chip = el('button', `chip${state.category === key ? ' on' : ''}`, `${label} ${count}`);
@@ -305,11 +511,11 @@ function renderChips() {
 
 function providerBadges(p) {
   const box = el('div', 'badges');
-  box.appendChild(el('span', `badge${p.kind === 'session' ? ' ses' : ''}`, KIND_LABEL[p.kind] ?? p.kind));
+  box.appendChild(el('span', `badge${p.kind === 'session' ? ' ses' : ''}`, kindLabel(p.kind)));
   box.appendChild(el('span', 'badge', p.auth?.mode ?? p.authType));
   box.appendChild(el('span', 'badge', `${p.auth?.scheme ?? p.authType}`));
-  box.appendChild(el('span', 'badge', `billing: ${p.billing?.mode ?? p.quota?.type ?? '-'}`));
-  if (p.endpoints?.length > 1) box.appendChild(el('span', 'badge', `${p.endpoints.length} 个接入面`));
+  box.appendChild(el('span', 'badge', t('billingBadge', { mode: p.billing?.mode ?? p.quota?.type ?? '-' })));
+  if (p.endpoints?.length > 1) box.appendChild(el('span', 'badge', t('endpointCount', { n: p.endpoints.length })));
   return box;
 }
 
@@ -328,7 +534,7 @@ function renderList() {
       state.selectedAgent = agents[0]?.id ?? null;
     }
     if (agents.length === 0) {
-      list.appendChild(el('div', 'empty', '没有匹配的 Agent'));
+      list.appendChild(el('div', 'empty', t('emptyAgent')));
       return;
     }
     for (const agent of agents) {
@@ -350,7 +556,7 @@ function renderList() {
 
   const providers = currentProviders();
   if (providers.length === 0) {
-    list.appendChild(el('div', 'empty', '没有匹配的 Provider'));
+    list.appendChild(el('div', 'empty', t('emptyProvider')));
     return;
   }
   if (!providers.some((p) => p.id === state.selectedProvider)) {
@@ -425,12 +631,12 @@ function fieldControl(field, value, onChange, hasError) {
   wrap.appendChild(input);
 
   if (field.type === 'password') {
-    const peek = el('button', 'peek', '显示');
+    const peek = el('button', 'peek', t('show'));
     peek.type = 'button';
     peek.onclick = () => {
       const showing = input.type === 'text';
       input.type = showing ? 'password' : 'text';
-      peek.textContent = showing ? '显示' : '隐藏';
+      peek.textContent = showing ? t('show') : t('hide');
     };
     wrap.appendChild(peek);
   }
@@ -458,7 +664,7 @@ function renderForm(provider) {
     box.appendChild(renderGroup(provider, group, fields, values));
   }
   if (advanced.length) {
-    const toggle = el('button', 'adv-toggle', `${state.showAdvanced ? '▾ 收起高级项' : `▸ 显示高级项（${advanced.length}）`}`);
+    const toggle = el('button', 'adv-toggle', state.showAdvanced ? t('advHide') : t('advShow', { n: advanced.length }));
     toggle.onclick = () => { state.showAdvanced = !state.showAdvanced; renderDetail(); };
     box.appendChild(toggle);
     if (state.showAdvanced) box.appendChild(renderGroup(provider, 'advanced', advanced, values));
@@ -466,10 +672,10 @@ function renderForm(provider) {
 
   const out = el('div', 'output');
   const head = el('div', 'output-head');
-  head.appendChild(el('span', '', '生成的请求配置（密钥已脱敏）'));
+  head.appendChild(el('span', '', t('outputTitle')));
   const acts = el('div', 'acts');
-  const gen = el('button', 'mini', '校验配置');
-  const copy = el('button', 'mini', '复制脱敏 JSON');
+  const gen = el('button', 'mini', t('validateBtn'));
+  const copy = el('button', 'mini', t('copyBtn'));
   acts.append(gen, copy);
   head.appendChild(acts);
   out.appendChild(head);
@@ -483,7 +689,7 @@ function renderForm(provider) {
     pre.textContent = JSON.stringify(config, null, 2);
     if (Object.keys(state.errors).length) {
       problems.classList.add('on');
-      problems.textContent = `缺少必填项：${Object.keys(state.errors).join('、')}`;
+      problems.textContent = t('missingFields', { keys: Object.keys(state.errors).join(t('listSep')) });
     } else {
       problems.classList.remove('on');
       problems.textContent = '';
@@ -501,7 +707,7 @@ function renderForm(provider) {
     const text = JSON.stringify(buildConfig(provider, values), null, 2);
     try {
       await navigator.clipboard.writeText(text);
-      copy.textContent = '已复制';
+      copy.textContent = t('copied');
     } catch {
       const ta = document.createElement('textarea');
       ta.value = text;
@@ -509,9 +715,9 @@ function renderForm(provider) {
       ta.select();
       document.execCommand('copy');
       ta.remove();
-      copy.textContent = '已复制';
+      copy.textContent = t('copied');
     }
-    setTimeout(() => (copy.textContent = '复制脱敏 JSON'), 1400);
+    setTimeout(() => (copy.textContent = t('copyBtn')), 1400);
   };
 
   update();
@@ -520,7 +726,7 @@ function renderForm(provider) {
   if (provider.notes?.length) {
     const notes = el('div', 'notes');
     const title = el('div', 'section-title');
-    title.appendChild(el('h3', '', '接入备注'));
+    title.appendChild(el('h3', '', t('notesTitle')));
     notes.appendChild(title);
     const ul = el('ul');
     for (const note of provider.notes) ul.appendChild(el('li', '', note));
@@ -534,17 +740,17 @@ function renderForm(provider) {
 function renderGroup(provider, group, fields, values) {
   const wrap = el('div', 'group');
   const head = el('div', 'group-head');
-  head.appendChild(el('span', '', GROUP_LABEL[group] ?? group));
-  head.appendChild(el('span', '', `${fields.length} 项`));
+  head.appendChild(el('span', '', groupLabel(group)));
+  head.appendChild(el('span', '', countLabel('fieldCount', fields.length)));
   const body = el('div', 'group-body');
 
   for (const field of fields) {
     const row = el('div', 'field');
     const label = el('label');
     label.appendChild(document.createTextNode(field.label));
-    if (field.required) label.appendChild(el('span', 'req', '必填'));
-    if (field.secret) label.appendChild(el('span', 'tag secret', '密钥'));
-    if (field.advanced) label.appendChild(el('span', 'tag', '高级'));
+    if (field.required) label.appendChild(el('span', 'req', t('tagRequired')));
+    if (field.secret) label.appendChild(el('span', 'tag secret', t('tagSecret')));
+    if (field.advanced) label.appendChild(el('span', 'tag', t('tagAdvanced')));
     body.appendChild(row);
     row.appendChild(label);
 
@@ -560,7 +766,7 @@ function renderGroup(provider, group, fields, values) {
     if (field.help) row.appendChild(el('div', 'help', field.help));
     if (field.type === 'select' && field.options) {
       const active = field.options.find((o) => o.value === (values[field.key] ?? field.default));
-      if (active?.description) row.appendChild(el('div', 'help', `当前：${active.description}`));
+      if (active?.description) row.appendChild(el('div', 'help', t('current', { desc: active.description })));
     }
   }
 
@@ -601,8 +807,44 @@ function endpointPath(endpoint) {
   return endpoint?.path ?? (DEFAULT_ENDPOINT_PATH[endpoint?.protocol] ?? '');
 }
 
+// 切片内本地双语表：test-demo-config.mjs 只切片本段函数，语言变量未注入时回退中文。
+const SLICE_TEXT = {
+  zh: {
+    localSessionURL: '本地会话',
+    sessionBaseURL: '（由已登录客户端动态签发，无公开端点）',
+    phUnfilled: '<未填写>',
+    awsDate: '由 SDK 生成',
+    awsAuth: 'AWS4-HMAC-SHA256 …（需 SDK 计算签名）',
+    jwtSession: 'Bearer <由已登录会话动态签发>',
+    wOauth: 'OAuth / 设备码：先在面板完成登录，不要把 access token 写进配置文件或 Prompt',
+    wCookie: '浏览器 Cookie：只应存在本地凭据库，不能提交到仓库或日志',
+    wLocalSession: '本地登录态：凭证由已登录客户端 / CLI 动态签发，不能导出为静态 Key',
+    wSession: '会话型：不能把 JWT 写进配置文件或 Prompt，额度跟随登录状态。',
+    wRisk: '风险提示（{level}）：{note}',
+    wStream: '该网关只接受流式请求；非流式调用需要先聚合 SSE。',
+    wHistory: '该网关要求严格回放 tool_call / reasoning 历史，否则会断在多轮。',
+  },
+  en: {
+    localSessionURL: 'Local session',
+    sessionBaseURL: '(Issued dynamically by the signed-in client; no public endpoint)',
+    phUnfilled: '<not set>',
+    awsDate: 'Generated by SDK',
+    awsAuth: 'AWS4-HMAC-SHA256 … (signature computed by SDK)',
+    jwtSession: 'Bearer <issued dynamically by signed-in session>',
+    wOauth: 'OAuth / device code: sign in in the panel first; never put the access token into config files or prompts',
+    wCookie: 'Browser cookie: keep it only in the local credential store; never commit to repos or logs',
+    wLocalSession: 'Local session: credentials are issued dynamically by the signed-in client / CLI; cannot be exported as a static key',
+    wSession: 'Session-based: never put the JWT into config files or prompts; quota follows the signed-in state.',
+    wRisk: 'Risk note ({level}): {note}',
+    wStream: 'This gateway accepts streaming requests only; aggregate SSE first for non-streaming calls.',
+    wHistory: 'This gateway requires strict replay of tool_call / reasoning history; otherwise multi-turn breaks.',
+  },
+};
+const sliceLang = (typeof lang === 'string' && lang === 'en') ? 'en' : 'zh';
+const st = SLICE_TEXT[sliceLang];
+
 function endpointURL(endpoint) {
-  if (!endpoint?.baseURL) return '本地会话';
+  if (!endpoint?.baseURL) return st.localSessionURL;
   const base = String(endpoint.baseURL).replace(/\/+$/, '');
   const path = endpointPath(endpoint);
   if (!path || base.endsWith(path)) return base;
@@ -631,7 +873,7 @@ function buildConfig(provider, values) {
   let baseURL = values.baseURL || endpoint?.baseURL || provider.baseURL || '';
   if (provider.baseURLTemplate) baseURL = interpolate(provider.baseURLTemplate, values);
   else if (baseURL.includes('{')) baseURL = interpolate(baseURL, values);
-  if (provider.kind === 'session') baseURL = '（由已登录客户端动态签发，无公开端点）';
+  if (provider.kind === 'session') baseURL = st.sessionBaseURL;
 
   const auth = provider.auth ?? {};
   const endpointAuth = endpoint?.auth ?? {};
@@ -651,38 +893,38 @@ function buildConfig(provider, values) {
   }
 
   if (authMode === 'oauth' || authMode === 'device-code') {
-    warnings.push('OAuth / 设备码：先在面板完成登录，不要把 access token 写进配置文件或 Prompt');
+    warnings.push(st.wOauth);
   }
   if (authMode === 'browser-cookie') {
-    warnings.push('浏览器 Cookie：只应存在本地凭据库，不能提交到仓库或日志');
+    warnings.push(st.wCookie);
   }
   if (authMode === 'local-session') {
-    warnings.push('本地登录态：凭证由已登录客户端 / CLI 动态签发，不能导出为静态 Key');
+    warnings.push(st.wLocalSession);
   }
 
   switch (scheme) {
     case 'bearer':
-      headers.Authorization = credential ? `Bearer ${masked}` : 'Bearer <未填写>';
+      headers.Authorization = credential ? `Bearer ${masked}` : `Bearer ${st.phUnfilled}`;
       break;
     case 'api-key-header':
-      headers[headerName ?? 'x-api-key'] = credential ? masked : '<未填写>';
+      headers[headerName ?? 'x-api-key'] = credential ? masked : st.phUnfilled;
       break;
     case 'query-param':
-      query[queryName ?? 'key'] = credential ? masked : '<未填写>';
+      query[queryName ?? 'key'] = credential ? masked : st.phUnfilled;
       break;
     case 'azure-api-key':
-      headers['api-key'] = credential ? masked : '<未填写>';
+      headers['api-key'] = credential ? masked : st.phUnfilled;
       query['api-version'] = values.apiVersion || '2024-10-21';
       break;
     case 'aws-sigv4':
-      headers['X-Amz-Date'] = '由 SDK 生成';
-      headers.Authorization = 'AWS4-HMAC-SHA256 …（需 SDK 计算签名）';
+      headers['X-Amz-Date'] = st.awsDate;
+      headers.Authorization = st.awsAuth;
       break;
     case 'cookie':
-      headers.Cookie = credential ? masked : '<未填写>';
+      headers.Cookie = credential ? masked : st.phUnfilled;
       break;
     case 'jwt-session':
-      headers.Authorization = 'Bearer <由已登录会话动态签发>';
+      headers.Authorization = st.jwtSession;
       break;
   }
 
@@ -695,12 +937,12 @@ function buildConfig(provider, values) {
     if (!resolved.includes('{')) headers[name] = resolved;
   }
 
-  if (provider.kind === 'session') warnings.push('会话型：不能把 JWT 写进配置文件或 Prompt，额度跟随登录状态。');
+  if (provider.kind === 'session') warnings.push(st.wSession);
   if (provider.risk && ['medium', 'high'].includes(provider.risk.level)) {
-    warnings.push(`风险提示（${provider.risk.level}）：${provider.risk.note}`);
+    warnings.push(st.wRisk.replaceAll('{level}', provider.risk.level).replaceAll('{note}', provider.risk.note));
   }
-  if (provider.runtime?.forceStream) warnings.push('该网关只接受流式请求；非流式调用需要先聚合 SSE。');
-  if (provider.runtime?.strictChatHistory) warnings.push('该网关要求严格回放 tool_call / reasoning 历史，否则会断在多轮。');
+  if (provider.runtime?.forceStream) warnings.push(st.wStream);
+  if (provider.runtime?.strictChatHistory) warnings.push(st.wHistory);
 
   return {
     baseURL,
@@ -724,7 +966,7 @@ function renderProviderDetail() {
   detail.replaceChildren();
   const provider = currentProvider();
   if (!provider) {
-    detail.appendChild(el('div', 'empty', '选择左侧的 Provider 查看可渲染的配置表单'));
+    detail.appendChild(el('div', 'empty', t('emptyDetailProvider')));
     return;
   }
 
@@ -733,9 +975,9 @@ function renderProviderDetail() {
   head.appendChild(logoNode(provider, true));
   const title = el('div', 'd-title');
   title.appendChild(el('h2', '', provider.name));
-  title.appendChild(el('div', 'd-id', `${provider.id} · ${CATEGORY_LABEL[provider.category] ?? provider.category}`));
+  title.appendChild(el('div', 'd-id', `${provider.id} · ${catLabel(provider.category)}`));
   head.appendChild(title);
-  const link = el('a', 'd-link', '官方文档 ↗');
+  const link = el('a', 'd-link', t('docsLink'));
   link.href = provider.docs;
   link.target = '_blank';
   link.rel = 'noopener noreferrer';
@@ -745,18 +987,22 @@ function renderProviderDetail() {
 
   const desc = el('div', 'd-id');
   desc.style.marginTop = '6px';
-  desc.textContent = `Base URL：${provider.baseURL ?? '—'}　鉴权：${provider.auth?.mode ?? provider.authType}/${provider.auth?.scheme ?? provider.authType}　计费：${provider.billing?.mode ?? provider.quota?.type ?? '—'}`;
+  desc.textContent = t('detailDesc', {
+    base: provider.baseURL ?? '—',
+    auth: `${provider.auth?.mode ?? provider.authType}/${provider.auth?.scheme ?? provider.authType}`,
+    billing: provider.billing?.mode ?? provider.quota?.type ?? '—',
+  });
   panel.appendChild(desc);
 
   if (provider.endpoints?.length) {
     const ep = el('div', 'notes');
     const title = el('div', 'section-title');
-    title.appendChild(el('h3', '', `接入面（${provider.endpoints.length}）`));
+    title.appendChild(el('h3', '', t('endpointsTitle', { n: provider.endpoints.length })));
     ep.appendChild(title);
     const ul = el('ul');
     for (const endpoint of provider.endpoints) {
       const li = el('li', '', `${endpoint.label} · ${endpoint.protocol} · ${endpoint.billing} · ${endpointURL(endpoint)}`);
-      if (endpoint.default) li.appendChild(el('span', 'tag', '默认'));
+      if (endpoint.default) li.appendChild(el('span', 'tag', t('defaultTag')));
       ul.appendChild(li);
     }
     ep.appendChild(ul);
@@ -767,14 +1013,17 @@ function renderProviderDetail() {
     const oauth = el('div', 'banner');
     oauth.appendChild(el('strong', '', `OAuth / ${provider.auth.mode}`));
     oauth.appendChild(document.createTextNode(
-      `　登录发起：${provider.auth.oauth.initiateUrl ?? provider.auth.oauth.authUrl ?? '—'}　轮询：${provider.auth.oauth.pollUrlBase ?? provider.auth.oauth.tokenUrl ?? '—'}`
+      t('oauthDetail', {
+        initiate: provider.auth.oauth.initiateUrl ?? provider.auth.oauth.authUrl ?? '—',
+        poll: provider.auth.oauth.pollUrlBase ?? provider.auth.oauth.tokenUrl ?? '—',
+      })
     ));
     panel.appendChild(oauth);
   }
 
   if (provider.risk) {
     const risk = el('div', `banner ${provider.risk.level === 'high' ? 'warn' : ''}`);
-    risk.appendChild(el('strong', '', `风险 ${provider.risk.level} / ${provider.risk.variant}`));
+    risk.appendChild(el('strong', '', t('riskTitle', { level: provider.risk.level, variant: provider.risk.variant })));
     risk.appendChild(document.createTextNode(`　${provider.risk.note}`));
     panel.appendChild(risk);
   }
@@ -788,7 +1037,7 @@ function renderAgentDetail() {
   detail.replaceChildren();
   const agent = (DATA.agents ?? []).find((a) => a.id === state.selectedAgent);
   if (!agent) {
-    detail.appendChild(el('div', 'empty', '选择左侧的 Agent / 运行时'));
+    detail.appendChild(el('div', 'empty', t('emptyDetailAgent')));
     return;
   }
   const panel = el('div', 'detail');
@@ -807,7 +1056,7 @@ function renderAgentDetail() {
   panel.appendChild(h);
 
   const proto = el('div', 'proto');
-  for (const t of agent.transports ?? (agent.transport ? [agent.transport] : [])) proto.appendChild(el('span', '', `transport: ${t}`));
+  for (const tr of agent.transports ?? (agent.transport ? [agent.transport] : [])) proto.appendChild(el('span', '', t('transportBadge', { t: tr })));
   for (const p of agent.protocols ?? []) proto.appendChild(el('span', '', p));
   panel.appendChild(proto);
 
@@ -816,24 +1065,24 @@ function renderAgentDetail() {
     kv.appendChild(el('dt', '', k));
     kv.appendChild(el('dd', '', v));
   };
-  row('类型', agent.kind);
-  row('传输', (agent.transports ?? (agent.transport ? [agent.transport] : [])).join(' + ') || '—');
-  row('应用协议', (agent.protocols ?? []).join(' · ') || '—');
-  row('后端模式', agent.runtime?.backendMode ?? '—');
-  row('可执行文件', agent.runtime?.binary ?? '—');
-  row('安装', agent.install?.npm ? `npm i -g ${agent.install.npm}` : agent.install?.docs ?? '—');
+  row(t('kvType'), agent.kind);
+  row(t('kvTransport'), (agent.transports ?? (agent.transport ? [agent.transport] : [])).join(' + ') || '—');
+  row(t('kvProtocol'), (agent.protocols ?? []).join(' · ') || '—');
+  row(t('kvBackendMode'), agent.runtime?.backendMode ?? '—');
+  row(t('kvBinary'), agent.runtime?.binary ?? '—');
+  row(t('kvInstall'), agent.install?.npm ? `npm i -g ${agent.install.npm}` : agent.install?.docs ?? '—');
   const paths = agent.configure?.paths;
-  row('配置路径', paths ? Object.entries(paths).map(([platform, list]) => `${platform}: ${list.join(', ')}`).join('；') : '—');
-  row('能力面', (agent.surfaces ?? []).join(' · ') || '—');
-  row('持久会话', agent.session?.persistent ? '是' : '否');
-  row('重启恢复', agent.session?.resumeAfterRestart ? '是' : '否');
-  row('凭证', agent.session?.credential ?? '—');
-  row('额度', agent.quota?.note ?? agent.quota?.type ?? '—');
+  row(t('kvConfigPaths'), paths ? Object.entries(paths).map(([platform, list]) => `${platform}: ${list.join(', ')}`).join(t('pathSep')) : '—');
+  row(t('kvSurfaces'), (agent.surfaces ?? []).join(' · ') || '—');
+  row(t('kvPersistent'), agent.session?.persistent ? t('yes') : t('no'));
+  row(t('kvResume'), agent.session?.resumeAfterRestart ? t('yes') : t('no'));
+  row(t('kvCredential'), agent.session?.credential ?? '—');
+  row(t('kvQuota'), agent.quota?.note ?? agent.quota?.type ?? '—');
   panel.appendChild(kv);
 
   const notes = el('div', 'notes');
   const title2 = el('div', 'section-title');
-  title2.appendChild(el('h3', '', '说明'));
+  title2.appendChild(el('h3', '', t('agentNotesTitle')));
   notes.appendChild(title2);
   const ul = el('ul');
   for (const n of agent.notes ?? []) ul.appendChild(el('li', '', n));
@@ -841,7 +1090,7 @@ function renderAgentDetail() {
   panel.appendChild(notes);
 
   const banner = el('div', 'banner');
-  banner.textContent = '这里列的是 Agent / 运行时，不是模型供应商。它们负责执行任务；模型额度仍由上面 Provider 的配置决定。';
+  banner.textContent = t('agentBanner');
   panel.insertBefore(banner, panel.querySelector('.proto'));
 
   detail.appendChild(panel);
@@ -852,11 +1101,27 @@ function renderDetail() {
   else renderAgentDetail();
 }
 
+function applyStaticTexts() {
+  document.title = t('title');
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.content = t('metaDesc');
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) ogDesc.content = t('ogDesc');
+  document.getElementById('subtitle').textContent = t('subtitle');
+  document.getElementById('search').placeholder = t('searchPlaceholder');
+  document.getElementById('tabProviders').textContent = t('tabProviders');
+  document.getElementById('tabAgents').textContent = t('tabAgents');
+  document.getElementById('themeBtn').title = t('themeTitle');
+  const langBtn = document.getElementById('langBtn');
+  langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
+  langBtn.title = t('langSwitchTo');
+  document.getElementById('footLeft').innerHTML = t('footLeft', { link: FOOT_LINK_HTML });
+  document.getElementById('footRight').textContent = t('footRight');
+}
+
 function renderAll() {
-  document.getElementById('stats').textContent =
-    `${DATA.providers.length} providers · ${DATA.agents.length} agents`;
-  document.getElementById('subtitle').textContent =
-    `${DATA.providers.length} Providers / ${DATA.agents.length} Agents · 可校验、可直接渲染配置表单的 Provider 元数据 · schema v2`;
+  applyStaticTexts();
+  document.getElementById('stats').textContent = t('stats', { n: DATA.providers.length, m: DATA.agents.length });
   renderChips();
   renderList();
   renderDetail();
@@ -886,6 +1151,13 @@ document.getElementById('themeBtn').addEventListener('click', () => {
 });
 if (localStorage.getItem('pr-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
 
+document.getElementById('langBtn').addEventListener('click', () => {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  applyLangState();
+  renderAll();
+});
+
+applyLangState();
 renderAll();
 </script>
 </body>

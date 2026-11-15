@@ -1,66 +1,52 @@
 ---
 name: provider-registry-builder
-display_name: "Provider 配置页生成"
-description: "从 llm-provider-kit 生成一个可运行的 Provider API Key / Base URL 配置页。适用于：给 Agent 面板、ACP 网关、代码代理或 AI 应用添加模型 Key 表单；需要 React + Vite 或静态 HTML 配置页；需要按 Starter / Mainstream / Full 分层选择 Provider；需要让表单字段、端点、鉴权和请求预览由注册表数据自动推导，而不是手写。触发词：Provider 配置页、模型 Key 表单、API Key 配置、Provider Registry、接入大模型、生成配置页。"
+display_name: "Provider 配置页生成（已废弃）"
+description: "[已废弃 DEPRECATED] 本 Skill 已收敛为兼容入口，配置页生成能力迁移到 llm-provider-kit。新任务请直接使用 llm-provider-kit（支持 react / vue / svelte / vanilla / html 五栈、公开数据直读、分层选择与脱敏请求预览）。本目录仅保留旧命令的委托入口，不要在这里新增模板或字段逻辑。"
 ---
 
-# Provider 配置页生成
+# ⚠️ 已废弃：请迁移到 `llm-provider-kit`
 
-从本仓库的 `data/providers.json` 生成一个 React + Vite 或原生静态（vanilla）配置页。表单字段由 `getFormFields()` 推导，请求配置由 `buildRequestConfig()` 生成；生成器不会写入真实 Key，也不会调用网络。
+本 Skill `provider-registry-builder` 已不再维护为独立的活动 Skill。**所有生成逻辑、模板与文档以新 Skill 为准：**
 
-## 选择层级
+- **新 Skill**：[`../llm-provider-kit/SKILL.md`](../llm-provider-kit/SKILL.md)
+- **字段 / 枚举 / 协议速查**：[`../llm-provider-kit/reference.md`](../llm-provider-kit/reference.md)
+- **需求示例**：[`../llm-provider-kit/examples/README.md`](../llm-provider-kit/examples/README.md)
 
-先读 `data/tiers.json`，按项目阶段选择：
+## 为什么迁移
 
-| tier | 用途 |
-|---|---|
-| `starter` | 默认；最常用的一批，适合新建项目 |
-| `mainstream` | 常规项目；含主流直连、国内大厂、常用聚合 |
-| `full` | 长尾/高级；全量条目 |
+旧 Skill 只支持 React 与 vanilla 两种栈，且假设数据来自本地仓库。新 Skill `llm-provider-kit`：
 
-各 tier 的条数以 `data/tiers.json` 的 `count` 为准，不要自行编造 Provider 或修改 Provider 数量。需要新增 Provider 时，先改 `data/providers.json` 并跑 `npm run validate`。
+- 支持 `react` / `vue` / `svelte` / `vanilla` / `html` 五种技术栈；
+- 可直接读取公开 Pages / raw URL 上的注册表数据，无需 clone 仓库（`--data` 传入下载快照）；
+- 字段、接入面、鉴权头与请求预览仍全部由注册表数据推导，不手写死字段。
 
-## 生成
+## 旧命令仍然可用（兼容委托）
 
-在仓库根目录执行：
+为避免打断已有脚本与文档，本目录的 wrapper 会把参数原样转发到根目录生成器，旧的 `--stack react` / `--stack vanilla` 命令继续可用：
 
 ```bash
+# 旧命令（兼容保留，等价于调用根目录 scripts/scaffold.mjs）
 node skills/provider-registry-builder/scripts/scaffold.mjs --tier starter --stack react --out ../my-key-page
+node skills/provider-registry-builder/scripts/scaffold.mjs --tier starter --stack vanilla --out ../my-static-page
 ```
 
-不需要构建链时用 `--stack vanilla`，生成 `index.html + app.js + styles.css`；用任意静态服务器打开。
+等价的新写法（推荐）：
 
-- `--out` 必须是新目录或空目录；非空目录会被拒绝，避免覆盖用户已有工作。
-- React：`cd ../my-key-page && npm install && npm run dev`；vanilla：`cd ../my-key-page && python3 -m http.server 4173`。
-- 生产构建：`npm run build`。
-
-生成物包含：
-
-```text
-src/ProviderForm.jsx      # 消费 getFormFields / buildRequestConfig
-src/registry/*.mjs        # 浏览器可用的注册表函数
-src/data/providers.json   # 只含当前 tier 的 Provider 快照
-src/data/tier.json        # tier 元信息
+```bash
+node skills/llm-provider-kit/scripts/scaffold.mjs --tier starter --stack react --out ../my-key-page
+node skills/llm-provider-kit/scripts/scaffold.mjs --tier starter --stack vanilla --out ../my-static-page
 ```
 
-## 验收
+新增栈 `vue` / `svelte` / `html` 只在新 Skill 中提供文档与模板；旧入口透传参数，若传入这三个栈也会由新生成器处理，但用法说明请查新 Skill。
 
-1. `src/data/providers.json` 的条数等于所选 tier 的 `count`，引用的 id 都存在；
-2. 页面能切换 Provider，字段来自 `fields[]` / `getFormFields()`，没有手写字段；
-3. 页面按 `risk.variant` / `risk.level` 展示第三方中转、订阅边界等风险提示；
-4. `buildRequestConfig()` 能显示 `requestURL`、`headers` 和 `missing`；
-5. 仓库根目录跑 `npm test`、`npm run test:demo`、`npm run test:scaffold`、`node bin/cli.mjs validate`、`tsc --noEmit --strict --skipLibCheck types/index.d.ts` 均通过。
+## 迁移方式
 
-## 边界
+1. 把调用本 Skill 的 prompt / 脚本改为指向 `llm-provider-kit`；
+2. 需要新技术栈时，按新 Skill 的「技术栈决策表」选 `--stack`；
+3. 不要在本目录复制或修改模板、字段逻辑；模板统一维护在 `skills/llm-provider-kit/assets/`；
+4. 旧生成产物无需返工：已生成的 react / vanilla 页面继续可用，重新生成时走新命令即可。
 
-- 不新增 Provider、不联网拉数据、不提交任何真实 Key / JWT / Cookie；
-- 不把 `session` / `device-code` / `browser-cookie` 条目混进 API Key 目录；
-- 生成页只负责配置 UI，不负责转发请求或保存密钥；请求预览必须脱敏，不把原始 Key 写进 DOM 文本或复制内容；
-- 需要自定义视觉时只改 `src/styles.css` 和布局，不要复制一份手写字段逻辑。
+## 边界（与新 Skill 一致）
 
-## 资源
-
-- 生成器：`skills/provider-registry-builder/scripts/scaffold.mjs`（转发到根 `scripts/scaffold.mjs`）
-- 模板：`skills/provider-registry-builder/assets/react/`、`assets/vanilla/`
-- 分层：`data/tiers.json`
-- 数据：`data/providers.json`
+- 不新增 Provider、不联网拉取页面、不提交任何真实 Key / JWT / Cookie；
+- 生成页只负责配置 UI 与脱敏预览，不转发请求、不持久化密钥。
