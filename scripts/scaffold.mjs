@@ -17,7 +17,7 @@ const args = process.argv.slice(2);
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`用法：node scripts/scaffold.mjs --tier <starter|mainstream|full> --stack <react|vanilla> --out <dir> [--name <package-name>]
 
-  --tier    starter（12，全部 verified）/ mainstream（40）/ full（131）
+  --tier    starter（12，全部 verified）/ mainstream（37）/ full（120）
   --stack   react（默认，React + Vite）/ vanilla（静态 HTML + JS）
   --out     新目录或空目录；非空目录会被拒绝
   --name    React 项目的 package 名称，默认 provider-key-page`);

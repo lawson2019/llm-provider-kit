@@ -7,7 +7,7 @@
 - 审计方式：三路独立复算（覆盖完整性 / 端点与鉴权映射 / 去重计费与文档一致性），全部结论由本地命令输出、源码行号或数据字段支撑，**不引用被审方（主 Agent）的任何结论**
 - 只读声明：未修改 `data/providers.json`、未修改任何源码、未 commit / checkout / reset、未 `npm install`。审计结束时两仓库 `git status --short` 均为空，HEAD 未变。本文件是唯一新增物。
 
-> **后续变更（v0.3.2）**：按产品决策删除 5 条 session-only Provider（`zai-coding-plan-session`、`doubao-desktop`、`workbuddy`、`codebuddy-cn`、`codebuddy-intl`），当前为 131 条（27 人工 + 104 导入）。本报告保留审计时点 `v0.3.1` 的 136 条基线；§1–§10 的历史数字用于复现当时的审计结论。
+> **后续变更（v0.3.2）**：按产品决策删除 5 条 session-only Provider（`zai-coding-plan-session`、`doubao-desktop`、`workbuddy`、`codebuddy-cn`、`codebuddy-intl`），v0.3.2 时为 131 条（27 人工 + 104 导入）；v0.4.0 合并同品牌接入面后为 120 条（24 人工 + 96 导入）。本报告保留审计时点 `v0.3.1` 的 136 条基线；§1–§10 的历史数字用于复现当时的审计结论。
 > 当前口径补充：104 条导入中 **61 条**没有 `probe.modelsUrl`；本报告 §2 / §11 里的 **63** 是审计时 106 条导入的旧口径。
 
 ---

@@ -20,8 +20,8 @@ const { registry } = await loadRegistry();
 const tiersData = JSON.parse(readFileSync(new URL('../data/tiers.json', import.meta.url), 'utf8'));
 const { resolveTierProviders } = await import('../src/tiers.mjs');
 
-assert.equal(registry.providers.length, 131, 'Provider 数量应为 131');
-assert.equal(registry.providers.filter((p) => p.tags?.includes('imported')).length, 104, 'OmniRoute 导入条目应为 104');
+assert.equal(registry.providers.length, 120, 'Provider 数量应为 120');
+assert.equal(registry.providers.filter((p) => p.tags?.includes('imported')).length, 96, 'OmniRoute 导入条目应为 96');
 assert.equal(registry.agents.length, 8, 'Agent 数量应为 8');
 
 // Z.ai：标准 API / Coding Plan OpenAI / Coding Plan Anthropic 三个接入面。
@@ -41,12 +41,13 @@ const zaiOpenAI = buildRequestConfig(zai, { endpoint: 'coding-openai', apiKey: '
 assert.equal(zaiOpenAI.requestURL, 'https://api.z.ai/api/coding/paas/v4/chat/completions');
 assert.equal(zaiOpenAI.headers['anthropic-version'], undefined);
 
-// Z.ai API Key 版 Coding Plan 保留；桌面 / CLI 会话条目已从数据移除。
+// Z.ai Coding Plan 已合并进 zai 主条目，旧 ID 通过 alias 仍可解析。
 const zaiPlan = registry.getProvider('zai-coding-plan');
+assert.equal(zaiPlan.id, 'zai');
 assert.equal(zaiPlan.auth.mode, 'api-key');
 assert.equal(zaiPlan.kind, 'api');
-assert.equal(zaiPlan.baseURL, 'https://api.z.ai/api/anthropic');
-assert.equal(buildRequestConfig(zaiPlan, { apiKey: 'test' }).requestURL, 'https://api.z.ai/api/anthropic/v1/messages');
+assert.equal(resolveEndpoint(zaiPlan, { endpoint: 'coding-anthropic' }).baseURL, 'https://api.z.ai/api/anthropic');
+assert.equal(buildRequestConfig(zaiPlan, { endpoint: 'coding-anthropic', apiKey: 'test' }).requestURL, 'https://api.z.ai/api/anthropic/v1/messages');
 
 // 当前数据只保留 API Key 可直连条目；session-only 不应再混入。
 for (const id of ['zai-coding-plan-session', 'doubao-desktop', 'workbuddy', 'codebuddy-cn', 'codebuddy-intl']) {
@@ -59,10 +60,13 @@ assert.equal(
 );
 assert.equal(getQuotaWarning(registry.getProvider('gitlawb')), null, '高风险提示不应与 provider.risk 重复渲染');
 
-// 火山方舟：标准 API、Coding Plan、Agent Plan 是三条独立条目。
-assert.equal(registry.getProvider('volcengine-ark').billing.mode, 'payg');
-assert.equal(registry.getProvider('volcengine-coding-plan').baseURL, 'https://ark.cn-beijing.volces.com/api/coding/v3');
-assert.equal(registry.getProvider('volcengine-agent-plan').baseURL, 'https://ark.cn-beijing.volces.com/api/plan/v3');
+// 火山方舟：标准 API、Coding Plan、Agent Plan 合并为一条，三个接入面。
+const ark = registry.getProvider('volcengine-ark');
+assert.equal(ark.billing.mode, 'mixed');
+assert.equal(resolveEndpoint(ark, { endpoint: 'coding' }).baseURL, 'https://ark.cn-beijing.volces.com/api/coding/v3');
+assert.equal(resolveEndpoint(ark, { endpoint: 'agent' }).baseURL, 'https://ark.cn-beijing.volces.com/api/plan/v3');
+assert.equal(registry.getProvider('volcengine-coding-plan').id, 'volcengine-ark');
+assert.equal(registry.getProvider('volcengine-agent-plan').id, 'volcengine-ark');
 
 // Agent manifest：transport 和 protocol 分开。
 const claude = registry.getAgent('claude-code');
@@ -78,7 +82,7 @@ assert.deepEqual(herdr.protocols, ['pty', 'rest']);
 // ============ 导入条目全量契约（v0.3.1） ============
 const imported = registry.providers.filter((p) => p.tags?.includes('imported'));
 
-// 1) requestURL 与 OmniRoute 源金标准逐一比对（104 条全量，不是抽样）
+// 1) requestURL 与 OmniRoute 源金标准逐一比对（96 条全量，不是抽样）
 const fixture = JSON.parse(readFileSync(new URL('./omniroute-url-fixture.json', import.meta.url), 'utf8'));
 assert.equal(Object.keys(fixture).length, imported.length, 'requestURL 金标准条数应与导入条目一致');
 for (const provider of imported) {
@@ -161,15 +165,16 @@ assert.equal(
   'gitlawb 应保持裸 baseURL',
 );
 assert.equal(
-  buildRequestConfig(registry.getProvider('gitlawb-gmi'), { apiKey: 'test' }).requestURL,
+  buildRequestConfig(registry.getProvider('gitlawb'), { endpoint: 'gmi-cloud', apiKey: 'test' }).requestURL,
   'https://opengateway.gitlawb.com/v1/gmi-cloud',
-  'gitlawb-gmi 应保持裸 baseURL',
+  'gitlawb GMI 上游应保持裸 baseURL',
 );
 assert.equal(
-  buildRequestConfig(registry.getProvider('kimi-coding-apikey'), { apiKey: 'test' }).requestURL,
+  buildRequestConfig(registry.getProvider('moonshot-kimi'), { endpoint: 'kimi-code', apiKey: 'test' }).requestURL,
   'https://api.kimi.com/coding/v1/messages?beta=true',
 );
-assert.equal(registry.getProvider('kimi-coding-apikey').auth.headerName, 'x-api-key');
+assert.equal(resolveEndpoint(registry.getProvider('moonshot-kimi'), { endpoint: 'kimi-code' }).auth.headerName, 'x-api-key');
+assert.equal(registry.getProvider('kimi-coding-apikey').id, 'moonshot-kimi');
 for (const removed of ['cline', 'kilocode', 'blackbox', 'sparkdesk']) {
   assert.equal(registry.providers.some((p) => p.id === removed), false, `${removed} 应已移除`);
 }
@@ -187,7 +192,7 @@ assert.equal(registry.getProvider('tabitoken').category, 'aggregator');
 assert.equal(registry.getProvider('tencent-hunyuan').externalIds.omniroute, 'tencent');
 assert.equal(registry.getProvider('dashscope').externalIds.omniroute, 'alibaba-cn');
 
-// 11) Provider 分层：Starter 全 verified；Mainstream 40；Full 等于全量
+// 11) Provider 分层：Starter 全 verified；Mainstream 37；Full 等于全量
 for (const tier of tiersData.tiers) {
   const selected = resolveTierProviders(registry.providers, tiersData, tier.id);
   assert.equal(selected.length, tier.count, `${tier.id} 条数`);
@@ -196,7 +201,7 @@ for (const tier of tiersData.tiers) {
   }
 }
 assert.equal(resolveTierProviders(registry.providers, tiersData, 'starter').length, 12);
-assert.equal(resolveTierProviders(registry.providers, tiersData, 'mainstream').length, 40);
+assert.equal(resolveTierProviders(registry.providers, tiersData, 'mainstream').length, 37);
 assert.equal(resolveTierProviders(registry.providers, tiersData, 'full').length, registry.providers.length);
 
 console.log(`smoke ok: ${registry.providers.length} providers / ${registry.agents.length} agents / ${imported.length} imported`);

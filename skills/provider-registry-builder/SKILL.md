@@ -15,8 +15,8 @@ description: "从 llm-provider-kit 生成一个可运行的 Provider API Key / B
 | tier | 数量 | 用途 |
 |---|---:|---|
 | `starter` | 12 | 默认；全部 `verified`，适合新建项目 |
-| `mainstream` | 40 | 常规项目；含主流直连、国内大厂、常用聚合 |
-| `full` | 131 | 长尾/高级；必须展示 `reference` / `unsupported` 提示 |
+| `mainstream` | 37 | 常规项目；含主流直连、国内大厂、常用聚合 |
+| `full` | 120 | 长尾/高级；必须展示 `reference` / `unsupported` 提示 |
 
 不要自行编造 Provider 或修改 Provider 数量。需要新增 Provider 时，先改 `data/providers.json` 并跑 `npm run validate`。
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.0
+
+### Changed
+
+- 同品牌的多连接方式合并为一条 Provider，连接方式统一放进 `endpoints[]`：Z.ai Coding Plan、火山方舟 Coding / Agent Plan、Kimi Code、MiniMax 国内站、Qwen Cloud Token Plan、Alibaba Token Plan、小米 MiMo Token Plan、Agnes 中国站、Gitlawb GMI 上游、Perplexity Agent 共 11 条并入 9 条主条目；旧 ID 保留为 `aliases`，深链仍可解析。
+- Provider 总数 131 → 120（24 条人工 + 96 条导入）；`starter` 12 / `mainstream` 37 / `full` 120，README、package、Demo、tiers、测试与 URL 金标准同步。
+- 合并条目按接入面拆分计费：火山方舟、Moonshot Kimi、Qwen Cloud、Xiaomi MiMo 等标记为 `billing.mode: "mixed"`；端点级鉴权保留 `x-api-key` / `bearer` 差异。
+
+### Added
+
+- 每个 Provider 都有可用图标：72 个使用真实 Lobe Icons slug；48 个 Lobe 未覆盖的网关使用 `icon.source: "favicon"` + 官网 favicon URL（`icon.horse`），仓库不分发 Logo 文件。
+- Demo 的 `logoNode` 支持 `icon.url`，并改为「先显示品牌色首字母块、图片加载成功再覆盖」；离线或 404 时不再出现空白方块。
+
+### Fixed
+
+- 修正大量导入条目把 Material Symbols 名（`auto-awesome`、`hub`、`cloud`、`router` 等）写进 `icon.slug`、导致 Lobe CDN 404 的问题。
+- Schema / 校验器支持 `icon.source: "favicon"`，并强制 favicon 来源必须带 `icon.url`。
+
 ## 0.3.4
 
 ### Changed

@@ -266,7 +266,7 @@
           "required": ["slug", "source"],
           "properties": {
             "slug": { "type": "string" },
-            "source": { "const": "lobe-icons" },
+            "source": { "enum": ["lobe-icons", "favicon"] },
             "color": { "type": "string" },
             "url": { "type": "string", "format": "uri" }
           },

@@ -6,13 +6,13 @@
 - 来源仓库：`diegosouzapw/OmniRoute` / `cheaper-inference/OmniRoute`（同一仓库）
 - 来源 HEAD：`82f60e5ef66cb8f4fd92929a44c3679ef844f84a`，分支 `release/v3.8.54`
 - 来源路径：`open-sse/config/providers/registry/**`（287 个 Provider 目录）+ `src/shared/constants/providers/apikey/**`
-- 导入结果：**27 条人工维护 + 104 条 OmniRoute 导入 = 131 个 Provider**（8 个 Agent 不受影响）
+- 导入结果：**24 条人工维护 + 96 条 OmniRoute 导入 = 120 个 Provider**（8 个 Agent 不受影响）
 
 ## 状态口径：reference ≠ verified
 
-- 104 条 OmniRoute 导入全部是 `reference`：它们只是**离线目录投影**，能渲染表单、能生成请求配置，但没有做过联网可达性验证；
-- 104 条中 43 条有 `probe.modelsUrl`，61 条没有；没有 modelsUrl 不等于配置错，只表示上游没有提供可探测的模型列表；
-- 20 条 `verified` 全部是历史人工条目，带 `verifiedAt`；104 条导入条目没有一条 `verifiedAt`；
+- 96 条 OmniRoute 导入全部是 `reference`：它们只是**离线目录投影**，能渲染表单、能生成请求配置，但没有做过联网可达性验证；
+- 96 条中 37 条有 `probe.modelsUrl`，59 条没有；没有 modelsUrl 不等于配置错，只表示上游没有提供可探测的模型列表；
+- 20 条 `verified` 全部是历史人工条目，带 `verifiedAt`；96 条导入条目没有一条 `verifiedAt`；
 - 画廊的 `unsupported` 是 `risk.variant`，表示第三方中转 / 非官方支持，不是一个“可填 Key”的通过标记；
 - 配置页不要把 `reference` 当成 `verified`；接入前请按厂商官方文档复核端点、鉴权和计费。
 
@@ -25,7 +25,7 @@
 3. 有固定 `http(s)` baseURL，且不包含 `{...}` 模板；
 4. `format` 为 `openai`、`openai-responses`、`claude` 或 `gemini`；
 5. `executor` 为 `default`，确保是通用协议而不是专用 executor；
-6. 不与已有 27 条人工条目的厂商等价项重复。
+6. 不与已有 24 条人工条目的厂商等价项重复。
 
 > 双鉴权说明：源里 `cline`（OAuth-primary + Bearer Key）与 `kilocode`（device-code 为主 + 匿名降级）在初版按 `api-key` 导入，违反规则 2，且丢失了 `forceStream` / `X-KILOCODE-EDITORNAME` 等运行时契约。`v0.3.1` 已按决策**删除**这两条：它们不是「baseURL + Key」即可用的接入。
 
@@ -125,7 +125,7 @@ https://api.xiaomimimo.com/anthropic/v1/messages
 - 删除 5 条 session-only Provider：`zai-coding-plan-session`、`doubao-desktop`、`workbuddy`、`codebuddy-cn`、`codebuddy-intl`；
 - 原因：本仓库当前只维护「API Key / 固定 baseURL」可直接接入的目录，session-only 会与画廊、统计和配置表单产生 131 / 136 两套口径；
 - schema 仍保留 `kind=session`、`auth.mode=local-session / device-code` 的建模能力，但不再把这些条目混入 API Key 目录；
-- 总数：27 条人工维护 + 104 条 OmniRoute 导入 = 131 个 Provider。
+- 总数：24 条人工维护 + 96 条 OmniRoute 导入 = 120 个 Provider。
 
 ## v0.3.1 变更摘要
 
@@ -139,7 +139,7 @@ https://api.xiaomimimo.com/anthropic/v1/messages
 
 ## 已知残留
 
-- 61 / 104 条无 `probe.modelsUrl`：源本身也未提供，不是导入丢失；
+- 59 / 96 条无 `probe.modelsUrl`：源本身也未提供，不是导入丢失；
 - 源 `alternateFormats` 使用动态指纹头（`agentrouter` 的 Codex CLI 头、`gitlawb` 的 OpenClaude 头）无法静态内联，已在 `endpoint.note` / `notes` 说明；
-- 89 / 104 条导入的 `docs` 只是源侧裸域名，不能当作官方文档深链；接入前请自行定位厂商文档；
+- 85 / 96 条导入的 `docs` 只是源侧裸域名，不能当作官方文档深链；接入前请自行定位厂商文档；
 - 全部条目为离线目录投影，未做联网可达性验证。

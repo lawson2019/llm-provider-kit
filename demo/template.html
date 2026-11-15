@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LLM Provider Kit · Provider 配置页</title>
-<meta name="description" content="131 个 AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。">
+<meta name="description" content="120 个 AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。">
 <meta property="og:title" content="LLM Provider Kit">
-<meta property="og:description" content="一份可校验、可直接渲染配置表单的 AI Provider 配置注册表：131 Providers / 8 Agents。">
+<meta property="og:description" content="一份可校验、可直接渲染配置表单的 AI Provider 配置注册表：120 Providers / 8 Agents。">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0f766e">
 <style>
@@ -92,11 +92,15 @@
   .item .body { min-width: 0; flex: 1; }
   .name { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .meta { color: var(--muted); font-size: 11.5px; display: flex; gap: 7px; flex-wrap: wrap; margin-top: 2px; }
-  .logo { width: 30px; height: 30px; border-radius: 8px; background: var(--panel-2);
+  .logo { width: 30px; height: 30px; border-radius: 8px; background: #fff;
     display: grid; place-items: center; flex: none; position: relative; overflow: hidden;
     border: 1px solid var(--line); }
-  .logo img { width: 22px; height: 22px; object-fit: contain; }
-  .logo.fallback { background: var(--brand, var(--accent)); color: #fff; font-weight: 700; font-size: 12px; border: 0; }
+  .logo .mono { position: absolute; inset: 0; display: grid; place-items: center;
+    background: var(--brand, var(--accent)); color: #fff; font-weight: 700; font-size: 12px; }
+  .logo img { position: absolute; inset: 0; margin: auto; width: 22px; height: 22px;
+    object-fit: contain; opacity: 0; transition: opacity .15s ease; background: #fff; }
+  .logo.has-img img { opacity: 1; }
+  .logo.has-img .mono { display: none; }
   .badge { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
   .badge.ok { color: var(--accent); border-color: var(--accent); }
   .badge.ref { color: var(--warn); border-color: var(--warn); }
@@ -176,7 +180,7 @@
     <span class="mark">LP</span>
     <div>
       <h1>LLM Provider Kit</h1>
-      <p class="sub">131 Providers / 8 Agents · 可校验、可直接渲染配置表单的 Provider 元数据 · schema v2</p>
+      <p class="sub">120 Providers / 8 Agents · 可校验、可直接渲染配置表单的 Provider 元数据 · schema v2</p>
     </div>
   </div>
   <div class="top-right">
@@ -258,16 +262,24 @@ function initials(name) {
 function logoNode(provider, big = false) {
   const wrap = el('span', big ? 'logo' : 'logo');
   wrap.style.setProperty('--brand', provider.icon?.color || provider.brandColor || '#0f766e');
-  const img = new Image();
-  img.alt = '';
-  img.loading = 'lazy';
-  img.src = `https://unpkg.com/@lobehub/icons-static-svg@latest/icons/${provider.icon.slug}.svg`;
-  img.addEventListener('error', () => {
-    img.remove();
-    wrap.classList.add('fallback');
-    wrap.textContent = initials(provider.name);
-  });
-  wrap.appendChild(img);
+  wrap.appendChild(el('span', 'mono', initials(provider.name)));
+  const icon = provider.icon ?? {};
+  const src = icon.url || (icon.source === 'lobe-icons' && icon.slug
+    ? `https://unpkg.com/@lobehub/icons-static-svg@latest/icons/${icon.slug}.svg`
+    : '');
+  if (src) {
+    const img = new Image();
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.src = src;
+    img.addEventListener('load', () => {
+      if (img.naturalWidth > 0) wrap.classList.add('has-img');
+      else img.remove();
+    });
+    img.addEventListener('error', () => img.remove());
+    wrap.appendChild(img);
+  }
   return wrap;
 }
 

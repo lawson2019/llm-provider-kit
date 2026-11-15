@@ -605,8 +605,11 @@ export function validateProvider(provider, index = 0, options = {}) {
     errors.push(`${ctx} 缺少 icon`);
   } else {
     if (!isNonEmptyString(provider.icon.slug)) errors.push(`${ctx} icon.slug 必填`);
-    if (provider.icon.source !== 'lobe-icons') {
-      errors.push(`${ctx} icon.source 目前只支持 lobe-icons`);
+    if (!['lobe-icons', 'favicon'].includes(provider.icon.source)) {
+      errors.push(`${ctx} icon.source 只支持 lobe-icons / favicon`);
+    }
+    if (provider.icon.source === 'favicon' && !isNonEmptyString(provider.icon.url)) {
+      errors.push(`${ctx} icon.source=favicon 时必须提供 icon.url`);
     }
   }
 

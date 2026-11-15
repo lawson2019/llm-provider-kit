@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-14",
+  "updatedAt": "2026-11-15",
   "providers": [
     {
       "id": "openai",
@@ -534,7 +534,10 @@
       "name": "Moonshot Kimi",
       "aliases": [
         "kimi",
-        "moonshot"
+        "moonshot",
+        "kimi-coding-apikey",
+        "kimi-code",
+        "kimi-for-coding"
       ],
       "kind": "api",
       "category": "china",
@@ -573,14 +576,16 @@
       ],
       "notes": [
         "国内站与国际站（platform.moonshot.ai）的 Key 和端点不通用",
-        "长上下文模型对输入长度计费敏感，面板应展示 token 估算"
+        "长上下文模型对输入长度计费敏感，面板应展示 token 估算",
+        "已合并 Kimi Code（API Key）（kimi-coding-apikey）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "auth": {
         "mode": "api-key",
         "scheme": "bearer"
       },
       "billing": {
-        "mode": "payg"
+        "mode": "mixed",
+        "note": "合并后含多种计费模式，按接入面选择。"
       },
       "endpoints": [
         {
@@ -590,6 +595,23 @@
           "baseURL": "https://api.moonshot.cn/v1",
           "billing": "payg",
           "default": true
+        },
+        {
+          "id": "kimi-code",
+          "label": "Kimi Code（Anthropic Messages）",
+          "protocol": "anthropic-messages",
+          "baseURL": "https://api.kimi.com/coding/v1",
+          "path": "/messages?beta=true",
+          "billing": "subscription",
+          "headers": {
+            "anthropic-version": "2023-06-01"
+          },
+          "note": "原条目 kimi-coding-apikey 的默认接入面；合并后保留主条目的默认标记。 合并自 kimi-coding-apikey。",
+          "auth": {
+            "mode": "api-key",
+            "scheme": "api-key-header",
+            "headerName": "x-api-key"
+          }
         }
       ],
       "probe": {
@@ -601,91 +623,8 @@
       }
     },
     {
-      "id": "kimi-coding-apikey",
-      "name": "Kimi Code（API Key）",
-      "aliases": [
-        "kimi-code",
-        "kimi-for-coding"
-      ],
-      "kind": "api",
-      "category": "china",
-      "authType": "api-key-header",
-      "baseURL": "https://api.kimi.com/coding/v1",
-      "docs": "https://www.kimi.ai/code",
-      "status": "reference",
-      "icon": {
-        "slug": "moonshot",
-        "source": "lobe-icons",
-        "color": "#0F172A"
-      },
-      "brandColor": "#0F172A",
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "subscription"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "api-key-header",
-        "headerName": "x-api-key"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "Kimi Code 为订阅制编码套餐；套餐额度与 Moonshot 开放平台 API 余额是两套账，以官方文档为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "Anthropic Messages（beta）",
-          "protocol": "anthropic-messages",
-          "baseURL": "https://api.kimi.com/coding/v1",
-          "path": "/messages?beta=true",
-          "billing": "subscription",
-          "headers": {
-            "anthropic-version": "2023-06-01"
-          },
-          "default": true
-        }
-      ],
-      "probe": {
-        "modelsUrl": "https://api.kimi.com/coding/v1/models"
-      },
-      "risk": {
-        "level": "medium",
-        "variant": "subscription",
-        "note": "订阅套餐边界：Key 只在 Kimi Code 套餐内有效，与 Moonshot 开放平台 API Key 不通用。"
-      },
-      "externalIds": {
-        "omniroute": "kimi-coding-apikey"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "Kimi Code 控制台签发的 API Key"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/kimi/coding-apikey/index.ts` 导入（baseUrl 来自 `KIMI_CODING_SHARED`）；源 Anthropic 端点 URL 为 `https://api.kimi.com/coding/v1/messages?beta=true`。",
-        "Anthropic Messages 协议：必须携带 `anthropic-version` 头，并使用 `x-api-key` 鉴权（源 `authHeader: \"x-api-key\"`）。",
-        "query 参数 `?beta=true` 已并入 `endpoint.path`，`buildRequestConfig()` 拼出的 requestURL 与源一致。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
-      ]
-    },
-    {
       "id": "zhipu-glm",
-      "name": "智谱 GLM（标准 API + Coding Plan）",
+      "name": "智谱 GLM",
       "aliases": [
         "glm",
         "bigmodel",
@@ -813,10 +752,14 @@
     },
     {
       "id": "zai",
-      "name": "Z.ai（标准 API + Coding Plan）",
+      "name": "Z.ai",
       "aliases": [
         "z-ai",
-        "zai-api"
+        "zai-api",
+        "zai-coding-plan",
+        "coding-plan",
+        "coding-plan-api",
+        "glm-coding-plan"
       ],
       "kind": "api",
       "category": "global",
@@ -882,7 +825,8 @@
       "notes": [
         "标准 API 与 Coding Plan 是两套计费；Coding Plan 也有 API Key 路径，不只是桌面登录态。",
         "GLM-5.3 系列在 Coding Plan 下可能走 OpenAI 兼容端点，其余模型走 Anthropic Messages；端点选错会 401。",
-        "与国内智谱开放平台不是同一个端点，账号与 Key 不通用。"
+        "与国内智谱开放平台不是同一个端点，账号与 Key 不通用。",
+        "已合并 Z.ai Coding Plan（API Key）（zai-coding-plan）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "auth": {
         "mode": "api-key",
@@ -890,7 +834,7 @@
       },
       "billing": {
         "mode": "mixed",
-        "note": "标准 API 按量计费；Coding Plan 走订阅额度，两端点不通用。"
+        "note": "标准 API 按量计费；Coding Plan 走订阅额度，两端点不通用。；合并后含多种计费模式，按接入面选择。"
       },
       "endpoints": [
         {
@@ -939,113 +883,6 @@
       }
     },
     {
-      "id": "zai-coding-plan",
-      "name": "Z.ai Coding Plan（API Key）",
-      "aliases": [
-        "coding-plan",
-        "coding-plan-api",
-        "glm-coding-plan"
-      ],
-      "kind": "api",
-      "category": "global",
-      "authType": "bearer",
-      "baseURL": "https://api.z.ai/api/anthropic",
-      "docs": "https://docs.z.ai/",
-      "status": "reference",
-      "icon": {
-        "slug": "zai",
-        "source": "lobe-icons",
-        "color": "#2563EB"
-      },
-      "brandColor": "#2563EB",
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "vision": false,
-        "embeddings": false,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "subscription",
-        "note": "Coding Plan 订阅额度，与 API 余额不通用"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "Coding Plan 的 API Key；不是桌面端导出的 JWT。选择端点后再发送到对应根"
-        },
-        {
-          "key": "endpoint",
-          "label": "接入方式",
-          "type": "select",
-          "group": "endpoint",
-          "required": true,
-          "default": "coding-anthropic",
-          "options": [
-            {
-              "label": "Anthropic Messages",
-              "value": "coding-anthropic",
-              "description": "https://api.z.ai/api/anthropic/v1/messages"
-            },
-            {
-              "label": "OpenAI 兼容",
-              "value": "coding-openai",
-              "description": "https://api.z.ai/api/coding/paas/v4/chat/completions"
-            }
-          ],
-          "help": "多数 GLM 走 Anthropic Messages；GLM-5.3 系列可能走 OpenAI 兼容端点"
-        }
-      ],
-      "notes": [
-        "Coding Plan 也有 API Key 路径；它能走专用端点，不代表能抵扣标准 API 余额。",
-        "桌面登录态 / JWT 仍不能当静态 Key 用，见 zai-coding-plan-session。",
-        "端点选错会 401，即使 Key 本身有效。"
-      ],
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer",
-        "headerName": "Authorization"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "Coding Plan 订阅额度，与 API 余额不通用"
-      },
-      "endpoints": [
-        {
-          "id": "coding-anthropic",
-          "label": "Coding Plan（Anthropic Messages）",
-          "value": "coding-anthropic",
-          "protocol": "anthropic-messages",
-          "baseURL": "https://api.z.ai/api/anthropic",
-          "billing": "subscription",
-          "headers": {
-            "anthropic-version": "2023-06-01"
-          },
-          "default": true,
-          "path": "/v1/messages"
-        },
-        {
-          "id": "coding-openai",
-          "label": "Coding Plan（OpenAI 兼容）",
-          "value": "coding-openai",
-          "protocol": "openai-chat",
-          "baseURL": "https://api.z.ai/api/coding/paas/v4",
-          "billing": "subscription",
-          "path": "/chat/completions"
-        }
-      ],
-      "risk": {
-        "level": "medium",
-        "variant": "subscription",
-        "note": "Coding Plan 与标准 API 是两套账；端点也分 Anthropic / OpenAI 两种协议。"
-      }
-    },
-    {
       "id": "dashscope",
       "name": "阿里云百炼（通义 / Qwen）",
       "aliases": [
@@ -1081,7 +918,7 @@
       "status": "verified",
       "verifiedAt": "2026-11-14",
       "icon": {
-        "slug": "qwen",
+        "slug": "bailian",
         "source": "lobe-icons",
         "color": "#615CED"
       },
@@ -1153,11 +990,18 @@
     },
     {
       "id": "volcengine-ark",
-      "name": "火山方舟（豆包模型 API）",
+      "name": "火山方舟",
       "aliases": [
         "ark",
         "volcengine",
-        "doubao-api"
+        "doubao-api",
+        "volcengine-coding-plan",
+        "ark-coding-plan",
+        "volc-coding-plan",
+        "doubao-coding-plan",
+        "volcengine-agent-plan",
+        "ark-agent-plan",
+        "volc-agent-plan"
       ],
       "kind": "api",
       "category": "china",
@@ -1207,15 +1051,17 @@
       "notes": [
         "同一个 Key 下不同接入点可以绑定不同模型与限流策略。",
         "Coding Plan 使用 /api/coding/v3，Agent Plan 使用 /api/plan/v3；用错根会 401。",
-        "电脑版豆包 / 豆包工作不提供公开 API，不能把客户端登录态当 Key 用。"
+        "电脑版豆包 / 豆包工作不提供公开 API，不能把客户端登录态当 Key 用。",
+        "已合并 火山方舟 Coding Plan（volcengine-coding-plan）的接入方式，统一在本条目的 endpoints 中维护。",
+        "已合并 火山方舟 Agent Plan（volcengine-agent-plan）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "auth": {
         "mode": "api-key",
         "scheme": "bearer"
       },
       "billing": {
-        "mode": "payg",
-        "note": "方舟 API 独立计费，与电脑版豆包会员额度不是一套"
+        "mode": "mixed",
+        "note": "方舟 API 独立计费，与电脑版豆包会员额度不是一套；合并后含多种计费模式，按接入面选择。"
       },
       "endpoints": [
         {
@@ -1225,6 +1071,32 @@
           "baseURL": "https://ark.cn-beijing.volces.com/api/v3",
           "billing": "payg",
           "default": true
+        },
+        {
+          "id": "coding",
+          "label": "Coding Plan",
+          "protocol": "openai-chat",
+          "baseURL": "https://ark.cn-beijing.volces.com/api/coding/v3",
+          "billing": "subscription",
+          "note": "原条目 volcengine-coding-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 volcengine-coding-plan。",
+          "auth": {
+            "mode": "api-key",
+            "scheme": "bearer",
+            "headerName": "Authorization"
+          }
+        },
+        {
+          "id": "agent",
+          "label": "Agent Plan",
+          "protocol": "openai-chat",
+          "baseURL": "https://ark.cn-beijing.volces.com/api/plan/v3",
+          "billing": "subscription",
+          "note": "原条目 volcengine-agent-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 volcengine-agent-plan。",
+          "auth": {
+            "mode": "api-key",
+            "scheme": "bearer",
+            "headerName": "Authorization"
+          }
         }
       ],
       "probe": {
@@ -1237,180 +1109,7 @@
       "risk": {
         "level": "low",
         "variant": "official-api",
-        "note": "标准方舟 API 按量计费；Coding Plan / Agent Plan 是独立条目、独立额度。"
-      }
-    },
-    {
-      "id": "volcengine-coding-plan",
-      "name": "火山方舟 Coding Plan",
-      "aliases": [
-        "ark-coding-plan",
-        "volc-coding-plan",
-        "doubao-coding-plan"
-      ],
-      "kind": "api",
-      "category": "china",
-      "authType": "bearer",
-      "baseURL": "https://ark.cn-beijing.volces.com/api/coding/v3",
-      "docs": "https://www.volcengine.com/docs/82379",
-      "status": "reference",
-      "icon": {
-        "slug": "volcengine",
-        "source": "lobe-icons",
-        "color": "#1664FF"
-      },
-      "brandColor": "#1664FF",
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer",
-        "headerName": "Authorization"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "Coding Plan 订阅额度，与方舟标准 API 余额不通用"
-      },
-      "endpoints": [
-        {
-          "id": "coding",
-          "label": "Coding Plan",
-          "protocol": "openai-chat",
-          "baseURL": "https://ark.cn-beijing.volces.com/api/coding/v3",
-          "billing": "subscription",
-          "default": true
-        }
-      ],
-      "probe": {
-        "modelsUrl": "/models",
-        "method": "GET"
-      },
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "vision": true,
-        "embeddings": false,
-        "audio": false,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "subscription",
-        "note": "Coding Plan 订阅额度，与方舟标准 API 余额不通用"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "火山方舟控制台创建；Coding Plan 与标准 API 共用 Key 类型，但端点不同"
-        },
-        {
-          "key": "model",
-          "label": "模型 ID",
-          "type": "text",
-          "group": "model",
-          "required": true,
-          "placeholder": "doubao-seed-2.1-turbo",
-          "help": "Coding Plan 支持豆包 / DeepSeek / GLM / Kimi / MiniMax 等模型，以控制台当前列表为准"
-        }
-      ],
-      "notes": [
-        "端点是 /api/coding/v3，不是标准方舟 /api/v3。",
-        "Coding Plan 额度与标准 API 余额是两套账。",
-        "模型列表可用 GET /models 验证 Key 与套餐状态。"
-      ],
-      "risk": {
-        "level": "medium",
-        "variant": "subscription",
-        "note": "Coding Plan 与标准 API 是两套账；端点选错会 401。"
-      },
-      "externalIds": {
-        "omniroute": "volcengine-coding-plan"
-      }
-    },
-    {
-      "id": "volcengine-agent-plan",
-      "name": "火山方舟 Agent Plan",
-      "aliases": [
-        "ark-agent-plan",
-        "volc-agent-plan"
-      ],
-      "kind": "api",
-      "category": "china",
-      "authType": "bearer",
-      "baseURL": "https://ark.cn-beijing.volces.com/api/plan/v3",
-      "docs": "https://www.volcengine.com/docs/82379",
-      "status": "reference",
-      "icon": {
-        "slug": "volcengine",
-        "source": "lobe-icons",
-        "color": "#1664FF"
-      },
-      "brandColor": "#1664FF",
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer",
-        "headerName": "Authorization"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "Agent Plan 订阅额度，与标准 API / Coding Plan 互不抵扣"
-      },
-      "endpoints": [
-        {
-          "id": "agent",
-          "label": "Agent Plan",
-          "protocol": "openai-chat",
-          "baseURL": "https://ark.cn-beijing.volces.com/api/plan/v3",
-          "billing": "subscription",
-          "default": true
-        }
-      ],
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "vision": true,
-        "embeddings": false,
-        "audio": false,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "subscription",
-        "note": "Agent Plan 订阅额度，与标准 API / Coding Plan 互不抵扣"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "火山方舟控制台创建；Agent Plan 使用独立端点"
-        },
-        {
-          "key": "model",
-          "label": "模型 ID",
-          "type": "text",
-          "group": "model",
-          "required": true,
-          "placeholder": "doubao-seed-2.1-turbo",
-          "help": "Agent Plan 不提供 /models 列表，模型以控制台当前命名为准；Key 校验要靠 chat probe"
-        }
-      ],
-      "notes": [
-        "端点是 /api/plan/v3，不是 /api/v3 或 /api/coding/v3。",
-        "没有 /models 列表，不能靠模型列表接口验证 Key；需要发一次最小 chat 请求。",
-        "Agent Plan 与 Coding Plan / 标准 API 是三套独立额度。"
-      ],
-      "risk": {
-        "level": "medium",
-        "variant": "subscription",
-        "note": "Agent Plan 与 Coding Plan / 标准 API 是三套账；没有模型列表接口。"
-      },
-      "externalIds": {
-        "omniroute": "volcengine-agent-plan"
+        "note": "标准方舟 API 按量计费；Coding Plan / Agent Plan 是独立条目、独立额度。 合并条目含 火山方舟 Coding Plan（subscription）形态。 合并条目含 火山方舟 Agent Plan（subscription）形态。"
       }
     },
     {
@@ -1583,7 +1282,8 @@
       ],
       "notes": [
         "国内站与国际站（api.minimaxi.com）域名不同",
-        "部分接口并非严格 OpenAI 兼容，接入前核对 path 与返回结构"
+        "部分接口并非严格 OpenAI 兼容，接入前核对 path 与返回结构",
+        "已合并 MiniMax（国内站）（minimax-cn）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "auth": {
         "mode": "api-key",
@@ -1600,90 +1300,23 @@
           "baseURL": "https://api.minimax.chat/v1",
           "billing": "payg",
           "default": true
-        }
-      ],
-      "externalIds": {
-        "omniroute": "minimax"
-      }
-    },
-    {
-      "id": "minimax-cn",
-      "name": "MiniMax（国内站）",
-      "aliases": [
-        "minimax-china"
-      ],
-      "kind": "api",
-      "category": "china",
-      "authType": "bearer",
-      "baseURL": "https://api.minimaxi.com/v1",
-      "docs": "https://platform.minimaxi.com/document",
-      "status": "reference",
-      "icon": {
-        "slug": "minimax",
-        "source": "lobe-icons",
-        "color": "#DC2626"
-      },
-      "brandColor": "#DC2626",
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "vision": true,
-        "embeddings": false,
-        "audio": true,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "api-key"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer"
-      },
-      "billing": {
-        "mode": "payg",
-        "note": "国内站按量计费；免费额度与赠送额度以厂商官网为准。"
-      },
-      "endpoints": [
+        },
         {
-          "id": "default",
-          "label": "默认端点",
+          "id": "cn",
+          "label": "MiniMax 国内站",
           "protocol": "openai-chat",
           "baseURL": "https://api.minimaxi.com/v1",
           "path": "/chat/completions",
           "billing": "payg",
-          "default": true
+          "note": "原条目 minimax-cn 的默认接入面；合并后保留主条目的默认标记。 合并自 minimax-cn。"
         }
       ],
-      "probe": {
-        "modelsUrl": "https://api.minimaxi.com/v1/models"
-      },
-      "risk": {
-        "level": "low",
-        "variant": "official-api",
-        "note": "官方国内站 API；来自 OmniRoute API Key Provider Registry，状态为 reference。"
-      },
       "externalIds": {
-        "omniroute": "minimax-cn"
+        "omniroute": "minimax"
       },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "MiniMax 开放平台（国内站 api.minimaxi.com）"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/minimax/cn/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://api.minimaxi.com/v1/chat/completions`。",
-        "国内站（api.minimaxi.com）与国际站（`minimax` 条目，api.minimax.chat）是两套账号与 Key，不可混用。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
+      "aliases": [
+        "minimax-cn",
+        "minimax-china"
       ]
     },
     {
@@ -2444,8 +2077,9 @@
       "docs": "https://agentrouter.org",
       "status": "reference",
       "icon": {
-        "slug": "router",
-        "source": "lobe-icons"
+        "slug": "agentrouter",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/agentrouter.org"
       },
       "brandColor": "#10B981",
       "capabilities": {
@@ -2532,80 +2166,6 @@
       ]
     },
     {
-      "id": "agnes-cn",
-      "name": "Agnes AI (China)",
-      "kind": "api",
-      "category": "china",
-      "authType": "bearer",
-      "baseURL": "https://api.agnes-ai.cn/v1",
-      "docs": "https://api.agnes-ai.cn",
-      "status": "reference",
-      "icon": {
-        "slug": "auto-awesome",
-        "source": "lobe-icons"
-      },
-      "brandColor": "#047857",
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "vision": true,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "api-key"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer"
-      },
-      "billing": {
-        "mode": "payg",
-        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "默认端点",
-          "protocol": "openai-chat",
-          "baseURL": "https://api.agnes-ai.cn/v1",
-          "path": "/chat/completions",
-          "billing": "payg",
-          "default": true
-        }
-      ],
-      "probe": {
-        "modelsUrl": "https://api.agnes-ai.cn/v1/models",
-        "method": "GET"
-      },
-      "risk": {
-        "level": "low",
-        "variant": "official-api",
-        "note": "来自 OmniRoute API Key Provider Registry；状态为 reference，接入前按官方文档复核端点、计费与可用模型。"
-      },
-      "externalIds": {
-        "omniroute": "agnes-cn"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "只写入本地配置或系统密钥库，不要提交到仓库或日志。"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/agnes/cn/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://api.agnes-ai.cn/v1/chat/completions`。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
-      ]
-    },
-    {
       "id": "agnes",
       "name": "Agnes AI",
       "kind": "api",
@@ -2615,7 +2175,7 @@
       "docs": "https://agnes-ai.com",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "agnesai",
         "source": "lobe-icons"
       },
       "brandColor": "#10B981",
@@ -2645,6 +2205,15 @@
           "path": "/chat/completions",
           "billing": "payg",
           "default": true
+        },
+        {
+          "id": "cn",
+          "label": "Agnes AI 中国站",
+          "protocol": "openai-chat",
+          "baseURL": "https://api.agnes-ai.cn/v1",
+          "path": "/chat/completions",
+          "billing": "payg",
+          "note": "原条目 agnes-cn 的默认接入面；合并后保留主条目的默认标记。 合并自 agnes-cn。"
         }
       ],
       "probe": {
@@ -2671,12 +2240,16 @@
         }
       ],
       "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/agnes/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://apihub.agnes-ai.com/v1/chat/completions`。"
+        "从 OmniRoute `open-sse/config/providers/registry/agnes/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://apihub.agnes-ai.com/v1/chat/completions`。",
+        "已合并 Agnes AI (China)（agnes-cn）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "tags": [
         "omniroute",
         "api-key",
         "imported"
+      ],
+      "aliases": [
+        "agnes-cn"
       ]
     },
     {
@@ -2689,7 +2262,7 @@
       "docs": "https://www.ai21.com",
       "status": "reference",
       "icon": {
-        "slug": "psychology-alt",
+        "slug": "ai21",
         "source": "lobe-icons"
       },
       "brandColor": "#0284C7",
@@ -2756,7 +2329,7 @@
       "docs": "https://aimlapi.com",
       "status": "reference",
       "icon": {
-        "slug": "hub",
+        "slug": "aimlapi",
         "source": "lobe-icons"
       },
       "brandColor": "#6366F1",
@@ -2823,7 +2396,7 @@
       "docs": "https://developer.ant-ling.com/en/docs/",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "antgroup",
         "source": "lobe-icons"
       },
       "brandColor": "#1677FF",
@@ -2890,8 +2463,9 @@
       "docs": "https://api.airforce",
       "status": "reference",
       "icon": {
-        "slug": "flight",
-        "source": "lobe-icons"
+        "slug": "api-airforce",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/api.airforce"
       },
       "brandColor": "#1E3A5F",
       "capabilities": {
@@ -2961,8 +2535,9 @@
       "docs": "https://apmix.ai",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "apmix",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/apmix.ai"
       },
       "brandColor": "#7C3AED",
       "capabilities": {
@@ -3033,8 +2608,9 @@
       "docs": "https://b.ai",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "bai",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/b.ai"
       },
       "brandColor": "#6366F1",
       "capabilities": {
@@ -3105,7 +2681,7 @@
       "docs": "https://www.baichuan-ai.com/",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "baichuan",
         "source": "lobe-icons"
       },
       "brandColor": "#6366F1",
@@ -3163,78 +2739,6 @@
       ]
     },
     {
-      "id": "bailian-coding-plan",
-      "name": "Alibaba Token Plan",
-      "kind": "api",
-      "category": "china",
-      "authType": "api-key-header",
-      "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic/v1",
-      "docs": "https://www.alibabacloud.com/help/en/model-studio/token-plan-overview",
-      "status": "reference",
-      "icon": {
-        "slug": "code",
-        "source": "lobe-icons"
-      },
-      "brandColor": "#FF6A00",
-      "capabilities": {
-        "streaming": true
-      },
-      "quota": {
-        "type": "subscription"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "api-key-header",
-        "headerName": "x-api-key"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "订阅 / Token Plan 计费；具体额度、区域与可用模型以厂商官网为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "默认端点",
-          "protocol": "anthropic-messages",
-          "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic/v1",
-          "path": "/messages",
-          "billing": "subscription",
-          "default": true,
-          "headers": {
-            "anthropic-version": "2023-06-01"
-          }
-        }
-      ],
-      "risk": {
-        "level": "low",
-        "variant": "official-api",
-        "note": "来自 OmniRoute API Key Provider Registry；状态为 reference，接入前按官方文档复核端点、计费与可用模型。"
-      },
-      "externalIds": {
-        "omniroute": "bailian-coding-plan"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "只写入本地配置或系统密钥库，不要提交到仓库或日志。"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/bailian-coding-plan/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic/v1`。",
-        "修复（v0.3.1）：源 `getAnthropicCompatHeaders()` 携带的 `Anthropic-Version` 头此前未带入，现补到 endpoint.headers。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
-      ]
-    },
-    {
       "id": "baseten",
       "name": "Baseten",
       "kind": "api",
@@ -3244,7 +2748,7 @@
       "docs": "https://baseten.co",
       "status": "reference",
       "icon": {
-        "slug": "deployed-code",
+        "slug": "baseten",
         "source": "lobe-icons"
       },
       "brandColor": "#111827",
@@ -3311,8 +2815,9 @@
       "docs": "https://bazaarlink.ai",
       "status": "reference",
       "icon": {
-        "slug": "storefront",
-        "source": "lobe-icons"
+        "slug": "bazaarlink",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/bazaarlink.ai"
       },
       "brandColor": "#6366F1",
       "capabilities": {
@@ -3383,8 +2888,9 @@
       "docs": "https://www.bluesminds.com",
       "status": "reference",
       "icon": {
-        "slug": "psychology",
-        "source": "lobe-icons"
+        "slug": "bluesminds",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/bluesminds.com"
       },
       "brandColor": "#3B82F6",
       "capabilities": {
@@ -3456,7 +2962,7 @@
       "docs": "https://console.byteplus.com/ark",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
+        "slug": "bytedance",
         "source": "lobe-icons"
       },
       "brandColor": "#2563EB",
@@ -3528,8 +3034,9 @@
       "docs": "https://bytez.com",
       "status": "reference",
       "icon": {
-        "slug": "api",
-        "source": "lobe-icons"
+        "slug": "bytez",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/bytez.com"
       },
       "brandColor": "#6366F1",
       "capabilities": {
@@ -3595,7 +3102,7 @@
       "docs": "https://inference.cerebras.ai",
       "status": "reference",
       "icon": {
-        "slug": "memory",
+        "slug": "cerebras",
         "source": "lobe-icons"
       },
       "brandColor": "#FF4F00",
@@ -3662,8 +3169,9 @@
       "docs": "https://hyper.charm.land",
       "status": "reference",
       "icon": {
-        "slug": "router",
-        "source": "lobe-icons"
+        "slug": "charm-hyper",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/hyper.charm.land"
       },
       "brandColor": "#7C3AED",
       "capabilities": {
@@ -3733,8 +3241,9 @@
       "docs": "https://chenzk.top",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "chenzk",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/chenzk.top"
       },
       "brandColor": "#10B981",
       "capabilities": {
@@ -3804,7 +3313,7 @@
       "docs": "https://chutes.ai",
       "status": "reference",
       "icon": {
-        "slug": "hub",
+        "slug": "chutes",
         "source": "lobe-icons"
       },
       "brandColor": "#06B6D4",
@@ -3871,7 +3380,7 @@
       "docs": "https://mistral.ai",
       "status": "reference",
       "icon": {
-        "slug": "terminal",
+        "slug": "mistral",
         "source": "lobe-icons"
       },
       "brandColor": "#FF7000",
@@ -3938,7 +3447,7 @@
       "docs": "https://cohere.com",
       "status": "reference",
       "icon": {
-        "slug": "hub",
+        "slug": "cohere",
         "source": "lobe-icons"
       },
       "brandColor": "#39594D",
@@ -4009,7 +3518,7 @@
       "docs": "https://coze.com",
       "status": "reference",
       "icon": {
-        "slug": "smart-toy",
+        "slug": "coze",
         "source": "lobe-icons"
       },
       "brandColor": "#3B82F6",
@@ -4076,8 +3585,9 @@
       "docs": "https://crof.ai",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
-        "source": "lobe-icons"
+        "slug": "crof",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/crof.ai"
       },
       "brandColor": "#0EA5E9",
       "capabilities": {
@@ -4144,7 +3654,7 @@
       "docs": "https://deepinfra.com",
       "status": "reference",
       "icon": {
-        "slug": "hub",
+        "slug": "deepinfra",
         "source": "lobe-icons"
       },
       "brandColor": "#2563EB",
@@ -4211,8 +3721,9 @@
       "docs": "https://dgrid.ai",
       "status": "reference",
       "icon": {
-        "slug": "router",
-        "source": "lobe-icons"
+        "slug": "dgrid",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/dgrid.ai"
       },
       "brandColor": "#65A30D",
       "capabilities": {
@@ -4282,8 +3793,9 @@
       "docs": "https://dit.ai",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "dit",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/dit.ai"
       },
       "brandColor": "#0EA5E9",
       "capabilities": {
@@ -4357,8 +3869,9 @@
       "docs": "https://factory.ai",
       "status": "reference",
       "icon": {
-        "slug": "smart-toy",
-        "source": "lobe-icons"
+        "slug": "factory",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/factory.ai"
       },
       "brandColor": "#0F172A",
       "capabilities": {
@@ -4426,7 +3939,7 @@
       "docs": "https://featherless.ai",
       "status": "reference",
       "icon": {
-        "slug": "flutter-dash",
+        "slug": "featherless",
         "source": "lobe-icons"
       },
       "brandColor": "#EA580C",
@@ -4493,7 +4006,7 @@
       "docs": "https://fireworks.ai",
       "status": "reference",
       "icon": {
-        "slug": "local-fire-department",
+        "slug": "fireworks",
         "source": "lobe-icons"
       },
       "brandColor": "#7B2EF2",
@@ -4565,8 +4078,9 @@
       "docs": "https://freeaiapikey.com",
       "status": "reference",
       "icon": {
-        "slug": "vpn-key",
-        "source": "lobe-icons"
+        "slug": "freeaiapikey",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/freeaiapikey.com"
       },
       "brandColor": "#F59E0B",
       "capabilities": {
@@ -4637,8 +4151,9 @@
       "docs": "https://freemodel.dev",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
-        "source": "lobe-icons"
+        "slug": "freemodel-dev",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/freemodel.dev"
       },
       "brandColor": "#8B5CF6",
       "capabilities": {
@@ -4708,8 +4223,9 @@
       "docs": "https://freetheai.org",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "freetheai",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/freetheai.org"
       },
       "brandColor": "#22C55E",
       "capabilities": {
@@ -4779,7 +4295,7 @@
       "docs": "https://friendli.ai",
       "status": "reference",
       "icon": {
-        "slug": "handshake",
+        "slug": "friendli",
         "source": "lobe-icons"
       },
       "brandColor": "#EC4899",
@@ -4850,8 +4366,9 @@
       "docs": "https://galadriel.com",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
-        "source": "lobe-icons"
+        "slug": "galadriel",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/galadriel.com"
       },
       "brandColor": "#F59E0B",
       "capabilities": {
@@ -4917,8 +4434,9 @@
       "docs": "https://developers.sber.ru",
       "status": "reference",
       "icon": {
-        "slug": "lock-person",
-        "source": "lobe-icons"
+        "slug": "gigachat",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/developers.sber.ru"
       },
       "brandColor": "#10B981",
       "capabilities": {
@@ -4975,76 +4493,8 @@
       ]
     },
     {
-      "id": "gitlawb-gmi",
-      "name": "Gitlawb Opengateway (GMI Cloud)",
-      "kind": "gateway",
-      "category": "aggregator",
-      "authType": "bearer",
-      "baseURL": "https://opengateway.gitlawb.com/v1/gmi-cloud",
-      "docs": "https://opengateway.gitlawb.com",
-      "status": "reference",
-      "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
-      },
-      "brandColor": "#10B981",
-      "capabilities": {
-        "streaming": true
-      },
-      "quota": {
-        "type": "api-key"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer"
-      },
-      "billing": {
-        "mode": "payg",
-        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "默认端点",
-          "protocol": "unknown",
-          "baseURL": "https://opengateway.gitlawb.com/v1/gmi-cloud",
-          "billing": "payg",
-          "default": true,
-          "note": "源以裸基址作为完整端点（stream / non-stream 同一 URL），上游不追加 /chat/completions；因此 protocol 记为 unknown，避免默认路径拼接。"
-        }
-      ],
-      "risk": {
-        "level": "high",
-        "variant": "unsupported",
-        "note": "第三方中转网关，源码固定伪装 User-Agent / X-Title / HTTP-Referer（OpenClaude 指纹）；存在账号封禁与 ToS 风险，端点与额度以运营方为准。"
-      },
-      "externalIds": {
-        "omniroute": "gitlawb-gmi"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "只写入本地配置或系统密钥库，不要提交到仓库或日志。"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/gitlawb/gmi/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://opengateway.gitlawb.com/v1/gmi-cloud`。",
-        "修复（v0.3.1）：源 baseUrl 即完整端点，原先被默认路径补成 `/chat/completions` 会 404；现以 protocol=unknown 保持裸 URL，risk 上调为 high/unsupported。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
-      ]
-    },
-    {
       "id": "gitlawb",
-      "name": "Gitlawb Opengateway (MiMo)",
+      "name": "Gitlawb Opengateway",
       "kind": "gateway",
       "category": "aggregator",
       "authType": "bearer",
@@ -5052,8 +4502,9 @@
       "docs": "https://opengateway.gitlawb.com",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "gitlawb",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/opengateway.gitlawb.com"
       },
       "brandColor": "#10B981",
       "capabilities": {
@@ -5073,12 +4524,20 @@
       "endpoints": [
         {
           "id": "default",
-          "label": "默认端点",
+          "label": "MiMo 上游",
           "protocol": "unknown",
           "baseURL": "https://opengateway.gitlawb.com/v1/xiaomi-mimo",
           "billing": "payg",
           "default": true,
           "note": "源以裸基址作为完整端点（stream / non-stream 同一 URL），上游不追加 /chat/completions；因此 protocol 记为 unknown，避免默认路径拼接。"
+        },
+        {
+          "id": "gmi-cloud",
+          "label": "GMI Cloud 上游",
+          "protocol": "unknown",
+          "baseURL": "https://opengateway.gitlawb.com/v1/gmi-cloud",
+          "billing": "payg",
+          "note": "源以裸基址作为完整端点（stream / non-stream 同一 URL），上游不追加 /chat/completions；因此 protocol 记为 unknown，避免默认路径拼接。 原条目 gitlawb-gmi 的默认接入面；合并后保留主条目的默认标记。 合并自 gitlawb-gmi。"
         }
       ],
       "risk": {
@@ -5102,12 +4561,16 @@
       ],
       "notes": [
         "从 OmniRoute `open-sse/config/providers/registry/gitlawb/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://opengateway.gitlawb.com/v1/xiaomi-mimo`。",
-        "修复（v0.3.1）：源 baseUrl 即完整端点，原先被默认路径补成 `/chat/completions` 会 404；现以 protocol=unknown 保持裸 URL，risk 上调为 high/unsupported。"
+        "修复（v0.3.1）：源 baseUrl 即完整端点，原先被默认路径补成 `/chat/completions` 会 404；现以 protocol=unknown 保持裸 URL，risk 上调为 high/unsupported。",
+        "已合并 Gitlawb Opengateway (GMI Cloud)（gitlawb-gmi）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "tags": [
         "omniroute",
         "api-key",
         "imported"
+      ],
+      "aliases": [
+        "gitlawb-gmi"
       ]
     },
     {
@@ -5120,8 +4583,9 @@
       "docs": "https://grokified.com",
       "status": "reference",
       "icon": {
-        "slug": "bolt",
-        "source": "lobe-icons"
+        "slug": "grokified",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/grokified.com"
       },
       "brandColor": "#111827",
       "capabilities": {
@@ -5187,8 +4651,9 @@
       "docs": "https://www.heroku.com",
       "status": "reference",
       "icon": {
-        "slug": "cloud-upload",
-        "source": "lobe-icons"
+        "slug": "heroku",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/heroku.com"
       },
       "brandColor": "#7C3AED",
       "capabilities": {
@@ -5254,8 +4719,9 @@
       "docs": "https://experiments.hetzner.com/inference",
       "status": "reference",
       "icon": {
-        "slug": "dns",
-        "source": "lobe-icons"
+        "slug": "hetzner",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/experiments.hetzner.com"
       },
       "brandColor": "#D50C2D",
       "capabilities": {
@@ -5321,7 +4787,7 @@
       "docs": "https://huggingface.co",
       "status": "reference",
       "icon": {
-        "slug": "face",
+        "slug": "huggingface",
         "source": "lobe-icons"
       },
       "brandColor": "#FFD21E",
@@ -5392,7 +4858,7 @@
       "docs": "https://hyperbolic.xyz",
       "status": "reference",
       "icon": {
-        "slug": "bolt",
+        "slug": "hyperbolic",
         "source": "lobe-icons"
       },
       "brandColor": "#00D4FF",
@@ -5459,7 +4925,7 @@
       "docs": "https://xinghuo.xfyun.cn",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "iflytekcloud",
         "source": "lobe-icons"
       },
       "brandColor": "#0066FF",
@@ -5526,7 +4992,7 @@
       "docs": "https://docs.inceptionlabs.ai",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "inception",
         "source": "lobe-icons"
       },
       "brandColor": "#F97316",
@@ -5593,7 +5059,7 @@
       "docs": "https://inference.net",
       "status": "reference",
       "icon": {
-        "slug": "dns",
+        "slug": "inference",
         "source": "lobe-icons"
       },
       "brandColor": "#2563EB",
@@ -5660,7 +5126,7 @@
       "docs": "https://internlm.intern-ai.org.cn/",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "internlm",
         "source": "lobe-icons"
       },
       "brandColor": "#4F46E5",
@@ -5727,8 +5193,9 @@
       "docs": "https://kenari.id",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "kenari",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/kenari.id"
       },
       "brandColor": "#B5362A",
       "capabilities": {
@@ -5798,8 +5265,9 @@
       "docs": "https://kie.ai",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "kie",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/kie.ai"
       },
       "brandColor": "#2563EB",
       "capabilities": {
@@ -5867,7 +5335,7 @@
       "docs": "https://lambda.ai",
       "status": "reference",
       "icon": {
-        "slug": "bolt",
+        "slug": "lambda",
         "source": "lobe-icons"
       },
       "brandColor": "#7C3AED",
@@ -5934,7 +5402,7 @@
       "docs": "https://liquid.ai",
       "status": "reference",
       "icon": {
-        "slug": "water-drop",
+        "slug": "liquid",
         "source": "lobe-icons"
       },
       "brandColor": "#06B6D4",
@@ -6005,8 +5473,9 @@
       "docs": "https://llamagate.ai",
       "status": "reference",
       "icon": {
-        "slug": "gate",
-        "source": "lobe-icons"
+        "slug": "llamagate",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/llamagate.ai"
       },
       "brandColor": "#16A34A",
       "capabilities": {
@@ -6072,8 +5541,9 @@
       "docs": "https://llm7.io",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "llm7",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/llm7.io"
       },
       "brandColor": "#6366F1",
       "capabilities": {
@@ -6143,7 +5613,7 @@
       "docs": "https://longcat.chat/platform/docs",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "longcat",
         "source": "lobe-icons"
       },
       "brandColor": "#FF6B9D",
@@ -6210,7 +5680,7 @@
       "docs": "https://llama.developer.meta.com",
       "status": "reference",
       "icon": {
-        "slug": "smart-toy",
+        "slug": "meta",
         "source": "lobe-icons"
       },
       "brandColor": "#0F766E",
@@ -6277,8 +5747,9 @@
       "docs": "https://modal.com/docs",
       "status": "reference",
       "icon": {
-        "slug": "cloud-queue",
-        "source": "lobe-icons"
+        "slug": "modal",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/modal.com"
       },
       "brandColor": "#7C3AED",
       "capabilities": {
@@ -6344,7 +5815,7 @@
       "docs": "https://modelscope.cn",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
+        "slug": "modelscope",
         "source": "lobe-icons"
       },
       "brandColor": "#FF6A00",
@@ -6415,8 +5886,9 @@
       "docs": "https://monsterapi.ai",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
-        "source": "lobe-icons"
+        "slug": "monsterapi",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/monsterapi.ai"
       },
       "brandColor": "#EF4444",
       "capabilities": {
@@ -6482,7 +5954,7 @@
       "docs": "https://morphllm.com",
       "status": "reference",
       "icon": {
-        "slug": "auto-fix-high",
+        "slug": "morph",
         "source": "lobe-icons"
       },
       "brandColor": "#2563EB",
@@ -6549,8 +6021,9 @@
       "docs": "https://nano-gpt.com",
       "status": "reference",
       "icon": {
-        "slug": "chat",
-        "source": "lobe-icons"
+        "slug": "nanogpt",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/nano-gpt.com"
       },
       "brandColor": "#4F46E5",
       "capabilities": {
@@ -6620,7 +6093,7 @@
       "docs": "https://portal.nousresearch.com/help",
       "status": "reference",
       "icon": {
-        "slug": "hub",
+        "slug": "nousresearch",
         "source": "lobe-icons"
       },
       "brandColor": "#2563EB",
@@ -6687,7 +6160,7 @@
       "docs": "https://novita.ai",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "novita",
         "source": "lobe-icons"
       },
       "brandColor": "#FF4081",
@@ -6760,8 +6233,9 @@
       "docs": "https://nscale.com",
       "status": "reference",
       "icon": {
-        "slug": "token",
-        "source": "lobe-icons"
+        "slug": "nscale",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/nscale.com"
       },
       "brandColor": "#0891B2",
       "capabilities": {
@@ -6827,8 +6301,9 @@
       "docs": "https://nube.sh",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
-        "source": "lobe-icons"
+        "slug": "nube",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/nube.sh"
       },
       "brandColor": "#2563EB",
       "capabilities": {
@@ -6899,7 +6374,7 @@
       "docs": "https://build.nvidia.com",
       "status": "reference",
       "icon": {
-        "slug": "developer-board",
+        "slug": "nvidia",
         "source": "lobe-icons"
       },
       "brandColor": "#76B900",
@@ -6969,7 +6444,7 @@
       "docs": "https://ollama.com/settings/keys",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
+        "slug": "ollama",
         "source": "lobe-icons"
       },
       "brandColor": "#58A6FF",
@@ -7042,8 +6517,9 @@
       "docs": "https://openadapter.dev",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "openadapter",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/openadapter.dev"
       },
       "brandColor": "#10B981",
       "capabilities": {
@@ -7116,8 +6592,9 @@
       "docs": "https://www.orcarouter.ai",
       "status": "reference",
       "icon": {
-        "slug": "router",
-        "source": "lobe-icons"
+        "slug": "orcarouter",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/orcarouter.ai"
       },
       "brandColor": "#0891B2",
       "capabilities": {
@@ -7177,79 +6654,6 @@
       ]
     },
     {
-      "id": "perplexity-agent",
-      "name": "Perplexity Agent",
-      "kind": "api",
-      "category": "global",
-      "authType": "bearer",
-      "baseURL": "https://api.perplexity.ai",
-      "docs": "https://www.perplexity.ai",
-      "status": "reference",
-      "icon": {
-        "slug": "search",
-        "source": "lobe-icons"
-      },
-      "brandColor": "#20808D",
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "api-key"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer"
-      },
-      "billing": {
-        "mode": "payg",
-        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "默认端点",
-          "protocol": "openai-responses",
-          "baseURL": "https://api.perplexity.ai",
-          "path": "/v1/responses",
-          "billing": "payg",
-          "default": true
-        }
-      ],
-      "probe": {
-        "modelsUrl": "https://api.perplexity.ai/v1/models",
-        "method": "GET"
-      },
-      "risk": {
-        "level": "low",
-        "variant": "official-api",
-        "note": "来自 OmniRoute API Key Provider Registry；状态为 reference，接入前按官方文档复核端点、计费与可用模型。"
-      },
-      "externalIds": {
-        "omniroute": "perplexity-agent"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "只写入本地配置或系统密钥库，不要提交到仓库或日志。"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/perplexity/agent/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://api.perplexity.ai/v1/responses`。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
-      ]
-    },
-    {
       "id": "perplexity",
       "name": "Perplexity",
       "kind": "api",
@@ -7259,7 +6663,7 @@
       "docs": "https://www.perplexity.ai",
       "status": "reference",
       "icon": {
-        "slug": "search",
+        "slug": "perplexity",
         "source": "lobe-icons"
       },
       "brandColor": "#20808D",
@@ -7286,6 +6690,15 @@
           "path": "/chat/completions",
           "billing": "payg",
           "default": true
+        },
+        {
+          "id": "agent",
+          "label": "Agent API（Responses）",
+          "protocol": "openai-responses",
+          "baseURL": "https://api.perplexity.ai",
+          "path": "/v1/responses",
+          "billing": "payg",
+          "note": "原条目 perplexity-agent 的默认接入面；合并后保留主条目的默认标记。 合并自 perplexity-agent。"
         }
       ],
       "risk": {
@@ -7308,12 +6721,16 @@
         }
       ],
       "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/perplexity/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://api.perplexity.ai/chat/completions`。"
+        "从 OmniRoute `open-sse/config/providers/registry/perplexity/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://api.perplexity.ai/chat/completions`。",
+        "已合并 Perplexity Agent（perplexity-agent）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "tags": [
         "omniroute",
         "api-key",
         "imported"
+      ],
+      "aliases": [
+        "perplexity-agent"
       ]
     },
     {
@@ -7326,8 +6743,9 @@
       "docs": "https://pioneer.ai",
       "status": "reference",
       "icon": {
-        "slug": "rocket-launch",
-        "source": "lobe-icons"
+        "slug": "pioneer",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/pioneer.ai"
       },
       "brandColor": "#7C5CFF",
       "capabilities": {
@@ -7394,8 +6812,9 @@
       "docs": "https://plamo.preferredai.jp/api",
       "status": "reference",
       "icon": {
-        "slug": "public",
-        "source": "lobe-icons"
+        "slug": "plamo",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/plamo.preferredai.jp"
       },
       "brandColor": "#DC2626",
       "capabilities": {
@@ -7461,8 +6880,9 @@
       "docs": "https://predibase.com",
       "status": "reference",
       "icon": {
-        "slug": "deployed-code-history",
-        "source": "lobe-icons"
+        "slug": "predibase",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/predibase.com"
       },
       "brandColor": "#0F766E",
       "capabilities": {
@@ -7528,8 +6948,9 @@
       "docs": "https://publicai.co",
       "status": "reference",
       "icon": {
-        "slug": "public",
-        "source": "lobe-icons"
+        "slug": "publicai",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/publicai.co"
       },
       "brandColor": "#059669",
       "capabilities": {
@@ -7595,7 +7016,7 @@
       "docs": "https://www.qiniu.com",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
+        "slug": "qiniu",
         "source": "lobe-icons"
       },
       "brandColor": "#1E88E5",
@@ -7666,7 +7087,7 @@
       "docs": "https://www.qwencloud.com/",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
+        "slug": "qwen",
         "source": "lobe-icons"
       },
       "brandColor": "#615CED",
@@ -7681,8 +7102,8 @@
         "scheme": "bearer"
       },
       "billing": {
-        "mode": "payg",
-        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。"
+        "mode": "mixed",
+        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。；合并后含多种计费模式，按接入面选择。"
       },
       "endpoints": [
         {
@@ -7693,6 +7114,32 @@
           "path": "/chat/completions",
           "billing": "payg",
           "default": true
+        },
+        {
+          "id": "token-plan",
+          "label": "Token Plan（OpenAI 兼容）",
+          "protocol": "openai-chat",
+          "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
+          "path": "/chat/completions",
+          "billing": "subscription",
+          "note": "原条目 qwen-cloud-token-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 qwen-cloud-token-plan。"
+        },
+        {
+          "id": "token-plan-anthropic",
+          "label": "Token Plan（Anthropic Messages）",
+          "protocol": "anthropic-messages",
+          "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic/v1",
+          "path": "/messages",
+          "billing": "subscription",
+          "headers": {
+            "anthropic-version": "2023-06-01"
+          },
+          "note": "原条目 bailian-coding-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 bailian-coding-plan。",
+          "auth": {
+            "mode": "api-key",
+            "scheme": "api-key-header",
+            "headerName": "x-api-key"
+          }
         }
       ],
       "probe": {
@@ -7719,86 +7166,18 @@
         }
       ],
       "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/qwen-cloud/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions`。"
+        "从 OmniRoute `open-sse/config/providers/registry/qwen-cloud/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions`。",
+        "已合并 Qwen Cloud Token Plan（qwen-cloud-token-plan）的接入方式，统一在本条目的 endpoints 中维护。",
+        "已合并 Alibaba Token Plan（bailian-coding-plan）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "tags": [
         "omniroute",
         "api-key",
         "imported"
-      ]
-    },
-    {
-      "id": "qwen-cloud-token-plan",
-      "name": "Qwen Cloud Token Plan",
-      "kind": "api",
-      "category": "china",
-      "authType": "bearer",
-      "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
-      "docs": "https://www.qwencloud.com/pricing/token-plan",
-      "status": "reference",
-      "icon": {
-        "slug": "cloud",
-        "source": "lobe-icons"
-      },
-      "brandColor": "#615CED",
-      "capabilities": {
-        "streaming": true,
-        "toolCalling": true,
-        "vision": true,
-        "reasoning": true
-      },
-      "quota": {
-        "type": "subscription"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "订阅 / Token Plan 计费；具体额度、区域与可用模型以厂商官网为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "默认端点",
-          "protocol": "openai-chat",
-          "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
-          "path": "/chat/completions",
-          "billing": "subscription",
-          "default": true
-        }
       ],
-      "probe": {
-        "modelsUrl": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/models",
-        "method": "GET"
-      },
-      "risk": {
-        "level": "low",
-        "variant": "official-api",
-        "note": "来自 OmniRoute API Key Provider Registry；状态为 reference，接入前按官方文档复核端点、计费与可用模型。"
-      },
-      "externalIds": {
-        "omniroute": "qwen-cloud-token-plan"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "只写入本地配置或系统密钥库，不要提交到仓库或日志。"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/qwen-cloud-token-plan/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions`。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
+      "aliases": [
+        "qwen-cloud-token-plan",
+        "bailian-coding-plan"
       ]
     },
     {
@@ -7811,7 +7190,7 @@
       "docs": "https://docs.reka.ai/chat/overview",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "reka",
         "source": "lobe-icons"
       },
       "brandColor": "#111827",
@@ -7879,8 +7258,9 @@
       "docs": "https://www.runcrate.ai",
       "status": "reference",
       "icon": {
-        "slug": "terminal",
-        "source": "lobe-icons"
+        "slug": "runcrate",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/runcrate.ai"
       },
       "brandColor": "#1A2B79",
       "capabilities": {
@@ -7946,7 +7326,7 @@
       "docs": "https://sambanova.ai",
       "status": "reference",
       "icon": {
-        "slug": "memory",
+        "slug": "sambanova",
         "source": "lobe-icons"
       },
       "brandColor": "#DC2626",
@@ -8013,8 +7393,9 @@
       "docs": "https://docs.sarvam.ai",
       "status": "reference",
       "icon": {
-        "slug": "public",
-        "source": "lobe-icons"
+        "slug": "sarvam",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/docs.sarvam.ai"
       },
       "brandColor": "#0EA5E9",
       "capabilities": {
@@ -8080,8 +7461,9 @@
       "docs": "https://www.scaleway.com/en/docs/ai-data/generative-apis/",
       "status": "reference",
       "icon": {
-        "slug": "cloud",
-        "source": "lobe-icons"
+        "slug": "scaleway",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/scaleway.com"
       },
       "brandColor": "#4F0599",
       "capabilities": {
@@ -8147,7 +7529,7 @@
       "docs": "https://platform.sensenova.cn",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "sensenova",
         "source": "lobe-icons"
       },
       "brandColor": "#0066FF",
@@ -8218,7 +7600,7 @@
       "docs": "https://stepfun.com",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "stepfun",
         "source": "lobe-icons"
       },
       "brandColor": "#8B5CF6",
@@ -8292,8 +7674,9 @@
       "docs": "https://ai.sumopod.com",
       "status": "reference",
       "icon": {
-        "slug": "router",
-        "source": "lobe-icons"
+        "slug": "sumopod",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/ai.sumopod.com"
       },
       "brandColor": "#2563EB",
       "capabilities": {
@@ -8363,8 +7746,9 @@
       "docs": "https://synthetic.new",
       "status": "reference",
       "icon": {
-        "slug": "verified-user",
-        "source": "lobe-icons"
+        "slug": "synthetic",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/synthetic.new"
       },
       "brandColor": "#6366F1",
       "capabilities": {
@@ -8438,8 +7822,9 @@
       "docs": "https://tabitoken.com",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "tabitoken",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/tabitoken.com"
       },
       "brandColor": "#F97316",
       "capabilities": {
@@ -8529,8 +7914,9 @@
       "docs": "https://agent-router.gaib.ai",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "token-kiosk",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/agent-router.gaib.ai"
       },
       "brandColor": "#6366F1",
       "capabilities": {
@@ -8603,8 +7989,9 @@
       "docs": "https://tokenrouter.com",
       "status": "reference",
       "icon": {
-        "slug": "hub",
-        "source": "lobe-icons"
+        "slug": "tokenrouter",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/tokenrouter.com"
       },
       "brandColor": "#F59E0B",
       "capabilities": {
@@ -8676,8 +8063,9 @@
       "docs": "https://docs.opentyphoon.ai",
       "status": "reference",
       "icon": {
-        "slug": "public",
-        "source": "lobe-icons"
+        "slug": "typhoon",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/docs.opentyphoon.ai"
       },
       "brandColor": "#7C3AED",
       "capabilities": {
@@ -8743,7 +8131,7 @@
       "docs": "https://www.upstage.ai",
       "status": "reference",
       "icon": {
-        "slug": "trending-up",
+        "slug": "upstage",
         "source": "lobe-icons"
       },
       "brandColor": "#0F766E",
@@ -8810,7 +8198,7 @@
       "docs": "https://v0.dev",
       "status": "reference",
       "icon": {
-        "slug": "code-blocks",
+        "slug": "v0",
         "source": "lobe-icons"
       },
       "brandColor": "#111827",
@@ -8877,7 +8265,7 @@
       "docs": "https://venice.ai",
       "status": "reference",
       "icon": {
-        "slug": "travel-explore",
+        "slug": "venice",
         "source": "lobe-icons"
       },
       "brandColor": "#0EA5E9",
@@ -8944,7 +8332,7 @@
       "docs": "https://vercel.com/docs/ai-gateway",
       "status": "reference",
       "icon": {
-        "slug": "route",
+        "slug": "vercel",
         "source": "lobe-icons"
       },
       "brandColor": "#111827",
@@ -9011,7 +8399,7 @@
       "docs": "https://wafer.ai",
       "status": "reference",
       "icon": {
-        "slug": "layers",
+        "slug": "wafer",
         "source": "lobe-icons"
       },
       "brandColor": "#6366F1",
@@ -9083,7 +8471,7 @@
       "docs": "https://wandb.ai",
       "status": "reference",
       "icon": {
-        "slug": "monitoring",
+        "slug": "wandb",
         "source": "lobe-icons"
       },
       "brandColor": "#FFBE0B",
@@ -9150,8 +8538,9 @@
       "docs": "https://dev.writer.com",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
-        "source": "lobe-icons"
+        "slug": "writer",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/dev.writer.com"
       },
       "brandColor": "#111827",
       "capabilities": {
@@ -9217,8 +8606,9 @@
       "docs": "https://x5lab.dev",
       "status": "reference",
       "icon": {
-        "slug": "router",
-        "source": "lobe-icons"
+        "slug": "x5lab",
+        "source": "favicon",
+        "url": "https://icon.horse/icon/x5lab.dev"
       },
       "brandColor": "#7C3AED",
       "capabilities": {
@@ -9288,7 +8678,7 @@
       "docs": "https://mimo.mi.com",
       "status": "reference",
       "icon": {
-        "slug": "devices",
+        "slug": "xiaomimimo",
         "source": "lobe-icons"
       },
       "brandColor": "#EA580C",
@@ -9303,8 +8693,8 @@
         "scheme": "bearer"
       },
       "billing": {
-        "mode": "payg",
-        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。"
+        "mode": "mixed",
+        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。；合并后含多种计费模式，按接入面选择。"
       },
       "endpoints": [
         {
@@ -9331,6 +8721,31 @@
             "headerName": "x-api-key"
           },
           "note": "源 alternateFormats：该接入面 authHeader 为 x-api-key，且必须携带 anthropic-version 头。"
+        },
+        {
+          "id": "token-plan",
+          "label": "Token Plan（OpenAI 兼容）",
+          "protocol": "openai-chat",
+          "baseURL": "https://token-plan-sgp.xiaomimimo.com/v1",
+          "path": "/chat/completions",
+          "billing": "subscription",
+          "note": "原条目 xiaomi-mimo-token-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 xiaomi-mimo-token-plan。"
+        },
+        {
+          "id": "token-plan-anthropic",
+          "label": "Token Plan（Anthropic 兼容）",
+          "protocol": "anthropic-messages",
+          "baseURL": "https://token-plan-sgp.xiaomimimo.com/anthropic/v1",
+          "path": "/messages",
+          "billing": "subscription",
+          "headers": {
+            "anthropic-version": "2023-06-01"
+          },
+          "auth": {
+            "scheme": "api-key-header",
+            "headerName": "x-api-key"
+          },
+          "note": "源 alternateFormats：该接入面 authHeader 为 x-api-key，且必须携带 anthropic-version 头。 合并自 xiaomi-mimo-token-plan。"
         }
       ],
       "risk": {
@@ -9354,100 +8769,16 @@
       ],
       "notes": [
         "从 OmniRoute `open-sse/config/providers/registry/xiaomi-mimo/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://api.xiaomimimo.com/v1`。",
-        "修复（v0.3.1）：补入源 `alternateFormats` 的 Anthropic 兼容接入面（独立 x-api-key 鉴权）。"
+        "修复（v0.3.1）：补入源 `alternateFormats` 的 Anthropic 兼容接入面（独立 x-api-key 鉴权）。",
+        "已合并 Xiaomi MiMo Token Plan（xiaomi-mimo-token-plan）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "tags": [
         "omniroute",
         "api-key",
         "imported"
-      ]
-    },
-    {
-      "id": "xiaomi-mimo-token-plan",
-      "name": "Xiaomi MiMo Token Plan",
-      "kind": "api",
-      "category": "global",
-      "authType": "bearer",
-      "baseURL": "https://token-plan-sgp.xiaomimimo.com/v1",
-      "docs": "https://mimo.mi.com",
-      "status": "reference",
-      "icon": {
-        "slug": "devices",
-        "source": "lobe-icons"
-      },
-      "brandColor": "#EA580C",
-      "capabilities": {
-        "streaming": true
-      },
-      "quota": {
-        "type": "subscription"
-      },
-      "auth": {
-        "mode": "api-key",
-        "scheme": "bearer"
-      },
-      "billing": {
-        "mode": "subscription",
-        "note": "订阅 / Token Plan 计费；具体额度、区域与可用模型以厂商官网为准。"
-      },
-      "endpoints": [
-        {
-          "id": "default",
-          "label": "默认端点",
-          "protocol": "openai-chat",
-          "baseURL": "https://token-plan-sgp.xiaomimimo.com/v1",
-          "path": "/chat/completions",
-          "billing": "subscription",
-          "default": true
-        },
-        {
-          "id": "anthropic",
-          "label": "Anthropic 兼容",
-          "protocol": "anthropic-messages",
-          "baseURL": "https://token-plan-sgp.xiaomimimo.com/anthropic/v1",
-          "path": "/messages",
-          "billing": "subscription",
-          "headers": {
-            "anthropic-version": "2023-06-01"
-          },
-          "auth": {
-            "scheme": "api-key-header",
-            "headerName": "x-api-key"
-          },
-          "note": "源 alternateFormats：该接入面 authHeader 为 x-api-key，且必须携带 anthropic-version 头。"
-        }
       ],
-      "probe": {
-        "modelsUrl": "https://token-plan-sgp.xiaomimimo.com/v1/models",
-        "method": "GET"
-      },
-      "risk": {
-        "level": "low",
-        "variant": "official-api",
-        "note": "来自 OmniRoute API Key Provider Registry；状态为 reference，接入前按官方文档复核端点、计费与可用模型。"
-      },
-      "externalIds": {
-        "omniroute": "xiaomi-mimo-token-plan"
-      },
-      "fields": [
-        {
-          "key": "apiKey",
-          "label": "API Key",
-          "type": "password",
-          "group": "auth",
-          "required": true,
-          "secret": true,
-          "help": "只写入本地配置或系统密钥库，不要提交到仓库或日志。"
-        }
-      ],
-      "notes": [
-        "从 OmniRoute `open-sse/config/providers/registry/xiaomi-mimo-token-plan/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://token-plan-sgp.xiaomimimo.com/v1`。",
-        "修复（v0.3.1）：补入源 `alternateFormats` 的 Anthropic 兼容接入面（独立 x-api-key 鉴权）。"
-      ],
-      "tags": [
-        "omniroute",
-        "api-key",
-        "imported"
+      "aliases": [
+        "xiaomi-mimo-token-plan"
       ]
     },
     {
@@ -9460,7 +8791,7 @@
       "docs": "https://01.ai",
       "status": "reference",
       "icon": {
-        "slug": "auto-awesome",
+        "slug": "yi",
         "source": "lobe-icons"
       },
       "brandColor": "#10B981",
@@ -9527,7 +8858,7 @@
       "docs": "https://zenmux.ai",
       "status": "reference",
       "icon": {
-        "slug": "neurology",
+        "slug": "zenmux",
         "source": "lobe-icons"
       },
       "brandColor": "#7C3AED",

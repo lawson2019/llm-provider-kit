@@ -7,13 +7,13 @@
 > LLM Provider Kit —— 一份可校验、可直接渲染配置表单的 AI Provider 配置元数据注册表。
 > 不只告诉你「baseURL 是什么」，还告诉你「配置页该怎么画」。
 
-**131 个 Provider / 8 个 Agent 运行时**，零依赖，MIT。
+**120 个 Provider / 8 个 Agent 运行时**，零依赖，MIT。
 
 **在线 Demo：<https://lawson2019.github.io/llm-provider-kit/>** — 搜索、筛选、动态表单、请求预览，支持 `?provider=` 深链。
 
 > 仓库与包名已从 `agent-provider-registry` 统一为 `llm-provider-kit`（v0.3.4 起）；CLI 继续保留 `provider-registry` 作为兼容别名。
 
-> **先看统计口径**：131 条中 **104 条**来自 OmniRoute 的离线目录投影，**0 条**做过联网可达性验证；这 104 条中 43 条有 `probe.modelsUrl`，**61 条没有**（审计时记录为 63，因为当时还含 2 条后来删除的非 API Key 条目）；**20 条 `verified` 全部是历史人工条目**，104 条导入全部为 `reference`。`reference ≠ verified`：前者只代表结构可渲染、字段可填充，不代表端点、鉴权、计费已经实测。
+> **先看统计口径**：120 条中 **96 条**来自 OmniRoute 的离线目录投影，**0 条**做过联网可达性验证；这 96 条中 37 条有 `probe.modelsUrl`，**59 条没有**；**20 条 `verified` 全部是历史人工条目**，96 条导入全部为 `reference`。`reference ≠ verified`：前者只代表结构可渲染、字段可填充，不代表端点、鉴权、计费已经实测。
 
 ![配置页预览](docs/preview.png)
 
@@ -89,8 +89,8 @@ cd ../my-key-page && python3 -m http.server 4173
 ```
 
 - `starter`：12 个最常用且全部 `verified` 的 Provider；
-- `mainstream`：40 个主流直连 / 国内大厂 / 聚合 / 本地；
-- `full`：131 个 API Key 可直连条目，强制显示 `reference` 提示。
+- `mainstream`：37 个主流直连 / 国内大厂 / 聚合 / 本地；
+- `full`：120 个 API Key 可直连条目，强制显示 `reference` 提示。
 
 生成页的字段、端点、鉴权头和请求预览全部来自注册表，不写死 Provider；生成器不联网、不写入真实 Key。页面支持 `?provider=gitlawb` 深链，并内置 Provider 搜索。分层定义见 `data/tiers.json`。
 
@@ -131,7 +131,7 @@ v2 拆成：
   "baseURL": "https://agentrouter.org",
   "docs": "https://agentrouter.org",
   "status": "reference",
-  "icon": { "slug": "router", "source": "lobe-icons" },
+  "icon": { "slug": "agentrouter", "source": "favicon", "url": "https://icon.horse/icon/agentrouter.org" },
   "auth": { "mode": "api-key", "scheme": "api-key-header", "headerName": "x-api-key" },
   "billing": { "mode": "payg", "note": "标准 API Key / 按量计费" },
   "endpoints": [
@@ -217,7 +217,7 @@ v2 拆成：
 
 ## 订阅 ≠ 会话：schema 支持，但当前数据只收 API Key 可直连
 
-v2 仍保留 `kind=session`、`auth.mode=local-session / device-code` 等词汇，用于未来接入桌面 / CLI 会话；但当前 131 条数据只保留 API Key 可直连条目，**没有任何 session-only 条目**。
+v2 仍保留 `kind=session`、`auth.mode=local-session / device-code` 等词汇，用于未来接入桌面 / CLI 会话；但当前 120 条数据只保留 API Key 可直连条目，**没有任何 session-only 条目**。
 
 | 形态 | 含义 | 鉴权 | 当前数据 |
 |---|---|---|---|
@@ -234,17 +234,17 @@ v2 仍保留 `kind=session`、`auth.mode=local-session / device-code` 等词汇�
 
 ### Schema 能力 ≠ 当前数据覆盖
 
-Schema 保留的建模面比当前数据使用的更宽，消费方不要把「schema 有」理解成「数据已支持」。当前 131 条的分布：
+Schema 保留的建模面比当前数据使用的更宽，消费方不要把「schema 有」理解成「数据已支持」。当前 120 条的分布：
 
 | 维度 | 当前数据 |
 |---|---|
-| `kind` | `api` 103 / `gateway` 25 / `local` 3 / `session` 0 |
-| `auth.mode` | `api-key` 129 / `none` 2 / `oauth`、`device-code`、`browser-cookie`、`local-session` 0 |
-| `auth.scheme` | `bearer` 120 / `api-key-header` 7 / `azure-api-key` 1 / `aws-sigv4` 1 / `none` 2 |
-| `endpoint.protocol` | `openai-chat` 125 / `anthropic-messages` 11 / `openai-responses` 2 / `gemini-native` 1 / `native` 1 / `unknown` 2 |
-| `billing.mode` | `payg` 114 / `subscription` 11 / `mixed` 3 / `free` 3 |
+| `kind` | `api` 93 / `gateway` 24 / `local` 3 / `session` 0 |
+| `auth.mode` | `api-key` 118 / `none` 2 / `oauth`、`device-code`、`browser-cookie`、`local-session` 0 |
+| `auth.scheme` | `bearer` 111 / `api-key-header` 5 / `azure-api-key` 1 / `aws-sigv4` 1 / `none` 2 |
+| `endpoint.protocol` | `openai-chat` 124 / `anthropic-messages` 10 / `openai-responses` 2 / `gemini-native` 1 / `native` 1 / `unknown` 2 |
+| `billing.mode` | `payg` 106 / `subscription` 4 / `mixed` 7 / `free` 3 |
 
-另外：20 条 `verified` 的 `verifiedAt` 都是 `2026-11-14`，属于一次性人工复核记录，不代表之后持续在线验证；104 条导入中有 89 条的 `docs` 只是源侧裸域名，不是官方文档深链。接入前都应按厂商官方文档复核。
+另外：20 条 `verified` 的 `verifiedAt` 都是 `2026-11-14`，属于一次性人工复核记录，不代表之后持续在线验证；96 条导入中有 85 条的 `docs` 只是源侧裸域名，不是官方文档深链。接入前都应按厂商官方文档复核。
 
 ## 给配置页用：三个核心函数
 
@@ -302,9 +302,9 @@ node bin/cli.mjs list --category china
 
 ```text
 data/
-  providers.json        # 131 个 Provider（schemaVersion 2；含 104 条 OmniRoute API Key 导入）
+  providers.json        # 120 个 Provider（schemaVersion 2；含 96 条 OmniRoute API Key 导入）
   agents.json           # 8 个 Agent / 运行时（CLI、桌面、运行时、控制面板）
-  tiers.json            # Starter 12 / Mainstream 40 / Full 131 分层视图
+  tiers.json            # Starter 12 / Mainstream 37 / Full 120 分层视图
 src/
   schema.mjs            # 词汇表 + 校验规则（零依赖）
   fields.mjs            # 表单字段推导 + 端点解析 + 请求配置生成
@@ -353,7 +353,7 @@ v2 把 Agent 的运行通道和应用协议拆开：
 
 ## OmniRoute API Key 批量导入
 
-除了原有的 27 条人工维护条目，注册表还从 OmniRoute 的 API Key Registry 批量导入了 104 条「固定 baseURL + API Key」Provider，当前共 131 条。
+除了原有的 24 条人工维护条目，注册表还从 OmniRoute 的 API Key Registry 批量导入了 96 条「固定 baseURL + API Key」Provider，当前共 120 条。
 
 - 只导入 `authType: "apikey"`、有 http(s) baseURL、`format` 为 OpenAI / Anthropic / Gemini、`executor` 为 `default` 的条目；
 - 媒体生成、OAuth、Cookie、本地会话、模板化 baseURL、以及已有人工条目的厂商等价项不重复导入；
@@ -382,7 +382,7 @@ CI 会跑 `npm run validate`、`npm test`、`npm run test:demo`、`npm run test:
 
 ## 图标
 
-`icon.slug` 对应 [Lobe Icons](https://github.com/lobehub/lobe-icons) 的静态图标名，仓库**不分发**品牌 Logo，Demo 通过 CDN 引用并在失败时回退为首字母色块。详见 [`assets/icons/README.md`](assets/icons/README.md)。
+`icon` 有两种来源：能找到品牌图标时用 `source: "lobe-icons"` + 真实 Lobe slug；找不到时用 `source: "favicon"` + `url`（按官网域名取 favicon），仓库**不分发**任何 Logo 二进制。Demo 优先用 `icon.url`，否则用 Lobe CDN；加载失败或离线时显示品牌色首字母块，不会出现空白。详见 [`assets/icons/README.md`](assets/icons/README.md)。
 
 ## 贡献
 

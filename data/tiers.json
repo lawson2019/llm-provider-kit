@@ -25,8 +25,8 @@
     {
       "id": "mainstream",
       "label": "Mainstream",
-      "description": "常规项目按需展开的 40 个 Provider；含主流直连、国内大厂、常用聚合与本地运行时。",
-      "count": 40,
+      "description": "常规项目按需展开的 37 个 Provider；含主流直连、国内大厂、常用聚合与本地运行时。",
+      "count": 37,
       "providerIds": [
         "openai",
         "anthropic",
@@ -50,12 +50,9 @@
         "nvidia",
         "perplexity",
         "zai",
-        "zai-coding-plan",
         "minimax",
-        "minimax-cn",
         "baidu-qianfan",
         "tencent-hunyuan",
-        "kimi-coding-apikey",
         "qwen-cloud",
         "stepfun",
         "yi",
@@ -73,8 +70,8 @@
     {
       "id": "full",
       "label": "Full",
-      "description": "全部 131 个 API Key / 固定 baseURL 条目；reference 条目必须显示未联网验证提示。",
-      "count": 131,
+      "description": "全部 120 个 API Key / 固定 baseURL 条目；reference 条目必须显示未联网验证提示。",
+      "count": 120,
       "allProviders": true
     }
   ]

@@ -152,7 +152,7 @@ const config = buildRequestConfig(provider, values);
 
 ## 6. 会话型：schema 支持，但当前数据不收录
 
-v2 仍保留 `kind: "session"`、`auth.mode: "local-session" / "device-code"` 等词汇，用于未来接入桌面 / CLI 会话；但当前 131 条数据只保留 API Key 可直连条目，**没有 session-only 条目**。
+v2 仍保留 `kind: "session"`、`auth.mode: "local-session" / "device-code"` 等词汇，用于未来接入桌面 / CLI 会话；但当前 120 条数据只保留 API Key 可直连条目，**没有 session-only 条目**。
 
 如果未来自行追加会话型 Provider，必须按下面的规则处理：
 
