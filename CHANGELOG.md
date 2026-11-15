@@ -18,6 +18,7 @@
 - 修正大量导入条目把 Material Symbols 名（`auto-awesome`、`hub`、`cloud`、`router` 等）写进 `icon.slug`、导致 Lobe CDN 404 的问题。
 - Demo 图标改为构建时内嵌（`data/icon-embeds.json`），去掉 unpkg / icon.horse 运行时依赖；120 个图标全部即时显示，失败仍保留首字母回退。
 - 图标改用 Lobe 彩色版 SVG，没有彩色版的单色图标按品牌色着色，修复整页品牌图标显示为黑白的问题。
+- 移除 `doubao-desktop` Agent：豆包桌面端没有公开 API / ACP / runtime，不是 Agent 运行时；Agent 数量 8 → 7。同步校正 CodeBuddy Code、ZCode、Herdr、T3 Code 的官方文档地址。
 - Schema / 校验器支持 `icon.source: "favicon"`，并强制 favicon 来源必须带 `icon.url`。
 
 ## 0.3.4

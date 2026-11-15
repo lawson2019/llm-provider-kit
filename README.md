@@ -7,7 +7,7 @@
 > LLM Provider Kit —— 一份可校验、可直接渲染配置表单的 AI Provider 配置元数据注册表。
 > 不只告诉你「baseURL 是什么」，还告诉你「配置页该怎么画」。
 
-**120 个 Provider / 8 个 Agent 运行时**，零依赖，MIT。
+**120 个 Provider / 7 个 Agent 运行时**，零依赖，MIT。
 
 **在线 Demo：<https://lawson2019.github.io/llm-provider-kit/>** — 搜索、筛选、动态表单、请求预览，支持 `?provider=` 深链。
 
@@ -303,7 +303,7 @@ node bin/cli.mjs list --category china
 ```text
 data/
   providers.json        # 120 个 Provider（schemaVersion 2；含 96 条 OmniRoute API Key 导入）
-  agents.json           # 8 个 Agent / 运行时（CLI、桌面、运行时、控制面板）
+  agents.json           # 7 个 Agent / 运行时（CLI、运行时、控制面板）
   tiers.json            # Starter 12 / Mainstream 37 / Full 120 分层视图
 src/
   schema.mjs            # 词汇表 + 校验规则（零依赖）

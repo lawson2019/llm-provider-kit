@@ -6,7 +6,7 @@
 - 来源仓库：`diegosouzapw/OmniRoute` / `cheaper-inference/OmniRoute`（同一仓库）
 - 来源 HEAD：`82f60e5ef66cb8f4fd92929a44c3679ef844f84a`，分支 `release/v3.8.54`
 - 来源路径：`open-sse/config/providers/registry/**`（287 个 Provider 目录）+ `src/shared/constants/providers/apikey/**`
-- 导入结果：**24 条人工维护 + 96 条 OmniRoute 导入 = 120 个 Provider**（8 个 Agent 不受影响）
+- 导入结果：**24 条人工维护 + 96 条 OmniRoute 导入 = 120 个 Provider**（7 个 Agent 不受影响）
 
 ## 状态口径：reference ≠ verified
 

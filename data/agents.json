@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "updatedAt": "2026-11-14",
+  "updatedAt": "2026-11-15",
   "agents": [
     {
       "id": "claude-code",
@@ -132,7 +132,7 @@
     {
       "id": "codebuddy-code",
       "name": "CodeBuddy Code",
-      "vendor": "腾讯",
+      "vendor": "腾讯云",
       "kind": "cli",
       "protocols": [
         "acp",
@@ -140,7 +140,7 @@
       ],
       "install": {
         "npm": "@tencent-ai/codebuddy-code",
-        "docs": "https://cnb.cool/codebuddy"
+        "docs": "https://www.codebuddy.ai/docs/zh/cli/cli-reference"
       },
       "session": {
         "persistent": true,
@@ -158,7 +158,7 @@
       "links": [
         {
           "label": "文档",
-          "url": "https://cnb.cool/codebuddy"
+          "url": "https://www.codebuddy.ai/docs/zh/cli/cli-reference"
         }
       ],
       "transports": [
@@ -179,7 +179,7 @@
     },
     {
       "id": "zcode",
-      "name": "zcode",
+      "name": "ZCode",
       "vendor": "Z.ai",
       "kind": "cli",
       "protocols": [
@@ -187,7 +187,7 @@
       ],
       "install": {
         "npm": "zcode-agent",
-        "docs": "https://z.ai"
+        "docs": "https://zcode.z.ai/docs"
       },
       "session": {
         "persistent": true,
@@ -206,7 +206,7 @@
       "links": [
         {
           "label": "官网",
-          "url": "https://z.ai"
+          "url": "https://zcode.z.ai/docs"
         }
       ],
       "transports": [
@@ -226,43 +226,6 @@
       ]
     },
     {
-      "id": "doubao-desktop",
-      "name": "豆包（桌面端）",
-      "vendor": "字节跳动",
-      "kind": "desktop",
-      "protocols": [],
-      "install": {
-        "docs": "https://www.doubao.com"
-      },
-      "session": {
-        "persistent": false,
-        "resumeAfterRestart": false,
-        "credential": "jwt-session"
-      },
-      "quota": {
-        "type": "session",
-        "note": "桌面会员额度与方舟 API 独立"
-      },
-      "notes": [
-        "没有公开模型 API，也没有原生 ACP 服务端",
-        "桥接只能依赖本机已登录客户端，稳定性受登录态影响",
-        "需要稳定接口时改用火山方舟 API"
-      ],
-      "links": [
-        {
-          "label": "官网",
-          "url": "https://www.doubao.com"
-        }
-      ],
-      "transports": [
-        "desktop"
-      ],
-      "surfaces": [
-        "catalog",
-        "detect"
-      ]
-    },
-    {
       "id": "herdr",
       "name": "Herdr",
       "vendor": "herdrdev",
@@ -272,7 +235,7 @@
         "rest"
       ],
       "install": {
-        "docs": "https://github.com/herdrdev/herdr"
+        "docs": "https://herdr.dev/docs"
       },
       "session": {
         "persistent": true,
@@ -290,7 +253,7 @@
       "links": [
         {
           "label": "仓库",
-          "url": "https://github.com/herdrdev/herdr"
+          "url": "https://herdr.dev/docs"
         }
       ],
       "transports": [
@@ -313,7 +276,7 @@
         "rest"
       ],
       "install": {
-        "docs": "https://github.com/pingdotgg/t3code"
+        "docs": "https://t3.codes"
       },
       "session": {
         "persistent": false,
@@ -331,7 +294,7 @@
       "links": [
         {
           "label": "仓库",
-          "url": "https://github.com/pingdotgg/t3code"
+          "url": "https://t3.codes"
         }
       ],
       "transports": [

@@ -22,7 +22,7 @@ const { resolveTierProviders } = await import('../src/tiers.mjs');
 
 assert.equal(registry.providers.length, 120, 'Provider 数量应为 120');
 assert.equal(registry.providers.filter((p) => p.tags?.includes('imported')).length, 96, 'OmniRoute 导入条目应为 96');
-assert.equal(registry.agents.length, 8, 'Agent 数量应为 8');
+assert.equal(registry.agents.length, 7, 'Agent 数量应为 7');
 
 // Z.ai：标准 API / Coding Plan OpenAI / Coding Plan Anthropic 三个接入面。
 const zai = registry.getProvider('zai');
