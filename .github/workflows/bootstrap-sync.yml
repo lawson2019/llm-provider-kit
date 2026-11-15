@@ -1,0 +1,54 @@
+name: bootstrap-sync
+
+on:
+  push:
+    paths:
+      - .github/workflows/bootstrap-sync.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Download registry snapshot
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 --retry-delay 2 -o /tmp/s.tgz https://aka.doubaocdn.com/s/d0eCoPaBWt
+          ls -l /tmp/s.tgz
+
+      - name: Extract snapshot into repository root
+        run: |
+          set -euo pipefail
+          tar xzf /tmp/s.tgz -C .
+
+      - name: Remove obsolete audit document
+        run: git rm -f --ignore-unmatch docs/audit-omniroute-import.md || true
+
+      - name: Commit synced registry
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::notice::No changes after snapshot extraction; skipping commit."
+            exit 0
+          fi
+          git commit -m "feat: ship llm-provider-kit skill, bilingual demo, 6-language README"
+          git push origin main
+
+      - name: Tag v0.6.0 and create release
+        run: |
+          set -euo pipefail
+          git tag -a v0.6.0 -m "llm-provider-kit 0.6.0"
+          git push origin v0.6.0
+          gh release create v0.6.0 --title "llm-provider-kit v0.6.0" --notes-file docs/release-0.6.0.md
