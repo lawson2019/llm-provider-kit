@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-15",
+  "updatedAt": "2026-11-16",
   "tiers": [
     {
       "id": "starter",
       "label": "Starter",
-      "description": "新建项目的默认 12 个 Provider，只收 verified，覆盖最常见的海外 / 国内 / 聚合 / 本地入口。",
+      "description": "新建项目的默认一批 Provider，覆盖最常见的海外 / 国内 / 聚合 / 本地入口。",
       "count": 12,
       "providerIds": [
         "openai",
@@ -25,7 +25,7 @@
     {
       "id": "mainstream",
       "label": "Mainstream",
-      "description": "常规项目按需展开的 37 个 Provider；含主流直连、国内大厂、常用聚合与本地运行时。",
+      "description": "常规项目按需展开的一批 Provider；含主流直连、国内大厂、常用聚合与本地运行时。",
       "count": 37,
       "providerIds": [
         "openai",
@@ -70,8 +70,8 @@
     {
       "id": "full",
       "label": "Full",
-      "description": "全部 126 个 API Key / 固定 baseURL 条目；reference 条目必须显示未联网验证提示。",
-      "count": 126,
+      "description": "全部 API Key / 固定 baseURL 条目；第三方中转、订阅边界等风险在 risk 中提示。",
+      "count": 108,
       "allProviders": true
     }
   ]

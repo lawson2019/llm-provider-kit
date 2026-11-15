@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LLM Provider Kit · Provider 配置页</title>
-<meta name="description" content="120 个 AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。">
+<meta name="description" content="AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。">
 <meta property="og:title" content="LLM Provider Kit">
-<meta property="og:description" content="一份可校验、可直接渲染配置表单的 AI Provider 配置注册表：120 Providers / 7 Agents。">
+<meta property="og:description" content="一份可校验、可直接渲染配置表单的 AI Provider 配置注册表。">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0f766e">
 <style>
@@ -74,7 +74,6 @@
   .search { flex: 1; min-width: 220px; padding: 9px 12px; border-radius: 10px;
     border: 1px solid var(--line); background: var(--panel); outline: none; }
   .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  select.status { padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); }
   .chips { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
   .chip { border: 1px solid var(--line); background: var(--panel); color: var(--muted);
     padding: 4px 11px; border-radius: 999px; font-size: 12px; }
@@ -102,8 +101,6 @@
   .logo.has-img img { opacity: 1; }
   .logo.has-img .mono { display: none; }
   .badge { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
-  .badge.ok { color: var(--accent); border-color: var(--accent); }
-  .badge.ref { color: var(--warn); border-color: var(--warn); }
   .badge.ses { color: #fff; background: var(--warn); border-color: transparent; }
   .detail { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
     box-shadow: var(--shadow); padding: 22px; min-height: 420px; }
@@ -180,7 +177,7 @@
     <span class="mark">LP</span>
     <div>
       <h1>LLM Provider Kit</h1>
-      <p class="sub">120 Providers / 7 Agents · 可校验、可直接渲染配置表单的 Provider 元数据 · schema v2</p>
+      <p class="sub" id="subtitle">可校验、可直接渲染配置表单的 Provider 元数据 · schema v2</p>
     </div>
   </div>
   <div class="top-right">
@@ -196,12 +193,6 @@
     <button data-mode="agents">Agents</button>
   </div>
   <input class="search" id="search" placeholder="搜索 id / 名称 / 别名，例如 kimi、acp、local…">
-  <select class="status" id="statusFilter">
-    <option value="">全部状态</option>
-    <option value="verified">verified</option>
-    <option value="reference">reference</option>
-    <option value="stale">stale</option>
-  </select>
   <div class="chips" id="chips"></div>
 </section>
 
@@ -211,7 +202,7 @@
 </main>
 <footer class="foot">
   <span>LLM Provider Kit · 数据来自 <a href="https://github.com/lawson2019/llm-provider-kit/blob/main/data/providers.json" target="_blank" rel="noopener">data/providers.json</a> · MIT</span>
-  <span>reference ≠ verified：导入条目未做联网可达性验证，接入前请按厂商官方文档复核。</span>
+  <span>接入前请按厂商官方文档复核端点、鉴权与计费。</span>
 </footer>
 
 <script>
@@ -222,14 +213,12 @@ const CATEGORY_LABEL = {
 };
 const KIND_LABEL = { api: '直连 API', gateway: '聚合网关', local: '本地运行时', session: '会话型' };
 const GROUP_LABEL = { auth: '鉴权', endpoint: '端点', model: '模型', runtime: '运行时 / 会话', advanced: '高级' };
-const STATUS_LABEL = { verified: 'verified', reference: 'reference', stale: 'stale' };
 
 const DEMO_PARAMS = new URLSearchParams(location.search);
 
 const state = {
   mode: DEMO_PARAMS.get('agent') ? 'agents' : 'providers',
   category: '',
-  status: '',
   query: '',
   selectedProvider: DEMO_PARAMS.get('provider') ?? DATA.providers?.[0]?.id ?? null,
   selectedAgent: DEMO_PARAMS.get('agent') ?? DATA.agents?.[0]?.id ?? null,
@@ -287,7 +276,6 @@ function currentProviders() {
   if (!DATA.providers) return [];
   return DATA.providers.filter((p) => {
     if (state.category && p.category !== state.category) return false;
-    if (state.status && p.status !== state.status) return false;
     if (!state.query) return true;
     const hay = [
       p.id, p.name, ...(p.aliases ?? []), p.kind,
@@ -322,8 +310,6 @@ function providerBadges(p) {
   box.appendChild(el('span', 'badge', `${p.auth?.scheme ?? p.authType}`));
   box.appendChild(el('span', 'badge', `billing: ${p.billing?.mode ?? p.quota?.type ?? '-'}`));
   if (p.endpoints?.length > 1) box.appendChild(el('span', 'badge', `${p.endpoints.length} 个接入面`));
-  const st = el('span', `badge ${p.status === 'verified' ? 'ok' : p.status === 'reference' ? 'ref' : ''}`, STATUS_LABEL[p.status]);
-  box.appendChild(st);
   return box;
 }
 
@@ -378,10 +364,6 @@ function renderList() {
     const meta = el('div', 'meta');
     meta.appendChild(el('span', '', p.kind));
     meta.appendChild(el('span', '', p.auth?.mode ?? p.authType));
-    const st = el('span', '', p.status);
-    if (p.status === 'verified') st.style.color = 'var(--accent)';
-    if (p.status === 'reference') st.style.color = 'var(--warn)';
-    meta.appendChild(st);
     body.appendChild(meta);
     btn.appendChild(body);
     btn.onclick = () => { state.selectedProvider = p.id; state.errors = {}; renderList(); renderDetail(); };
@@ -713,7 +695,6 @@ function buildConfig(provider, values) {
     if (!resolved.includes('{')) headers[name] = resolved;
   }
 
-  if (provider.status === 'reference') warnings.push('该条目标记为 reference，接入前请按官方文档核对端点与鉴权。');
   if (provider.kind === 'session') warnings.push('会话型：不能把 JWT 写进配置文件或 Prompt，额度跟随登录状态。');
   if (provider.risk && ['medium', 'high'].includes(provider.risk.level)) {
     warnings.push(`风险提示（${provider.risk.level}）：${provider.risk.note}`);
@@ -874,6 +855,8 @@ function renderDetail() {
 function renderAll() {
   document.getElementById('stats').textContent =
     `${DATA.providers.length} providers · ${DATA.agents.length} agents`;
+  document.getElementById('subtitle').textContent =
+    `${DATA.providers.length} Providers / ${DATA.agents.length} Agents · 可校验、可直接渲染配置表单的 Provider 元数据 · schema v2`;
   renderChips();
   renderList();
   renderDetail();
@@ -881,11 +864,6 @@ function renderAll() {
 
 document.getElementById('search').addEventListener('input', (e) => {
   state.query = e.target.value;
-  renderList();
-  renderDetail();
-});
-document.getElementById('statusFilter').addEventListener('change', (e) => {
-  state.status = e.target.value;
   renderList();
   renderDetail();
 });

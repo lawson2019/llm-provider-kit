@@ -46,12 +46,6 @@ function pad(text, target) {
   return gap > 0 ? text + ' '.repeat(gap) : text;
 }
 
-function statusLabel(status) {
-  if (status === 'verified') return c.green('verified');
-  if (status === 'reference') return c.yellow('reference');
-  return c.red('stale');
-}
-
 function printProviderList(providers) {
   if (providers.length === 0) {
     console.log('没有匹配的 Provider。');
@@ -62,7 +56,6 @@ function printProviderList(providers) {
     name: p.name,
     meta: `${p.kind}/${p.auth?.mode ?? p.authType}`,
     quota: p.billing?.mode ?? p.quota?.type ?? '-',
-    status: p.status,
   }));
   const w1 = Math.max(...rows.map((r) => width(r.id)), 4);
   const w2 = Math.max(...rows.map((r) => width(r.name)), 4);
@@ -73,7 +66,7 @@ function printProviderList(providers) {
       `${c.cyan(pad(row.id, w1))}  ${pad(row.name, w2)}  ${c.dim(pad(row.meta, w3))}  ${pad(
         row.quota,
         11,
-      )}  ${statusLabel(row.status)}`,
+      )}`,
     );
   }
   console.log(c.dim(`\n共 ${providers.length} 条`));
@@ -86,7 +79,7 @@ function printProvider(provider) {
   console.log(`  Base URL  ${provider.baseURL ?? '（会话型，无公开端点）'}`);
   console.log(`  计费      ${provider.billing?.mode ?? provider.quota?.type ?? '-'}${provider.billing?.note ? ` — ${provider.billing.note}` : ''}`);
   console.log(`  额度      ${provider.quota?.type ?? '-'}${provider.quota?.note ? ` — ${provider.quota.note}` : ''}`);
-  console.log(`  状态      ${statusLabel(provider.status)}${provider.verifiedAt ? `  ${provider.verifiedAt}` : ''}`);
+  if (provider.verifiedAt) console.log(`  审计日期  ${provider.verifiedAt}`);
   console.log(`  文档      ${provider.docs}`);
   console.log(`  图标      ${provider.icon.slug} (${provider.icon.source})`);
 
@@ -306,7 +299,7 @@ async function main() {
       if (values.json) {
         console.log(JSON.stringify(stats, null, 2));
       } else {
-        console.log(c.bold(`Provider 共 ${stats.total} 条（verified ${stats.verified} / reference ${stats.reference}）`));
+        console.log(c.bold(`Provider 共 ${stats.total} 条`));
         const printMap = (label, map) => {
           console.log(`\n${c.cyan(label)}`);
           for (const [key, value] of Object.entries(map).sort((a, b) => b[1] - a[1])) {

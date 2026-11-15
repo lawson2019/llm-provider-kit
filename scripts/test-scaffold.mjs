@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 生成器回归：在临时目录生成 starter / mainstream / full 三个项目，
- * 验证条数、状态、表单字段和请求 URL。不需要联网或安装依赖。
+ * 验证条数、表单字段和请求 URL。不需要联网或安装依赖。
  */
 import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
@@ -24,19 +24,18 @@ try {
     assert.equal(result.status, 0, result.stderr || result.stdout);
     const payload = JSON.parse(readFileSync(join(out, 'src/data/providers.json'), 'utf8'));
     assert.ok(readFileSync(join(out, 'src/registry/infer.mjs'), 'utf8').includes('inferAuthMode'), '生成物必须带 infer.mjs');
-    assert.equal(readFileSync(join(out, 'src/data/tier.json'), 'utf8').includes('verifiedCount'), true, '生成物必须带 tier 元信息');
+    assert.equal(readFileSync(join(out, 'src/data/tier.json'), 'utf8').includes('count'), true, '生成物必须带 tier 元信息');
     assert.equal(payload.providers.length, tier.count, `${tier.id} 条数`);
     const meta = JSON.parse(readFileSync(join(out, 'src/data/tier.json'), 'utf8'));
     assert.equal(meta.count, tier.count);
-    assert.equal(meta.verifiedCount, payload.providers.filter((p) => p.status === 'verified').length);
-    assert.equal(meta.referenceCount, payload.providers.filter((p) => p.status === 'reference').length);
     assert.equal(meta.unsupportedCount, payload.providers.filter((p) => p.risk?.variant === 'unsupported').length);
 
     const registry = await import(pathToFileURL(join(out, 'src/registry/index.mjs')).href);
     const registryData = registry.createRegistry(payload);
     assert.equal(registryData.providers.length, tier.count);
-    if (tier.id === 'starter') {
-      assert.equal(registryData.providers.filter((p) => p.status === 'verified').length, tier.count, 'starter 必须全 verified');
+    const tierIds = new Set(tier.providerIds ?? payload.providers.map((p) => p.id));
+    for (const provider of registryData.providers) {
+      assert.ok(tierIds.has(provider.id), `生成物包含不在 tier ${tier.id} 中的条目：${provider.id}`);
     }
     for (const provider of registryData.providers) {
       const fields = registry.getFormFields(provider);

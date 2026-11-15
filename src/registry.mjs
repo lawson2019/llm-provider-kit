@@ -56,7 +56,7 @@ export function createRegistry(data) {
  * @param {object[]} providers
  * @param {{ q?: string, category?: string, kind?: string, authType?: string,
  *           authMode?: string, capability?: string, quota?: string, billing?: string,
- *           protocol?: string, status?: string }} filter
+ *           protocol?: string }} filter
  */
 export function filterProviders(providers, filter = {}) {
   const q = filter.q?.trim().toLowerCase();
@@ -76,7 +76,6 @@ export function filterProviders(providers, filter = {}) {
     if (filter.quota && provider.quota?.type !== filter.quota && inferBillingMode(provider) !== filter.quota) {
       return false;
     }
-    if (filter.status && provider.status !== filter.status) return false;
     if (filter.capability && provider.capabilities?.[filter.capability] !== true) return false;
     if (filter.protocol) {
       const endpoints = getProviderEndpoints(provider);
@@ -167,8 +166,6 @@ export function providerStats(providers) {
 
   return {
     total: providers.length,
-    verified: providers.filter((p) => p.status === 'verified').length,
-    reference: providers.filter((p) => p.status === 'reference').length,
     byCategory,
     byKind,
     byAuthType,

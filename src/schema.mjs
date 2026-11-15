@@ -93,12 +93,6 @@ export const QUOTA_TYPES = {
   mixed: '混合（免费额度 + 付费额度）',
 };
 
-export const STATUSES = {
-  verified: '已核对（至少一个维护者按官方文档确认过）',
-  reference: '参考项：字段结构可用，但地址 / 鉴权可能随版本变化',
-  stale: '可能已过时，等待复核',
-};
-
 export const RISK_LEVELS = {
   low: '普通风险：按官方文档接入即可',
   medium: '需要额外说明：订阅边界、登录态、区域或账号不通用',
@@ -355,9 +349,6 @@ export function validateProvider(provider, index = 0, options = {}) {
   }
   if (!Object.hasOwn(AUTH_TYPES, provider.authType)) {
     errors.push(`${ctx} authType 必须是 ${Object.keys(AUTH_TYPES).join(' / ')}`);
-  }
-  if (!Object.hasOwn(STATUSES, provider.status)) {
-    errors.push(`${ctx} status 必须是 ${Object.keys(STATUSES).join(' / ')}`);
   }
   if (!isNonEmptyString(provider.docs) || !isHttpUrl(provider.docs)) {
     errors.push(`${ctx} docs 必须是 http(s) 链接`);
@@ -666,10 +657,10 @@ export function validateProvider(provider, index = 0, options = {}) {
     }
   }
 
-  // 状态
-  if (provider.status === 'verified') {
+  // 审计日期（仅作记录，不参与分类、筛选或徽标）
+  if (provider.verifiedAt !== undefined) {
     if (!isNonEmptyString(provider.verifiedAt) || !DATE_RE.test(provider.verifiedAt)) {
-      errors.push(`${ctx} status=verified 必须提供 verifiedAt（YYYY-MM-DD）`);
+      errors.push(`${ctx} verifiedAt 必须是 YYYY-MM-DD`);
     } else {
       const d = new Date(`${provider.verifiedAt}T00:00:00Z`);
       if (Number.isNaN(d.getTime())) {

@@ -223,7 +223,6 @@
         "authType",
         "baseURL",
         "docs",
-        "status",
         "icon",
         "capabilities",
         "quota",
@@ -259,7 +258,6 @@
           "items": { "$ref": "#/$defs/endpoint" }
         },
         "docs": { "type": "string", "format": "uri" },
-        "status": { "enum": ["verified", "reference", "stale"] },
         "verifiedAt": { "type": "string", "format": "date" },
         "icon": {
           "type": "object",
@@ -329,10 +327,6 @@
             },
             "required": ["session"]
           }
-        },
-        {
-          "if": { "properties": { "status": { "const": "verified" } }, "required": ["status"] },
-          "then": { "required": ["verifiedAt"] }
         },
         {
           "if": {

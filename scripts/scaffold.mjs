@@ -17,7 +17,7 @@ const args = process.argv.slice(2);
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`用法：node scripts/scaffold.mjs --tier <starter|mainstream|full> --stack <react|vanilla> --out <dir> [--name <package-name>]
 
-  --tier    starter（12，全部 verified）/ mainstream（37）/ full（120）
+  --tier    starter / mainstream / full（分层定义见 data/tiers.json）
   --stack   react（默认，React + Vite）/ vanilla（静态 HTML + JS）
   --out     新目录或空目录；非空目录会被拒绝
   --name    React 项目的 package 名称，默认 provider-key-page`);
@@ -81,15 +81,11 @@ const providerPayload = {
   providers,
 };
 writeFileSync(join(target, 'src/data/providers.json'), JSON.stringify(providerPayload, null, 2) + '\n');
-const verified = providers.filter((provider) => provider.status === 'verified').length;
-const reference = providers.filter((provider) => provider.status === 'reference').length;
 const unsupported = providers.filter((provider) => provider.risk?.variant === 'unsupported').length;
 const tierMeta = {
   id: tier.id,
   label: tier.label,
   count: providers.length,
-  verifiedCount: verified,
-  referenceCount: reference,
   unsupportedCount: unsupported,
   description: tier.description,
 };
@@ -112,7 +108,7 @@ if (stack === 'react') {
 }
 
 console.log(`已生成 ${target}`);
-console.log(`tier=${tier.id} stack=${stack} providers=${providers.length} verified=${verified} reference=${reference}`);
+console.log(`tier=${tier.id} stack=${stack} providers=${providers.length}`);
 console.log(
   stack === 'react'
     ? '下一步：cd ' + out + ' && npm install && npm run dev'

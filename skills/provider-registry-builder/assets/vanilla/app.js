@@ -72,9 +72,8 @@ function visibleProviders() {
   return matches.length ? matches : providers.filter((provider) => provider.id === state.providerId);
 }
 
-function statusPill(provider) {
-  const wrap = el('div', 'status-line');
-  if (provider.status) wrap.appendChild(el('span', `pill ${provider.status}`, provider.status));
+function riskPill(provider) {
+  const wrap = el('div', 'pill-line');
   if (provider.risk?.variant === 'unsupported') wrap.appendChild(el('span', 'pill unsupported', 'unsupported'));
   if (provider.risk?.level) wrap.appendChild(el('span', `pill risk-${provider.risk.level}`, `${provider.risk.level} risk`));
   return wrap;
@@ -169,9 +168,9 @@ function renderDetail() {
   if (!provider) return;
   $('provider-name').textContent = provider.name;
   $('provider-meta').textContent = `${provider.id} · ${CATEGORY_LABEL[provider.category] ?? provider.category} · ${provider.endpoints?.length ?? 1} 个接入面`;
-  const status = statusPill(provider);
-  status.id = 'status-line';
-  $('status-line').replaceWith(status);
+  const pills = riskPill(provider);
+  pills.id = 'pill-line';
+  $('pill-line').replaceWith(pills);
   const risk = $('risk');
   risk.replaceChildren();
   const warning = getQuotaWarning(provider);
@@ -231,7 +230,7 @@ function boot() {
   $('eyebrow').textContent = `Provider Registry · ${tier.label ?? 'Tier'}`;
   $('tier-count').textContent = tier.count ?? providers.length;
   $('tier-label').textContent = `${tier.label ?? ''} Providers`;
-  $('tier-warning').textContent = tier.referenceCount ? 'reference ≠ verified' : '全部 verified';
+  $('tier-warning').textContent = tier.description ?? '';
 
   renderSelect();
   $('search').addEventListener('input', (event) => {

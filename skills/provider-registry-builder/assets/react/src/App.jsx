@@ -13,10 +13,9 @@ const CATEGORY_LABEL = {
   local: '本地',
 };
 
-function StatusPill({ provider }) {
+function RiskPill({ provider }) {
   return (
-    <span className="status-line">
-      <span className={`pill ${provider.status}`}>{provider.status}</span>
+    <span className="pill-line">
       {provider.risk?.variant === 'unsupported' && <span className="pill unsupported">unsupported</span>}
       {provider.risk?.level && (
         <span className={`pill risk-${provider.risk.level}`}>{provider.risk.level} risk</span>
@@ -67,7 +66,7 @@ export default function App() {
         <div className="tier-card">
           <b>{tierMeta.count}</b>
           <span>{tierMeta.label} Providers</span>
-          <small>{tierMeta.referenceCount ? 'reference ≠ verified' : '全部 verified'}</small>
+          <small>{tierMeta.description ?? ''}</small>
         </div>
       </header>
 
@@ -105,7 +104,7 @@ export default function App() {
             <h2>{provider.name}</h2>
             <p>{provider.id} · {CATEGORY_LABEL[provider.category] ?? provider.category} · {provider.endpoints?.length ?? 1} 个接入面</p>
           </div>
-          <StatusPill provider={provider} />
+          <RiskPill provider={provider} />
         </div>
 
         {provider.risk?.note && !quotaWarning && <p className="risk-note">{provider.risk.note}</p>}

@@ -7,7 +7,7 @@
 - 新增 Provider（直连、聚合、本地运行时、会话型）；
 - 修正 baseURL、鉴权方式、请求头、路径、默认参数；
 - 补充字段（例如 Azure 的 deployment、Bedrock 的 region、OpenRouter 的 referer）；
-- 更新 `verifiedAt`、把过期条目改成 `stale`；
+- 修正过期条目；更新审计日期 `verifiedAt`；
 - 修正文档、Demo、CLI、校验规则；
 - 新增 Agent 运行时条目（CLI / 桌面 / 运行时 / 控制面板）。
 
@@ -74,14 +74,6 @@
 
 校验器会直接报错，不要试图绕过。
 
-## 状态字段
-
-- `verified`：按官方文档核对过，且 `verifiedAt` 是真实核对日期；
-- `reference`：结构可用，但版本 / 域名可能变化，接入前需复核；
-- `stale`：已知过期，等待更新。
-
-不要为了「好看」把所有条目都标成 `verified`。
-
 ## 图标
 
 - `icon.slug` 对应 [Lobe Icons](https://github.com/lobehub/lobe-icons) 的静态图标名；
@@ -102,5 +94,5 @@ PR 合并前应满足：
 - [ ] `npm run validate` 通过（warning 需解释）；
 - [ ] Demo 构建产物已同步；
 - [ ] 没有提交任何密钥 / JWT；
-- [ ] `verified` 条目有可信来源与日期；
+- [ ] 每条条目附官方文档依据（文档站 / API Reference / 官方 GitHub 仓库）；
 - [ ] 会话型条目没有被误配成 API Key 型。

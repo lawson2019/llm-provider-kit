@@ -7,8 +7,8 @@
 仓库还没有发布 npm 包时，可以直接引用源码，或先打包成本地 tgz：
 
 ```bash
-npm pack                       # 生成 llm-provider-kit-0.3.4.tgz
-npm install ./llm-provider-kit-0.3.4.tgz
+npm pack                       # 生成 llm-provider-kit-0.5.0.tgz
+npm install ./llm-provider-kit-0.5.0.tgz
 ```
 
 ```js
@@ -152,7 +152,7 @@ const config = buildRequestConfig(provider, values);
 
 ## 6. 会话型：schema 支持，但当前数据不收录
 
-v2 仍保留 `kind: "session"`、`auth.mode: "local-session" / "device-code"` 等词汇，用于未来接入桌面 / CLI 会话；但当前 120 条数据只保留 API Key 可直连条目，**没有 session-only 条目**。
+v2 仍保留 `kind: "session"`、`auth.mode: "local-session" / "device-code"` 等词汇，用于未来接入桌面 / CLI 会话；但当前数据只保留 API Key 可直连条目，**没有 session-only 条目**。
 
 如果未来自行追加会话型 Provider，必须按下面的规则处理：
 
@@ -204,7 +204,7 @@ npm run validate
 - 每个 `endpoint` 的 `protocol` / `billing` 是否合法；
 - `select` 的默认值是否在选项中；
 - 会话型是否误加了 `apiKey`、是否缺 `session` 元信息；
-- `status: verified` 是否有合法的 `verifiedAt`；
+- `verifiedAt`（若填写）是否为合法日期；
 - `runtime.bodyStringReplacements` 是否都是两个非空字符串。
 
 新增后重新构建 Demo，CI 会检查产物是否同步。

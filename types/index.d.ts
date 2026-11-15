@@ -24,7 +24,6 @@ export type Protocol =
 export type FieldType = 'text' | 'password' | 'url' | 'select' | 'number' | 'boolean' | 'json' | 'textarea';
 export type FieldGroup = 'auth' | 'endpoint' | 'model' | 'runtime' | 'advanced';
 export type QuotaType = 'api-key' | 'subscription' | 'session' | 'free' | 'mixed';
-export type ProviderStatus = 'verified' | 'reference' | 'stale';
 export type RiskLevel = 'low' | 'medium' | 'high';
 export type RiskVariant =
   | 'official-api'
@@ -164,7 +163,6 @@ export interface Provider {
   baseURLEditable?: boolean;
   endpoints: ProviderEndpoint[];
   docs: string;
-  status: ProviderStatus;
   verifiedAt?: string;
   icon: ProviderIcon;
   brandColor?: string;
@@ -248,7 +246,6 @@ export interface ProviderFilter {
   quota?: QuotaType | BillingMode;
   billing?: BillingMode;
   protocol?: Protocol;
-  status?: ProviderStatus;
 }
 
 export interface AgentFilter {
@@ -261,8 +258,6 @@ export interface AgentFilter {
 
 export interface RegistryStats {
   total: number;
-  verified: number;
-  reference: number;
   byCategory: Record<string, number>;
   byKind: Record<string, number>;
   byAuthType: Record<string, number>;
@@ -355,7 +350,6 @@ export declare const CATEGORIES: Record<ProviderCategory, string>;
 export declare const FIELD_TYPES: FieldType[];
 export declare const FIELD_GROUPS: Record<FieldGroup, string>;
 export declare const QUOTA_TYPES: Record<QuotaType, string>;
-export declare const STATUSES: Record<ProviderStatus, string>;
 export declare const RISK_LEVELS: Record<RiskLevel, string>;
 export declare const RISK_VARIANTS: Record<RiskVariant, string>;
 export declare const AGENT_TRANSPORTS: Record<AgentTransport, string>;

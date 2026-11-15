@@ -12,13 +12,13 @@ description: "从 llm-provider-kit 生成一个可运行的 Provider API Key / B
 
 先读 `data/tiers.json`，按项目阶段选择：
 
-| tier | 数量 | 用途 |
-|---|---:|---|
-| `starter` | 12 | 默认；全部 `verified`，适合新建项目 |
-| `mainstream` | 37 | 常规项目；含主流直连、国内大厂、常用聚合 |
-| `full` | 126 | 长尾/高级；必须展示 `reference` / `unsupported` 提示 |
+| tier | 用途 |
+|---|---|
+| `starter` | 默认；最常用的一批，适合新建项目 |
+| `mainstream` | 常规项目；含主流直连、国内大厂、常用聚合 |
+| `full` | 长尾/高级；全量条目 |
 
-不要自行编造 Provider 或修改 Provider 数量。需要新增 Provider 时，先改 `data/providers.json` 并跑 `npm run validate`。
+各 tier 的条数以 `data/tiers.json` 的 `count` 为准，不要自行编造 Provider 或修改 Provider 数量。需要新增 Provider 时，先改 `data/providers.json` 并跑 `npm run validate`。
 
 ## 生成
 
@@ -45,12 +45,11 @@ src/data/tier.json        # tier 元信息
 
 ## 验收
 
-1. `src/data/providers.json` 的条数等于所选 tier 的 `count`；
+1. `src/data/providers.json` 的条数等于所选 tier 的 `count`，引用的 id 都存在；
 2. 页面能切换 Provider，字段来自 `fields[]` / `getFormFields()`，没有手写字段；
-3. `starter` 的 12 条全部是 `verified`；
-4. 页面显示 `reference` / `unsupported` 状态，不把 `reference` 当 `verified`；
-5. `buildRequestConfig()` 能显示 `requestURL`、`headers` 和 `missing`；
-6. 仓库根目录跑 `npm test`、`npm run test:demo`、`npm run test:scaffold`、`node bin/cli.mjs validate`、`tsc --noEmit --strict --skipLibCheck types/index.d.ts` 均通过。
+3. 页面按 `risk.variant` / `risk.level` 展示第三方中转、订阅边界等风险提示；
+4. `buildRequestConfig()` 能显示 `requestURL`、`headers` 和 `missing`；
+5. 仓库根目录跑 `npm test`、`npm run test:demo`、`npm run test:scaffold`、`node bin/cli.mjs validate`、`tsc --noEmit --strict --skipLibCheck types/index.d.ts` 均通过。
 
 ## 边界
 

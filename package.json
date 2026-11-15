@@ -1,7 +1,7 @@
 {
   "name": "llm-provider-kit",
-  "version": "0.5.0",
-  "description": "LLM Provider 配置注册表与配置页工具集（Schema v2）：126 个 Provider 的接入面、鉴权模式、计费、风险与运行时契约，可直接驱动表单与请求预览，并附在线 Demo 与配置页生成器。",
+  "version": "0.6.0",
+  "description": "LLM Provider 配置注册表与配置页工具集（Schema v2）：Provider 的接入面、鉴权模式、计费、风险与运行时契约，可直接驱动表单与请求预览，并附在线 Demo 与配置页生成器。",
   "type": "module",
   "license": "MIT",
   "engines": {
