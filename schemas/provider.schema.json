@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/your-org/agent-provider-registry/schemas/provider.schema.json",
-  "title": "Agent Provider Registry v2",
+  "$id": "https://github.com/lawson2019/llm-provider-kit/schemas/provider.schema.json",
+  "title": "LLM Provider Kit v2",
   "description": "AI Provider 配置注册表：catalog、端点多接入面、鉴权模式、计费、表单字段、能力、风险与运行时契约。",
   "type": "object",
   "required": ["schemaVersion", "updatedAt", "providers"],

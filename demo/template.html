@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Provider Registry · 配置页预览</title>
+<title>LLM Provider Kit · Provider 配置页</title>
+<meta name="description" content="131 个 AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。">
+<meta property="og:title" content="LLM Provider Kit">
+<meta property="og:description" content="一份可校验、可直接渲染配置表单的 AI Provider 配置注册表：131 Providers / 8 Agents。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f766e">
 <style>
   :root {
     --bg: #f6f5f2;
@@ -55,6 +60,10 @@
     background: var(--panel); padding: 4px 9px; border-radius: 999px; }
   .icon-btn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line);
     background: var(--panel); display: grid; place-items: center; }
+  .repo-link { display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    font-size: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+    padding: 6px 10px; border-radius: 9px; }
+  .repo-link:hover { border-color: var(--accent); color: var(--accent); }
   .toolbar { max-width: 1280px; margin: 0 auto; padding: 0 28px 14px; display: flex;
     flex-wrap: wrap; gap: 10px; align-items: center; }
   .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
@@ -149,25 +158,30 @@
   .kv { display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px; font-size: 12.5px; margin-top: 8px; }
   .kv dt { color: var(--muted); }
   .kv dd { margin: 0; }
+  .foot { max-width: 1280px; margin: 0 auto; padding: 0 28px 40px; display: flex; flex-wrap: wrap;
+    gap: 6px 18px; justify-content: space-between; color: var(--muted); font-size: 12px; }
+  .foot a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
+  .foot a:hover { color: var(--accent); border-color: var(--accent); }
   @media (max-width: 900px) {
     main { grid-template-columns: 1fr; }
     .list { max-height: 260px; }
     .topbar { padding: 16px 16px 10px; }
-    .toolbar, main { padding-left: 16px; padding-right: 16px; }
+    .toolbar, main, .foot { padding-left: 16px; padding-right: 16px; }
   }
 </style>
 </head>
 <body>
 <header class="topbar">
   <div class="brand">
-    <span class="mark">PR</span>
+    <span class="mark">LP</span>
     <div>
-      <h1>Provider Registry</h1>
-      <p class="sub">一份可校验、可直接渲染表单的 Provider 配置注册表 · schema v2</p>
+      <h1>LLM Provider Kit</h1>
+      <p class="sub">131 Providers / 8 Agents · 可校验、可直接渲染配置表单的 Provider 元数据 · schema v2</p>
     </div>
   </div>
   <div class="top-right">
     <span class="stat" id="stats">—</span>
+    <a class="repo-link" href="https://github.com/lawson2019/llm-provider-kit" target="_blank" rel="noopener">GitHub ↗</a>
     <button class="icon-btn" id="themeBtn" title="切换深浅色">◐</button>
   </div>
 </header>
@@ -191,6 +205,10 @@
   <aside class="list" id="list"></aside>
   <section id="detail"></section>
 </main>
+<footer class="foot">
+  <span>LLM Provider Kit · 数据来自 <a href="https://github.com/lawson2019/llm-provider-kit/blob/main/data/providers.json" target="_blank" rel="noopener">data/providers.json</a> · MIT</span>
+  <span>reference ≠ verified：导入条目未做联网可达性验证，接入前请按厂商官方文档复核。</span>
+</footer>
 
 <script>
 const DATA = /*__REGISTRY__*/ {};

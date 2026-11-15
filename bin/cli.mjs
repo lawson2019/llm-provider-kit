@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * provider-registry CLI（零依赖）。
+ * llm-provider-kit CLI（零依赖）。bin 别名：provider-registry。
  *
- *   provider-registry list --category china
- *   provider-registry show volcengine-ark
- *   provider-registry fields zai-coding-plan
- *   provider-registry validate
- *   provider-registry export --format ts --out dist/providers.ts
+ *   llm-provider-kit list --category china
+ *   llm-provider-kit show volcengine-ark
+ *   llm-provider-kit fields zai-coding-plan
+ *   llm-provider-kit validate
+ *   llm-provider-kit export --format ts --out dist/providers.ts
  */
 import { parseArgs } from 'node:util';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -196,7 +196,8 @@ async function main() {
   const [command = 'list', arg] = positionals;
 
   if (values.help || command === 'help') {
-    console.log(`provider-registry <command> [options]
+    console.log(`llm-provider-kit <command> [options]
+（别名：provider-registry）
 
 命令
   list                     列出 Provider（默认）

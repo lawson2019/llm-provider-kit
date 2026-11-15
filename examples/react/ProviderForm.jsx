@@ -15,7 +15,7 @@ import {
   groupFormFields,
   buildRequestConfig,
   getQuotaWarning,
-} from 'agent-provider-registry';
+} from 'llm-provider-kit';
 
 
 function maskValue(value) {

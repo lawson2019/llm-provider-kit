@@ -1,9 +1,17 @@
-# agent-provider-registry
+# llm-provider-kit
 
-> 一份可校验、可渲染表单的 AI Provider 配置注册表。
+[![validate](https://github.com/lawson2019/llm-provider-kit/actions/workflows/validate.yml/badge.svg)](https://github.com/lawson2019/llm-provider-kit/actions/workflows/validate.yml)
+[![pages](https://github.com/lawson2019/llm-provider-kit/actions/workflows/pages.yml/badge.svg)](https://lawson2019.github.io/llm-provider-kit/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-0f766e.svg)](LICENSE)
+
+> LLM Provider Kit —— 一份可校验、可直接渲染配置表单的 AI Provider 配置元数据注册表。
 > 不只告诉你「baseURL 是什么」，还告诉你「配置页该怎么画」。
 
 **131 个 Provider / 8 个 Agent 运行时**，零依赖，MIT。
+
+**在线 Demo：<https://lawson2019.github.io/llm-provider-kit/>** — 搜索、筛选、动态表单、请求预览，支持 `?provider=` 深链。
+
+> 仓库与包名已从 `agent-provider-registry` 统一为 `llm-provider-kit`（v0.3.4 起）；CLI 继续保留 `provider-registry` 作为兼容别名。
 
 > **先看统计口径**：131 条中 **104 条**来自 OmniRoute 的离线目录投影，**0 条**做过联网可达性验证；这 104 条中 43 条有 `probe.modelsUrl`，**61 条没有**（审计时记录为 63，因为当时还含 2 条后来删除的非 API Key 条目）；**20 条 `verified` 全部是历史人工条目**，104 条导入全部为 `reference`。`reference ≠ verified`：前者只代表结构可渲染、字段可填充，不代表端点、鉴权、计费已经实测。
 
@@ -43,6 +51,14 @@
 - **不宣称官方认证**：这是社区维护的配置元数据，`reference` 条目需要按官方文档复核。
 - **不覆盖全部厂商**：优先覆盖 API Key / 固定 baseURL 的直连、聚合、本地运行时，持续补充。
 
+## 在线 Demo（GitHub Pages）
+
+打开 **<https://lawson2019.github.io/llm-provider-kit/>** 即可使用，不需要 clone 或构建。
+
+页面包含搜索、分类筛选、动态表单、必填校验、脱敏后的请求配置预览、接入面切换，以及 Agent 运行时清单；支持 `?provider=agentrouter`、`?agent=claude-code` 深链到指定条目。
+
+站点由 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) 在每次 push 到 `main` 时重新构建 `demo/index.html` 并发布，页面始终对应注册表的最新数据。
+
 ## 30 秒试用
 
 ```bash
@@ -55,8 +71,6 @@ npm run demo        # http://localhost:4173
 # 方式三：校验数据
 npm run validate
 ```
-
-Demo 里有搜索、分类筛选、动态表单、必填校验、脱敏后的请求配置预览、接入面切换，以及 Agent 运行时清单。支持 `?provider=agentrouter`、`?agent=claude-code` 直接深链到指定条目。
 
 ### 用 skill 一键生成配置页
 
@@ -245,7 +259,7 @@ const config = buildRequestConfig(provider, values);     // baseURL / path / req
 React 里最简的用法：
 
 ```jsx
-import { getFormFields, buildRequestConfig } from 'agent-provider-registry';
+import { getFormFields, buildRequestConfig } from 'llm-provider-kit';
 
 function ProviderForm({ provider, values, onChange }) {
   const fields = getFormFields(provider);
@@ -265,20 +279,20 @@ function ProviderForm({ provider, values, onChange }) {
 ## CLI
 
 ```bash
-provider-registry list --category china
-provider-registry list --auth device-code
-provider-registry list --billing subscription
-provider-registry list --protocol anthropic-messages
-provider-registry show zai
-provider-registry show zai-coding-plan
-provider-registry fields zai-coding-plan
-provider-registry validate
-provider-registry stats
-provider-registry agents
-provider-registry export --format ts --out dist/providers.ts
+llm-provider-kit list --category china
+llm-provider-kit list --auth device-code
+llm-provider-kit list --billing subscription
+llm-provider-kit list --protocol anthropic-messages
+llm-provider-kit show zai
+llm-provider-kit show zai-coding-plan
+llm-provider-kit fields zai-coding-plan
+llm-provider-kit validate
+llm-provider-kit stats
+llm-provider-kit agents
+llm-provider-kit export --format ts --out dist/providers.ts
 ```
 
-仓库内直接用：
+`provider-registry` 是保留的兼容别名，命令和参数完全相同。仓库内也可以直接用：
 
 ```bash
 node bin/cli.mjs list --category china
@@ -296,12 +310,13 @@ src/
   fields.mjs            # 表单字段推导 + 端点解析 + 请求配置生成
   registry.mjs          # 纯函数查询层（浏览器可用）
   node.mjs              # 读文件、校验、导出
-bin/cli.mjs             # 命令行
+bin/cli.mjs             # 命令行（bin: llm-provider-kit / provider-registry）
 schemas/provider.schema.json
-demo/                   # 单文件 Demo（模板 + 构建产物）
+demo/                   # 单文件 Demo（模板 + 构建产物，GitHub Pages 发布源）
 examples/react/         # 参考组件
 skills/                 # provider-registry-builder 接入 skill
-docs/                   # 集成与贡献说明
+docs/                   # 集成、导入与贡献说明
+.github/workflows/      # validate.yml（CI）+ pages.yml（GitHub Pages 部署）
 ```
 
 ## Agent manifest：transport 与 protocol 分开
@@ -355,7 +370,7 @@ v2 把 Agent 的运行通道和应用协议拆开：
 - `reference`：结构可用，但地址 / 版本可能随厂商变化，接入前需复核；
 - `stale`：已知可能过期，等待维护者更新。
 
-CI 会跑 `npm run validate`、`npm test`、`npm run test:demo`、`npm run test:scaffold`，并要求 Demo 构建产物与数据保持一致。
+CI 会跑 `npm run validate`、`npm test`、`npm run test:demo`、`npm run test:scaffold`；`build-demo` workflow 在数据或模板变化后自动重建并提交 `demo/index.html`，`pages` workflow 把同一份产物发布到 GitHub Pages。
 
 ## 适合接入的场景
 

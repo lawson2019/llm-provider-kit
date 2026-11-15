@@ -1,7 +1,7 @@
 ---
 name: provider-registry-builder
 display_name: "Provider 配置页生成"
-description: "从 agent-provider-registry 生成一个可运行的 Provider API Key / Base URL 配置页。适用于：给 Agent 面板、ACP 网关、代码代理或 AI 应用添加模型 Key 表单；需要 React + Vite 或静态 HTML 配置页；需要按 Starter / Mainstream / Full 分层选择 Provider；需要让表单字段、端点、鉴权和请求预览由注册表数据自动推导，而不是手写。触发词：Provider 配置页、模型 Key 表单、API Key 配置、Provider Registry、接入大模型、生成配置页。"
+description: "从 llm-provider-kit 生成一个可运行的 Provider API Key / Base URL 配置页。适用于：给 Agent 面板、ACP 网关、代码代理或 AI 应用添加模型 Key 表单；需要 React + Vite 或静态 HTML 配置页；需要按 Starter / Mainstream / Full 分层选择 Provider；需要让表单字段、端点、鉴权和请求预览由注册表数据自动推导，而不是手写。触发词：Provider 配置页、模型 Key 表单、API Key 配置、Provider Registry、接入大模型、生成配置页。"
 ---
 
 # Provider 配置页生成

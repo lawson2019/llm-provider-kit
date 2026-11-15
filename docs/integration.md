@@ -7,8 +7,8 @@
 仓库还没有发布 npm 包时，可以直接引用源码，或先打包成本地 tgz：
 
 ```bash
-npm pack                       # 生成 agent-provider-registry-0.3.3.tgz
-npm install ./agent-provider-registry-0.3.3.tgz
+npm pack                       # 生成 llm-provider-kit-0.3.4.tgz
+npm install ./llm-provider-kit-0.3.4.tgz
 ```
 
 ```js
@@ -18,16 +18,16 @@ import {
   groupFormFields,
   buildRequestConfig,
   getQuotaWarning,
-} from 'agent-provider-registry';
+} from 'llm-provider-kit';
 
 // Node：读数据 + 校验
-import { loadRegistry, validateAll } from 'agent-provider-registry/node';
+import { loadRegistry, validateAll } from 'llm-provider-kit/node';
 ```
 
 如果只想拿数据：
 
 ```js
-import providersData from 'agent-provider-registry/data/providers.json' with { type: 'json' };
+import providersData from 'llm-provider-kit/data/providers.json' with { type: 'json' };
 ```
 
 ## 2. 渲染表单的标准流程
@@ -40,7 +40,7 @@ const groups = groupFormFields(fields);   // 2. { auth: [...], endpoint: [...], 
 如果 Provider 有多个接入面，`getFormFields()` 会自动补一个 `endpoint` select；也可以显式调用：
 
 ```js
-import { resolveEndpoint } from 'agent-provider-registry';
+import { resolveEndpoint } from 'llm-provider-kit';
 const endpoint = resolveEndpoint(provider, values);
 ```
 
@@ -216,7 +216,7 @@ npm run validate
 ```vue
 <script setup>
 import { computed } from 'vue';
-import { getFormFields, groupFormFields } from 'agent-provider-registry';
+import { getFormFields, groupFormFields } from 'llm-provider-kit';
 const props = defineProps({ provider: Object });
 const groups = computed(() => groupFormFields(getFormFields(props.provider)));
 </script>
@@ -224,7 +224,7 @@ const groups = computed(() => groupFormFields(getFormFields(props.provider)));
 
 ```svelte
 <script>
-  import { getFormFields } from 'agent-provider-registry';
+  import { getFormFields } from 'llm-provider-kit';
   export let provider;
   $: groups = getFormFields(provider).reduce((acc, f) => {
     (acc[f.group] ??= []).push(f);

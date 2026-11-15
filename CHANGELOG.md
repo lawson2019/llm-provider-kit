@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.4
+
+### Changed
+
+- 包名与仓库名统一为 `llm-provider-kit`：`package.json`、README、集成文档、React 示例、导出的 TS 头部注释与 Schema `$id` 全部同步；CLI 保留 `provider-registry` 兼容别名。
+- `package.json` 的 `repository` / `homepage` / `bugs` 指向真实仓库 `lawson2019/llm-provider-kit`，不再使用 `your-org` 占位。
+- README 重写开头、试用路径与仓库结构，补充在线 Demo 地址、CI / Pages 徽章，并说明 `reference ≠ verified` 的统计口径。
+- Demo 品牌化为「LLM Provider Kit」：更新页面标题、meta 描述、顶部 GitHub 入口与页脚声明。
+
+### Added
+
+- `.github/workflows/pages.yml`：push 到 `main` 时构建 `demo/index.html` 并发布到 GitHub Pages（<https://lawson2019.github.io/llm-provider-kit/>），Demo 原始文件即线上站点。
+- `.github/workflows/build-demo.yml`：数据或模板变化后自动重建并提交 `demo/index.html`，避免生成产物与源数据脱节；`validate` 在 PR 上仍检查产物是否同步。
+
 ## 0.3.3
 
 ### Security

@@ -1,7 +1,7 @@
 {
-  "name": "agent-provider-registry",
-  "version": "0.3.3",
-  "description": "可校验、可渲染表单的 AI Provider 配置注册表（Schema v2）：多接入面、鉴权模式、计费、风险与运行时契约，供 Agent 面板 / ACP 网关 / 代码代理直接消费。",
+  "name": "llm-provider-kit",
+  "version": "0.3.4",
+  "description": "LLM Provider 配置注册表与配置页工具集（Schema v2）：131 个 Provider 的接入面、鉴权模式、计费、风险与运行时契约，可直接驱动表单与请求预览，并附在线 Demo 与配置页生成器。",
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -21,6 +21,7 @@
     "./data/tiers.json": "./data/tiers.json"
   },
   "bin": {
+    "llm-provider-kit": "./bin/cli.mjs",
     "provider-registry": "./bin/cli.mjs"
   },
   "files": [
@@ -57,10 +58,15 @@
     "form-schema",
     "acp",
     "agent",
-    "configuration"
+    "configuration",
+    "github-pages"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/agent-provider-registry"
+    "url": "https://github.com/lawson2019/llm-provider-kit"
+  },
+  "homepage": "https://lawson2019.github.io/llm-provider-kit/",
+  "bugs": {
+    "url": "https://github.com/lawson2019/llm-provider-kit/issues"
   }
 }

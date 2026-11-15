@@ -55,7 +55,7 @@ export async function validateAll(rootDir = REPO_ROOT) {
  * 导出成 TypeScript 常量，方便前端直接 import 并获得字面量类型。
  */
 export function toTypeScriptModule(providersData, agentsData) {
-  const header = `// 由 agent-provider-registry 生成，请勿手改。\n// 数据版本：${providersData.updatedAt}\n\n`;
+  const header = `// 由 llm-provider-kit 生成，请勿手改。\n// 数据版本：${providersData.updatedAt}\n\n`;
   return (
     header +
     `export const PROVIDERS = ${JSON.stringify(providersData.providers, null, 2)} as const;\n\n` +
