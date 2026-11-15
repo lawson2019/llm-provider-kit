@@ -889,7 +889,9 @@
         "qwen",
         "tongyi",
         "bailian",
-        "dashscope"
+        "dashscope",
+        "bailian-coding-plan",
+        "alibaba-token-plan"
       ],
       "kind": "api",
       "category": "china",
@@ -912,6 +914,24 @@
           "protocol": "openai-chat",
           "baseURL": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
           "billing": "payg"
+        },
+        {
+          "id": "token-plan-anthropic",
+          "label": "Token Plan（Anthropic Messages）",
+          "protocol": "anthropic-messages",
+          "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic/v1",
+          "path": "/messages",
+          "billing": "subscription",
+          "headers": {
+            "anthropic-version": "2023-06-01"
+          },
+          "note": "来自 Alibaba Token Plan（原条目 bailian-coding-plan）；使用订阅额度，鉴权头为 x-api-key。",
+          "auth": {
+            "mode": "api-key",
+            "scheme": "api-key-header",
+            "headerName": "x-api-key"
+          },
+          "default": false
         }
       ],
       "docs": "https://help.aliyun.com/zh/model-studio/developer-reference/",
@@ -970,15 +990,16 @@
       "notes": [
         "这里配置的是 OpenAI 兼容模式（/compatible-mode/v1），原生 DashScope 协议路径不同",
         "国内站与国际站的 Key、模型列表不通用",
-        "修复（v0.3.1）：默认接入面为中国大陆站，externalIds.omniroute 对齐源 `alibaba-cn`；`intl` 接入面来自源 `alibaba`（国际站），两条端点的 baseURL 未改动。"
+        "修复（v0.3.1）：默认接入面为中国大陆站，externalIds.omniroute 对齐源 `alibaba-cn`；`intl` 接入面来自源 `alibaba`（国际站），两条端点的 baseURL 未改动。",
+        "已合并 Alibaba Token Plan（bailian-coding-plan）的 Anthropic 接入面；与百炼按量 API 是两套额度。"
       ],
       "auth": {
         "mode": "api-key",
         "scheme": "bearer"
       },
       "billing": {
-        "mode": "payg",
-        "note": "百炼按模型调用量计费"
+        "mode": "mixed",
+        "note": "百炼按模型调用量计费；合并后含多种计费模式，按接入面选择。"
       },
       "probe": {
         "modelsUrl": "/models",
@@ -7103,7 +7124,7 @@
       },
       "billing": {
         "mode": "mixed",
-        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。；合并后含多种计费模式，按接入面选择。"
+        "note": "标准 API Key / 按量计费；免费额度与赠送额度以厂商官网为准。；合并后含多种计费模式，按接入面选择。；合并后含多种计费模式，按接入面选择。"
       },
       "endpoints": [
         {
@@ -7123,23 +7144,6 @@
           "path": "/chat/completions",
           "billing": "subscription",
           "note": "原条目 qwen-cloud-token-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 qwen-cloud-token-plan。"
-        },
-        {
-          "id": "token-plan-anthropic",
-          "label": "Token Plan（Anthropic Messages）",
-          "protocol": "anthropic-messages",
-          "baseURL": "https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic/v1",
-          "path": "/messages",
-          "billing": "subscription",
-          "headers": {
-            "anthropic-version": "2023-06-01"
-          },
-          "note": "原条目 bailian-coding-plan 的默认接入面；合并后保留主条目的默认标记。 合并自 bailian-coding-plan。",
-          "auth": {
-            "mode": "api-key",
-            "scheme": "api-key-header",
-            "headerName": "x-api-key"
-          }
         }
       ],
       "probe": {
@@ -7167,8 +7171,7 @@
       ],
       "notes": [
         "从 OmniRoute `open-sse/config/providers/registry/qwen-cloud/index.ts` 的 API Key Registry 导入；原始 baseUrl 为 `https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions`。",
-        "已合并 Qwen Cloud Token Plan（qwen-cloud-token-plan）的接入方式，统一在本条目的 endpoints 中维护。",
-        "已合并 Alibaba Token Plan（bailian-coding-plan）的接入方式，统一在本条目的 endpoints 中维护。"
+        "已合并 Qwen Cloud Token Plan（qwen-cloud-token-plan）的接入方式，统一在本条目的 endpoints 中维护。"
       ],
       "tags": [
         "omniroute",
@@ -7176,8 +7179,7 @@
         "imported"
       ],
       "aliases": [
-        "qwen-cloud-token-plan",
-        "bailian-coding-plan"
+        "qwen-cloud-token-plan"
       ]
     },
     {

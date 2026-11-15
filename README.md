@@ -242,7 +242,7 @@ Schema 保留的建模面比当前数据使用的更宽，消费方不要把「s
 | `auth.mode` | `api-key` 118 / `none` 2 / `oauth`、`device-code`、`browser-cookie`、`local-session` 0 |
 | `auth.scheme` | `bearer` 111 / `api-key-header` 5 / `azure-api-key` 1 / `aws-sigv4` 1 / `none` 2 |
 | `endpoint.protocol` | `openai-chat` 124 / `anthropic-messages` 10 / `openai-responses` 2 / `gemini-native` 1 / `native` 1 / `unknown` 2 |
-| `billing.mode` | `payg` 106 / `subscription` 4 / `mixed` 7 / `free` 3 |
+| `billing.mode` | `payg` 105 / `subscription` 4 / `mixed` 8 / `free` 3 |
 
 另外：20 条 `verified` 的 `verifiedAt` 都是 `2026-11-14`，属于一次性人工复核记录，不代表之后持续在线验证；96 条导入中有 85 条的 `docs` 只是源侧裸域名，不是官方文档深链。接入前都应按厂商官方文档复核。
 
