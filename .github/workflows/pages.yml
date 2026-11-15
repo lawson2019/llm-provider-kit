@@ -28,9 +28,13 @@ jobs:
 
       - name: Assemble site
         run: |
-          mkdir -p _site
+          mkdir -p _site/data _site/skills/llm-provider-kit
           cp demo/index.html _site/index.html
           cp docs/preview.png _site/preview.png
+          cp data/providers.json data/agents.json data/tiers.json _site/data/
+          cp skills/llm-provider-kit/SKILL.md _site/skills/llm-provider-kit/SKILL.md
+          if [ -f skills/llm-provider-kit/reference.md ]; then cp skills/llm-provider-kit/reference.md _site/skills/llm-provider-kit/reference.md; fi
+          if [ -f skills/llm-provider-kit/examples/example-prompt.md ]; then mkdir -p _site/skills/llm-provider-kit/examples && cp skills/llm-provider-kit/examples/example-prompt.md _site/skills/llm-provider-kit/examples/example-prompt.md; fi
           printf 'User-agent: *\nAllow: /\n' > _site/robots.txt
 
       - name: Publish to gh-pages
