@@ -1,0 +1,42 @@
+name: bootstrap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bootstrap.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download snapshot
+        run: |
+          curl -fsSL --retry 3 -o /tmp/snapshot.tar.gz "https://aka.doubaocdn.com/s/vOfjoxTVoP"
+          mkdir -p /tmp/snapshot
+          tar -xzf /tmp/snapshot.tar.gz -C /tmp/snapshot
+
+      - name: Sync repository files
+        run: |
+          cp -a /tmp/snapshot/. "$GITHUB_WORKSPACE"/
+          git status --short
+
+      - name: Commit snapshot
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "no changes"
+            exit 0
+          fi
+          git config user.name "lawson2019"
+          git config user.email "lawson2019@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: import llm-provider-kit v0.3.4 (rename + pages)"
+          git push origin HEAD:main

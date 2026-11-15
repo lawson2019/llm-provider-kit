@@ -1,0 +1,45 @@
+name: build-demo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/providers.json'
+      - 'data/agents.json'
+      - 'data/tiers.json'
+      - 'src/**'
+      - 'demo/template.html'
+      - 'scripts/build-demo.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-demo
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rebuild demo
+        run: node scripts/build-demo.mjs
+
+      - name: Commit regenerated demo
+        run: |
+          if git diff --quiet -- demo/index.html; then
+            echo "demo/index.html 已是最新"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add demo/index.html
+          git commit -m "chore: rebuild demo"
+          git push origin HEAD:main

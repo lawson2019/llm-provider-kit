@@ -24,10 +24,12 @@ jobs:
       - name: Demo config parity and secret masking
         run: npm run test:demo
 
-      - name: Rebuild demo and check it is in sync
-        run: |
-          node scripts/build-demo.mjs
-          git diff --exit-code demo/index.html
+      - name: Build demo
+        run: node scripts/build-demo.mjs
+
+      - name: Check demo is in sync (pull requests)
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code demo/index.html
 
       - name: Scaffold tiers regression
         run: npm run test:scaffold
