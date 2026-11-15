@@ -4,7 +4,7 @@
 
 ### Changed
 
-- 同品牌的多连接方式合并为一条 Provider，连接方式统一放进 `endpoints[]`：Z.ai Coding Plan、火山方舟 Coding / Agent Plan、Kimi Code、MiniMax 国内站、Qwen Cloud Token Plan、小米 MiMo Token Plan、Agnes 中国站、Gitlawb GMI 上游、Perplexity Agent 共 11 条并入 9 条主条目；Alibaba Token Plan 的 Anthropic 面归入阿里云百炼。旧 ID 保留为 `aliases`，深链仍可解析。
+- 同品牌的多连接方式合并为一条 Provider，连接方式统一放进 `endpoints[]`：Z.ai Coding Plan、火山方舟 Coding / Agent Plan、Kimi Code、MiniMax 国内站、Qwen Cloud Token Plan、小米 MiMo Token Plan、Agnes 中国站、Gitlawb GMI 上游、Perplexity Agent 共 11 条并入 10 条主条目（Alibaba Token Plan 的 Anthropic 面归入阿里云百炼）。旧 ID 保留为 `aliases`，深链仍可解析。
 - Provider 总数 131 → 120（24 条人工 + 96 条导入）；`starter` 12 / `mainstream` 37 / `full` 120，README、package、Demo、tiers、测试与 URL 金标准同步。
 - 合并条目按接入面拆分计费：火山方舟、Moonshot Kimi、Qwen Cloud、Xiaomi MiMo 等标记为 `billing.mode: "mixed"`；端点级鉴权保留 `x-api-key` / `bearer` 差异。
 
