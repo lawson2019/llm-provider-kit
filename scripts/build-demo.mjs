@@ -11,8 +11,19 @@ import { getQuotaWarning, providerStats } from '../src/registry.mjs';
 
 const { registry, providersData, agentsData } = await loadRegistry();
 
+// 构建时把 favicon 内嵌成 data URI，避免 icon.horse 等外部图源在浏览器里挂起。
+let iconEmbeds = {};
+try {
+  iconEmbeds = JSON.parse(await readFile(path.join(REPO_ROOT, 'data/icon-embeds.json'), 'utf8'));
+} catch {
+  console.warn('未找到 data/icon-embeds.json，favicon 仍使用外部 URL');
+}
+
 const providers = registry.providers.map((provider) => ({
   ...provider,
+  icon: iconEmbeds[provider.id]
+    ? { ...provider.icon, url: iconEmbeds[provider.id] }
+    : provider.icon,
   formFields: getFormFields(provider),
   quotaWarning: getQuotaWarning(provider),
 }));
@@ -37,7 +48,8 @@ const json = JSON.stringify(payload).replaceAll('<', '\\u003c');
 const html = template.replace(placeholder, json);
 
 await writeFile(outputPath, html, 'utf8');
+const embeddedCount = providers.filter((p) => iconEmbeds[p.id]).length;
 console.log(
   `demo/index.html 已生成：${providers.length} providers / ${registry.agents.length} agents，` +
-    `${(html.length / 1024).toFixed(1)} KB`,
+    `${embeddedCount} 个图标已内嵌，${(html.length / 1024).toFixed(1)} KB`,
 );

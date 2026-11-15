@@ -382,7 +382,7 @@ CI 会跑 `npm run validate`、`npm test`、`npm run test:demo`、`npm run test:
 
 ## 图标
 
-`icon` 有两种来源：能找到品牌图标时用 `source: "lobe-icons"` + 真实 Lobe slug；找不到时用 `source: "favicon"` + `url`（按官网域名取 favicon），仓库**不分发**任何 Logo 二进制。Demo 优先用 `icon.url`，否则用 Lobe CDN；加载失败或离线时显示品牌色首字母块，不会出现空白。详见 [`assets/icons/README.md`](assets/icons/README.md)。
+`icon` 有两种来源：能找到品牌图标时用 `source: "lobe-icons"` + 真实 Lobe slug；找不到时用 `source: "favicon"` + `url`（按官网域名取 favicon），仓库不保存独立 Logo 文件；Demo 构建时会把全部图标内嵌为 data URI（`data/icon-embeds.json`），运行时零外部图源，离线也能显示；加载失败仍回退品牌色首字母块。详见 [`assets/icons/README.md`](assets/icons/README.md)。
 
 ## 贡献
 

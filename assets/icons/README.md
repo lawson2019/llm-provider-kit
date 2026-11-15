@@ -1,6 +1,6 @@
 # 图标策略
 
-本仓库**不分发**任何厂商 Logo 的二进制文件，只保存图标引用：Lobe Icons 的 `slug`，或厂商官网 favicon 的 `url`。
+本仓库不保存任何厂商 Logo 的独立二进制文件，只保存图标引用：Lobe Icons 的 `slug`，或厂商官网 favicon 的 `url`；Demo 构建缓存 `data/icon-embeds.json` 内嵌这些图标，仅用于页面渲染。
 
 ## slug 的来源
 
@@ -39,13 +39,9 @@
 
 ## Demo 如何取图
 
-优先读 `icon.url`；没有 `url` 时按 Lobe CDN 拼：
+`scripts/build-demo.mjs` 会读取 `data/icon-embeds.json`，把每个 Provider 的图标内嵌成 data URI 写进 `demo/index.html`；因此 Demo 运行时**不依赖** unpkg / icon.horse，离线打开也能看到全部图标。
 
-```text
-https://unpkg.com/@lobehub/icons-static-svg@latest/icons/{slug}.svg
-```
-
-图片加载完成前先显示**品牌色首字母块**；加载失败（离线、slug 不存在、CDN 不可达）时保持首字母块，不会出现空白。
+`data/icon-embeds.json` 只是构建缓存：`providers.json` 仍保留 `slug` 或官网 favicon URL，不把图标二进制塞进注册表。图片加载完成前先显示**品牌色首字母块**；加载失败（图标缺失、data URI 损坏）时保持首字母块，不会出现空白。
 
 ## 使用方注意
 
