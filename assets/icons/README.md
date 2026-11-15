@@ -41,7 +41,7 @@
 
 `scripts/build-demo.mjs` 会读取 `data/icon-embeds.json`，把每个 Provider 的图标内嵌成 data URI 写进 `demo/index.html`；因此 Demo 运行时**不依赖** unpkg / icon.horse，离线打开也能看到全部图标。
 
-`data/icon-embeds.json` 只是构建缓存：`providers.json` 仍保留 `slug` 或官网 favicon URL，不把图标二进制塞进注册表。图片加载完成前先显示**品牌色首字母块**；加载失败（图标缺失、data URI 损坏）时保持首字母块，不会出现空白。
+`data/icon-embeds.json` 只是构建缓存：`providers.json` 仍保留 `slug` 或官网 favicon URL，不把图标二进制塞进注册表。Lobe 图标优先取 `-color.svg` 彩色版；没有彩色版的单色 SVG 会按 `icon.color` / `brandColor` 着色，避免整页黑白。图片加载完成前先显示**品牌色首字母块**；加载失败（图标缺失、data URI 损坏）时保持首字母块，不会出现空白。
 
 ## 使用方注意
 
