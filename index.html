@@ -415,6 +415,38 @@ const GROUP_LABEL = {
   en: { auth: I18N.en.groupAuth, endpoint: I18N.en.groupEndpoint, model: I18N.en.groupModel, runtime: I18N.en.groupRuntime, advanced: I18N.en.groupAdvanced },
 };
 const catLabel = (key) => CATEGORY_LABEL[lang][key] ?? key;
+
+// 由注册表库自动补齐的标准字段（不是厂商数据）在英文模式下做本地化，避免中英混排。
+const STD_FIELD_EN = {
+  '接入方式': { label: 'Endpoint' },
+  '默认模型': { label: 'Default model', placeholder: 'Model ID (leave blank to let the server decide)' },
+  '请求超时（秒）': { label: 'Timeout (seconds)' },
+};
+const HELP_EN = {
+  '不同套餐使用不同端点；选错端点会出现 401，即使 Key 本身有效':
+    'Different plans use different endpoints; picking the wrong one returns 401 even with a valid key',
+  '该 Provider 没有固定公共端点，请填写你的自建 / 网关地址':
+    'This provider has no fixed public endpoint — enter your self-hosted or gateway URL',
+  '按模板填写，{...} 部分替换成你的资源标识':
+    'Fill in per the template and replace the {...} part with your resource id',
+  '该网关支持透传模型 ID，模型目录可能需要登录后动态发现':
+    'This gateway passes model IDs through; its model catalog may only be discoverable after sign-in',
+  '只影响默认值，配置页可让用户在会话里切换':
+    'Only sets the default; users can still switch models during the conversation',
+  '本地会话，无公开端点': 'Local session, no public endpoint',
+};
+const OPT_LABEL_EN = { '默认端点': 'Default endpoint' };
+const optLabel = (label) => (lang === 'en' ? (OPT_LABEL_EN[label] ?? label) : label);
+
+function locField(field) {
+  if (lang !== 'en') return field;
+  const std = STD_FIELD_EN[field.label];
+  const out = { ...field };
+  if (std?.label) out.label = std.label;
+  if (std?.placeholder && out.placeholder === field.placeholder) out.placeholder = std.placeholder;
+  if (field.help && HELP_EN[field.help]) out.help = HELP_EN[field.help];
+  return out;
+}
 const kindLabel = (key) => KIND_LABEL[lang][key] ?? key;
 const groupLabel = (key) => GROUP_LABEL[lang][key] ?? key;
 
@@ -588,7 +620,7 @@ function fieldControl(field, value, onChange, hasError) {
   if (field.type === 'select') {
     input = el('select');
     for (const option of field.options ?? []) {
-      const opt = el('option', '', option.label);
+      const opt = el('option', '', optLabel(option.label));
       opt.value = option.value;
       if (option.description) opt.title = option.description;
       input.appendChild(opt);
@@ -744,7 +776,8 @@ function renderGroup(provider, group, fields, values) {
   head.appendChild(el('span', '', countLabel('fieldCount', fields.length)));
   const body = el('div', 'group-body');
 
-  for (const field of fields) {
+  for (const rawField of fields) {
+    const field = locField(rawField);
     const row = el('div', 'field');
     const label = el('label');
     label.appendChild(document.createTextNode(field.label));
@@ -1001,7 +1034,7 @@ function renderProviderDetail() {
     ep.appendChild(title);
     const ul = el('ul');
     for (const endpoint of provider.endpoints) {
-      const li = el('li', '', `${endpoint.label} · ${endpoint.protocol} · ${endpoint.billing} · ${endpointURL(endpoint)}`);
+      const li = el('li', '', `${optLabel(endpoint.label)} · ${endpoint.protocol} · ${endpoint.billing} · ${endpointURL(endpoint)}`);
       if (endpoint.default) li.appendChild(el('span', 'tag', t('defaultTag')));
       ul.appendChild(li);
     }
