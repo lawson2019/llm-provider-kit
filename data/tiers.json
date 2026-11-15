@@ -70,8 +70,8 @@
     {
       "id": "full",
       "label": "Full",
-      "description": "全部 120 个 API Key / 固定 baseURL 条目；reference 条目必须显示未联网验证提示。",
-      "count": 120,
+      "description": "全部 126 个 API Key / 固定 baseURL 条目；reference 条目必须显示未联网验证提示。",
+      "count": 126,
       "allProviders": true
     }
   ]
