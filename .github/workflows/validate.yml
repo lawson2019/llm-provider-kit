@@ -1,0 +1,42 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate registry data
+        run: node bin/cli.mjs validate
+
+      - name: Smoke test Schema v2 semantics
+        run: npm test
+
+      - name: Demo config parity and secret masking
+        run: npm run test:demo
+
+      - name: Rebuild demo and check it is in sync
+        run: |
+          node scripts/build-demo.mjs
+          git diff --exit-code demo/index.html
+
+      - name: Scaffold tiers regression
+        run: npm run test:scaffold
+
+      - name: CLI smoke test
+        run: |
+          node bin/cli.mjs list --category china
+          node bin/cli.mjs list --billing subscription
+          node bin/cli.mjs show volcengine-ark > /dev/null
+          node bin/cli.mjs show zai-coding-plan > /dev/null
+          node bin/cli.mjs agents > /dev/null
+          node bin/cli.mjs export --format ts --out /tmp/providers.ts
