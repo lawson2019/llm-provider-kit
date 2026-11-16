@@ -1,20 +1,20 @@
 # llm-provider-kit
 
-[English](README.md) · [简体中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md)
+[English](README.en.md) · [简体中文](README.md) · **日本語** · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md)
 
-LLM プロバイダーとエージェントランタイムのメタデータレジストリで、プレーンな JSON として提供され、実行時の依存関係はなく、MIT ライセンスです。AI アプリ、エージェントパネル、またはゲートウェイにプロバイダー設定画面を追加するすべての人を対象としています。**108 プロバイダー、7 エージェントランタイム、142 エンドポイント** を収録しています。
+LLM プロバイダーのメタデータレジストリで、プレーンな JSON として提供され、実行時の依存関係はなく、MIT ライセンスです。AI アプリ、コーディングアシスタント、またはゲートウェイにプロバイダー設定画面を追加するすべての人を対象としています。**108 プロバイダー、142 エンドポイント** を収録しています。
 
-各プロバイダーのエントリは、自身のエンドポイント、認証方式、フォーム項目、クォータのメタデータを備え、該当する場合にリスクフラグを付けています。7 つのエージェントランタイムは、それぞれインストール、セッション、設定のメタデータを備えています。
+各プロバイダーのエントリは、自身のエンドポイント、認証方式、フォーム項目、クォータのメタデータを備え、該当する場合にリスクフラグを付けています。
 
 ## Demo
 
 ライブデモ（English / 中文）：<https://lawson2019.github.io/llm-provider-kit/>
 
-![プロバイダー設定 UI](docs/preview.png)
+![プロバイダー設定 UI](docs/preview.svg)
 
-## エージェントに渡すプロンプト
+## コーディングアシスタントに渡すプロンプト
 
-以下のプロンプトを任意のコーディングエージェントに貼り付けると、あなたのプロジェクト向けのプロバイダー設定 UI を生成できます。リポジトリのクローンは不要です。
+以下のプロンプトを任意のコーディングアシスタントに貼り付けると、あなたのプロジェクト向けのプロバイダー設定 UI を生成できます。リポジトリのクローンは不要です。
 
 ```text
 あなたは私のプロジェクトに LLM プロバイダー設定 UI を追加します。リポジトリをクローンしないで、以下の公開 URL だけを取得してください。
@@ -27,7 +27,6 @@ LLM プロバイダーとエージェントランタイムのメタデータレ�
 
 3. manifest に記載されたレジストリデータを取得してください：
    - プロバイダー：https://lawson2019.github.io/llm-provider-kit/data/providers.json
-   - エージェントランタイム：https://lawson2019.github.io/llm-provider-kit/data/agents.json
    - ティア：https://lawson2019.github.io/llm-provider-kit/data/tiers.json
    - スキーマ：https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
    Pages の URL が利用できない場合は、https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<相対パス> を使用してください。
@@ -40,9 +39,9 @@ LLM プロバイダーとエージェントランタイムのメタデータレ�
    - プロバイダーごとのエンドポイント選択。レジストリが定義するエンドポイントとフィールドのみを使用してください（プロトコル、baseURL、パス、課金方式、およびそのプロバイダー固有のフィールド）。レジストリが定義していないプランやリージョンの選択ピッカーは追加しないでください。
    - レジストリから導出した認証ヘッダー。エンドポイントレベルのルールはプロバイダーレベルの方式より優先されます。
    - シークレットをマスクしたリクエストプレビュー。
-   - ?provider=<id> と ?agent=<id> を使ったディープリンク。ID は providers.json と agents.json からのみ取得してください。
+   - ?provider=<id> を使ったディープリンク。ID は providers.json からのみ取得してください。
 
-6. 各エントリが定義するフィールドのみを描画して、プロバイダー、エージェント、エンドポイント、ティア、フィールド、ステータスラベルを自作しないでください。完了前に、プロバイダー、エージェント、エンドポイントの件数を manifest と照合してください。一致しない場合は、穴埋めせずに停止して不一致を報告してください。
+6. 各エントリが定義するフィールドのみを描画して、プロバイダー、エンドポイント、ティア、フィールド、ステータスラベルを自作しないでください。完了前に、プロバイダーとエンドポイントの件数を manifest と照合してください。一致しない場合は、穴埋めせずに停止して不一致を報告してください。
 ```
 
 ## 生成できるもの
@@ -53,7 +52,7 @@ LLM プロバイダーとエージェントランタイムのメタデータレ�
 - **ティア**：Starter（12）、Mainstream（37）、Full（全 108）。
 - **認証ヘッダー**：レジストリの認証方式に沿って認証情報を付与します。
 - **リクエストプレビュー**：組み立てた URL とヘッダーを表示し、シークレットはマスクします。
-- **ディープリンク**：`?provider=` / `?agent=` で特定のプロバイダーやエージェントを開きます。
+- **ディープリンク**：`?provider=` で特定のプロバイダーを開きます。
 
 ## リンク
 
@@ -61,7 +60,6 @@ LLM プロバイダーとエージェントランタイムのメタデータレ�
 - [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json)
 - [llms.txt](https://lawson2019.github.io/llm-provider-kit/llms.txt)
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
-- [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)
 - [provider.schema.json](https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json)
 - [SKILL.md](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md)

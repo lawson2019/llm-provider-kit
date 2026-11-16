@@ -18,7 +18,6 @@
 mkdir -p /tmp/llm-providers
 curl -fsSL https://lawson2019.github.io/llm-provider-kit/data/providers.json -o /tmp/llm-providers/providers.json
 curl -fsSL https://lawson2019.github.io/llm-provider-kit/data/tiers.json    -o /tmp/llm-providers/tiers.json
-curl -fsSL https://lawson2019.github.io/llm-provider-kit/data/agents.json  -o /tmp/llm-providers/agents.json
 
 node skills/llm-provider-kit/scripts/scaffold.mjs \
   --data /tmp/llm-providers/providers.json \

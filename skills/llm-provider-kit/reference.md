@@ -74,14 +74,14 @@
 
 ### 2.2 `category` 归类
 
-`global` 海外 · `china` 国内 · `aggregator` 聚合 / 中转 · `local` 本地 · `agent` Agent / 桌面会话。
+`global` 海外 · `china` 国内 · `aggregator` 聚合 / 中转 · `local` 本地。
 
 ### 2.3 计费 `billing.mode` / 额度 `quota.type`
 
 | billing.mode | 含义 |
 |---|---|
 | `payg` | 按量计费 / API Key 余额 |
-| `subscription` | 订阅制（Coding Plan、Agent Plan、桌面会员） |
+| `subscription` | 订阅制（Coding Plan、桌面会员） |
 | `free` | 免费 / 本地自托管 |
 | `mixed` | 混合（免费额度 + 付费额度） |
 | `unknown` | 未确认 |
@@ -155,7 +155,7 @@
 
 ```js
 import {
-  createRegistry,        // (data) => { providers, agents, getProvider, getAgent, ... }
+  createRegistry,        // (data) => { providers, getProvider, listProviders, stats }
   getFormFields,         // (provider) => 补齐并排序后的字段列表
   groupFormFields,       // (fields) => { auth: [], endpoint: [], ... }
   resolveEndpoint,       // (provider, values) => 选中的接入面

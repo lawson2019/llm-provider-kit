@@ -196,13 +196,12 @@ async function main() {
   list                     列出 Provider（默认）
   show <id|alias>          查看单条详情、表单字段与备注
   fields <id|alias>        只输出表单字段 / 示例请求配置
-  validate                 校验 data/*.json，CI 用
+  validate                 校验 data/providers.json，CI 用
   stats                    统计分类 / 鉴权 / 额度分布
-  agents                   列出 Agent 运行时清单
   export --format json|ts --out <path>   导出数据
 
 过滤（list / stats）
-  --category china|global|aggregator|local|agent
+  --category china|global|aggregator|local
   --kind api|gateway|local|session
   --auth api-key|oauth|device-code|browser-cookie|local-session|none
       也可以按 wire scheme 过滤：bearer|api-key-header|query-param|aws-sigv4|azure-api-key|cookie|jwt-session|none
@@ -222,7 +221,7 @@ async function main() {
     return;
   }
 
-  const { registry, providersData, agentsData } = await loadRegistry();
+  const { registry, providersData } = await loadRegistry();
   const providers = registry.providers;
 
   switch (command) {
@@ -271,15 +270,15 @@ async function main() {
         console.log(JSON.stringify(result, null, 2));
       } else {
         console.log(
-          `${c.bold('校验')}  providers=${result.stats.providers}  agents=${result.stats.agents}`,
+          `${c.bold('校验')}  providers=${result.stats.providers}`,
         );
-        for (const item of [...result.providers.errors, ...result.agents.errors]) {
+        for (const item of result.providers.errors) {
           console.log(`${c.red('error')}  ${item}`);
         }
-        for (const item of [...result.providers.warnings, ...result.agents.warnings]) {
+        for (const item of result.providers.warnings) {
           console.log(`${c.yellow('warn')}   ${item}`);
         }
-        console.log(result.ok ? c.green(`\n通过（${result.providers.warnings.length + result.agents.warnings.length} 条提醒）`) : c.red('\n未通过'));
+        console.log(result.ok ? c.green(`\n通过（${result.providers.warnings.length} 条提醒）`) : c.red('\n未通过'));
       }
       if (!result.ok) process.exitCode = 1;
       break;
@@ -317,24 +316,6 @@ async function main() {
       break;
     }
 
-    case 'agents': {
-      const list = registry.listAgents();
-      if (values.json) {
-        console.log(JSON.stringify(list, null, 2));
-      } else {
-        for (const agent of list) {
-          const transports = (agent.transports ?? (agent.transport ? [agent.transport] : [])).join('+') || '-';
-          const protocols = (agent.protocols ?? []).join(',') || '-';
-          const backend = agent.runtime?.backendMode ? ` [${agent.runtime.backendMode}]` : '';
-          console.log(
-            `${c.cyan(pad(agent.id, 16))} ${pad(agent.name, 18)} ${pad(agent.kind, 8)} ${pad(transports, 10)} ${protocols}${backend}`,
-          );
-        }
-        console.log(c.dim(`\n共 ${list.length} 个 Agent / 运行时`));
-      }
-      break;
-    }
-
     case 'export': {
       const format = values.format ?? 'json';
       if (!['json', 'ts'].includes(format)) {
@@ -345,8 +326,8 @@ async function main() {
       const outPath = path.resolve(values.out ?? `dist/providers.${format}`);
       const payload =
         format === 'json'
-          ? JSON.stringify({ ...providersData, agents: agentsData.agents }, null, 2)
-          : toTypeScriptModule(providersData, agentsData);
+          ? JSON.stringify(providersData, null, 2)
+          : toTypeScriptModule(providersData);
       await mkdir(path.dirname(outPath), { recursive: true });
       await writeFile(outPath, `${payload}\n`, 'utf8');
       console.log(`${c.green('已导出')} ${outPath}`);

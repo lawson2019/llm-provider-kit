@@ -1,7 +1,7 @@
 ---
 name: llm-provider-kit
 display_name: "LLM Provider 配置页生成"
-description: "从公开的 LLM Provider 注册表生成可运行的模型 Key / Provider 配置界面。适用于：给 Agent 面板、ACP 网关、代码代理或 AI 应用添加模型 Key 表单；按项目技术栈（React / Vue / Svelte / 原生 JS / 纯静态 HTML）生成对应表单；需要多 Provider 切换、多接入面选择与脱敏请求预览；需要按 Starter / Mainstream / Full 分层选择 Provider。表单字段、端点、鉴权头与请求预览全部由注册表数据推导，不手写死字段。触发词：Provider 配置页、模型 Key 表单、API Key 配置、Provider Registry、接入大模型、生成配置页、多 Provider 切换、请求预览。"
+description: "从公开的 LLM Provider 注册表生成可运行的模型 Key / Provider 配置界面。适用于：给 AI 应用、编程助手或模型网关添加 Provider Key 表单；按项目技术栈（React / Vue / Svelte / 原生 JS / 纯静态 HTML）生成对应表单；需要多 Provider 切换、多接入面选择与脱敏请求预览；需要按 Starter / Mainstream / Full 分层选择 Provider。表单字段、端点、鉴权头与请求预览全部由注册表数据推导，不手写死字段。触发词：Provider 配置页、模型 Key 表单、API Key 配置、Provider Registry、接入大模型、生成配置页、多 Provider 切换、请求预览。"
 ---
 
 # llm-provider-kit · Provider 配置页生成
@@ -12,12 +12,11 @@ description: "从公开的 LLM Provider 注册表生成可运行的模型 Key / 
 
 ## 1. 数据从哪来（无需 clone 仓库）
 
-注册表是公开静态数据，Agent 可以直接通过 HTTP 读取，**不需要 clone 仓库**。优先用 GitHub Pages 地址，raw 地址作为回退。
+注册表是公开静态数据，任何 AI 编程助手或工具都可以直接通过 HTTP 读取，**不需要 clone 仓库**。优先用 GitHub Pages 地址，raw 地址作为回退。
 
 | 文件 | Pages URL（优先） | raw URL（回退） |
 |---|---|---|
 | providers.json | `https://lawson2019.github.io/llm-provider-kit/data/providers.json` | `https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json` |
-| agents.json | `https://lawson2019.github.io/llm-provider-kit/data/agents.json` | `https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json` |
 | tiers.json | `https://lawson2019.github.io/llm-provider-kit/data/tiers.json` | `https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json` |
 | 本 Skill | `https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md` | `https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md` |
 
@@ -27,16 +26,15 @@ description: "从公开的 LLM Provider 注册表生成可运行的模型 Key / 
 mkdir -p /tmp/llm-providers
 curl -fsSL https://lawson2019.github.io/llm-provider-kit/data/providers.json -o /tmp/llm-providers/providers.json
 curl -fsSL https://lawson2019.github.io/llm-provider-kit/data/tiers.json    -o /tmp/llm-providers/tiers.json
-curl -fsSL https://lawson2019.github.io/llm-provider-kit/data/agents.json  -o /tmp/llm-providers/agents.json
 
 node skills/llm-provider-kit/scripts/scaffold.mjs \
   --data /tmp/llm-providers/providers.json \
   --tier starter --stack react --out ../my-key-page
 ```
 
-**回退方案**：如果公开 URL 不可达，且当前环境能访问本仓库，直接用仓库内 `data/providers.json`（不传 `--data` 即可）。`--data` 指向的目录下若存在同名 `tiers.json` / `agents.json` 会一并使用；否则回退到仓库内置分层与 Agent 清单。
+**回退方案**：如果公开 URL 不可达，且当前环境能访问本仓库，直接用仓库内 `data/providers.json`（不传 `--data` 即可）。`--data` 指向的目录下若存在同名 `tiers.json` 会一并使用；否则回退到仓库内置分层。
 
-数据条数以注册表为准：当前 **108 个 Provider / 7 个 Agent**；分层为 starter 12 / mainstream 37 / full 108。不要自行编造 Provider，也不要修改 `data/providers.json` 的条目内容。
+数据条数以注册表为准：当前 **108 个 Provider / 142 个接入点**；分层为 starter 12 / mainstream 37 / full 108。不要自行编造 Provider，也不要修改 `data/providers.json` 的条目内容。
 
 ## 2. 技术栈决策表
 
@@ -173,7 +171,7 @@ node skills/llm-provider-kit/scripts/scaffold.mjs \
 │   ├── main.* / app.js
 │   ├── styles.css
 │   ├── data/
-│   │   ├── providers.json     # 只含当前 tier 的 Provider 快照（含 agents）
+│   │   ├── providers.json     # 只含当前 tier 的 Provider 快照
 │   │   └── tier.json          # tier 元信息
 │   └── registry/*.mjs         # 浏览器可用的注册表纯函数
 └── ...

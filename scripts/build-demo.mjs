@@ -9,7 +9,7 @@ import { loadRegistry, REPO_ROOT } from '../src/node.mjs';
 import { getFormFields } from '../src/fields.mjs';
 import { getQuotaWarning, providerStats } from '../src/registry.mjs';
 
-const { registry, providersData, agentsData } = await loadRegistry();
+const { registry, providersData } = await loadRegistry();
 
 // 构建时把 favicon 内嵌成 data URI，避免 icon.horse 等外部图源在浏览器里挂起。
 let iconEmbeds = {};
@@ -32,7 +32,6 @@ const payload = {
   updatedAt: providersData.updatedAt,
   stats: providerStats(registry.providers),
   providers,
-  agents: agentsData.agents,
 };
 
 const templatePath = path.join(REPO_ROOT, 'demo/template.html');
@@ -50,6 +49,6 @@ const html = template.replace(placeholder, json);
 await writeFile(outputPath, html, 'utf8');
 const embeddedCount = providers.filter((p) => iconEmbeds[p.id]).length;
 console.log(
-  `demo/index.html 已生成：${providers.length} providers / ${registry.agents.length} agents，` +
+  `demo/index.html 已生成：${providers.length} providers，` +
     `${embeddedCount} 个图标已内嵌，${(html.length / 1024).toFixed(1)} KB`,
 );

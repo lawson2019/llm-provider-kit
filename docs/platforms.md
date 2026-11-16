@@ -1,6 +1,6 @@
 # 平台分发调研与授权缺口 — 2026-11-16
 
-发布物形态：Agent Skill（`SKILL.md` frontmatter `name`/`description` + 脚本 + 公开数据 URL 引用），仓库 `lawson2019/llm-provider-kit`（public，默认分支 `main`）。
+发布物形态：Skill（`SKILL.md` frontmatter `name`/`description` + 脚本 + 公开数据 URL 引用），仓库 `lawson2019/llm-provider-kit`（public，默认分支 `main`）。
 
 > 本轮原则：未实际登录/授权任何第三方平台；未向他人仓库提交 PR/Issue；下表「已上线」仅指仓库与 Pages 已公开可访问，不代表已被各目录收录。所有第三方收录状态均为**待授权 / 待就绪**，未伪造上线。
 
@@ -10,13 +10,13 @@
 |---|---|---|---|---|
 | 1 | GitHub 仓库（repo + Pages） | 已上线（代码与 Demo 公开） | 无（写文件 / 分支 / PR 经 GitHub OAuth 连接器可用） | <https://github.com/lawson2019/llm-provider-kit> ｜ <https://lawson2019.github.io/llm-provider-kit/> |
 | 2 | GitHub tag / Release（v0.6.0） | 待授权（连接器不能打 tag / 建 Release） | 浏览器登录会话、或本机 git 凭据、或 Actions 工作流 + `contents: write`、或带 `repo` 权限的 PAT | <https://github.com/lawson2019/llm-provider-kit/releases> |
-| 3 | skills.sh（Vercel Labs 跨 Agent 目录） | 待就绪（**无需账号/Key**；待 Skill 目录推送到远端后被自动索引） | 前置：远端 public 仓库含可发现的 `SKILL.md`；无提交表单，按安装遥测排名；例行安全审计 | <https://skills.sh> ｜ CLI 源码 <https://github.com/vercel-labs/skills> |
+| 3 | skills.sh（Vercel Labs 跨客户端目录） | 待就绪（**无需账号/Key**；待 Skill 目录推送到远端后被自动索引） | 前置：远端 public 仓库含可发现的 `SKILL.md`；无提交表单，按安装遥测排名；例行安全审计 | <https://skills.sh> ｜ CLI 源码 <https://github.com/vercel-labs/skills> |
 | 4 | ClawHub（OpenClaw 生态市场） | 待授权 | ClawHub 账号并完成 `clawhub login`；发布 owner（个人 handle 或组织内 publisher 角色）；CI 通道需 `CLAWHUB_TOKEN`；上架前自动安全检查，必要时人工审核 | <https://clawhub.ai> ｜ 文档 <https://docs.openclaw.ai/tools/creating-skills> ｜ 发布流程 <https://docs.openclaw.ai/clawhub/publishing> |
 | 5 | Smithery（Skills Registry + MCP 目录） | 待授权 | Smithery 账号（OAuth 登录）或 Smithery API Key（Bearer）；namespace 认领；收录含 `SKILL.md` 的 GitHub 仓库链接。本 Skill 非 MCP Server，MCP 发布通道不适用 | <https://smithery.ai> ｜ CLI 文档 <https://smithery.mintlify.dev/docs/concepts/cli> ｜ Skills API <https://www.smithery.ai/docs/api-reference/skills/create-a-new-skill-deprecated> |
 | 6 | Anthropic 官方目录（Claude Directory） | 待授权 + **形态待改造** | ① Skill 必须打包成 **Plugin bundle**（`Skill 不能单独提交`）；② 付费 Claude 计划（Pro/Max/Ultra/Team/Enterprise，Free 不可提交）；Team/Enterprise 需 Owner 或授予 Directory 权限；③ 公开 GitHub 仓库；④ 新上架经人工审核。另有 Skills API 仅上传到自有 workspace，不是公开目录 | 开发者门户 <https://claude.ai/directory/manage> ｜ 发布说明 <https://claude.com/docs/directory/publish> ｜ 插件构建 <https://claude.com/docs/plugins/quickstart> |
 | 7 | 社区 awesome 聚合仓（如 VoltAgent/awesome-agent-skills） | 待授权（未提交 PR） | GitHub 账号 fork + PR；维护者人工审核；要求 public 可用、有文档、**已有真实社区使用**，全新仓不收；条目 ≤10 词描述 | <https://github.com/VoltAgent/awesome-agent-skills> ｜ 贡献规范 <https://github.com/VoltAgent/awesome-agent-skills/blob/main/CONTRIBUTING.md> |
-| 8 | MCP Registry（官方 MCP Server 目录） | 不适用 | 形态不符：收录 MCP Server（`server.json` + npm/PyPI/NuGet/OCI/MCPB 包或远程端点），不收 Agent Skill。若未来包一层 MCP Server，再走 `mcp-publisher login github` + `publish` | <https://registry.modelcontextprotocol.io> ｜ 快速上手 <https://modelcontextprotocol.io/registry/quickstart> |
-| 9 | agentskills.io（开放规范站） | 不适用 | 仅为 Agent Skills 格式规范与客户端展示，无第三方提交流程 | <https://agentskills.io> |
+| 8 | MCP Registry（官方 MCP Server 目录） | 不适用 | 形态不符：收录 MCP Server（`server.json` + npm/PyPI/NuGet/OCI/MCPB 包或远程端点），不收 Skill。若未来包一层 MCP Server，再走 `mcp-publisher login github` + `publish` | <https://registry.modelcontextprotocol.io> ｜ 快速上手 <https://modelcontextprotocol.io/registry/quickstart> |
+| 9 | agentskills.io（开放规范站） | 不适用 | 仅为 Skill 格式规范与客户端展示，无第三方提交流程 | <https://agentskills.io> |
 
 ---
 
@@ -29,7 +29,7 @@
 - **账号 / Key**：连接器已绑定 OAuth 账号；未使用任何明文 token。
 - **人工审核**：仓库自身 CI（`validate.yml`）跑校验与测试；外部审核不适用。
 - **收录形态**：public Git 仓库，目录内 `SKILL.md` + 脚本 + 数据 JSON。
-- **现状**：main HEAD `41ac2b22958ec3da3ddd111ea080f933753e128c`；线上 Demo 108 Provider / 7 Agent；远端 `skills/` 当前仅 `provider-registry-builder/`，新 `skills/llm-provider-kit/` 尚未推送。
+- **现状**：当前构建产物为 108 Provider / 142 接入点；`skills/llm-provider-kit/` 与兼容入口 `skills/provider-registry-builder/` 均已在 `main`。
 
 ### 2. GitHub tag / Release —— 待授权（连接器能力缺口）
 
@@ -38,7 +38,7 @@
 ### 3. skills.sh —— 待就绪，无需账号授权
 
 - **入口**：<https://skills.sh>；CLI 开源于 <https://github.com/vercel-labs/skills>。
-- **提交机制**：**无独立提交表单**。CLI/站点从 public GitHub 仓库自动索引标准位置下的 `SKILL.md`（根目录、`skills/`、`.agents/skills/`、`.claude/skills/` 等 60+ 路径，目录内最深三层）；也可用根目录 `skills.sh.json` 的 `paths` 声明自定义目录。安装命令 `npx skills add <owner/repo>`。
+- **提交机制**：**无独立提交表单**。CLI/站点从 public GitHub 仓库自动索引标准位置下的 `SKILL.md`（根目录、`skills/`、`.claude/skills/` 等 60+ 路径，目录内最深三层）；也可用根目录 `skills.sh.json` 的 `paths` 声明自定义目录。安装命令 `npx skills add <owner/repo>`。
 - **账号 / Key**：发现与索引不需要账号；排名基于匿名安装遥测。
 - **人工审核**：例行安全审计；官方说明不保证每个 Skill 的质量，安装前需自行审查。
 - **收录形态**：GitHub 仓库链接（不镜像内容），按仓库内 Skill 目录展示。
@@ -70,7 +70,7 @@
 - **提交机制**：门户网页表单 `Submit new` → 选 **Plugin bundle** 或 **MCP connector**。**Skill 不是独立提交类型**，必须放进插件包：`.claude-plugin/plugin.json` 清单 + `skills/<name>/SKILL.md` + README（≥40 词）+ LICENSE；仓库上线前必须 public。
 - **账号 / Key**：claude.ai 账号；**付费计划** Pro / Max / Ultra / Team / Enterprise，Free 不可提交；Team/Enterprise 需 Owner，或 Owner 在组织角色中授予 Directory 权限；listing 归属于提交时所在组织，同一仓库目录首个提交的组织持有该条目。
 - **人工审核**：每个版本自动校验 + 安全扫描；**新 listing 上架前有人工审核**；审核时长不固定，状态在门户跟踪。
-- **收录形态**：Plugin bundle（可内含 skills / commands / agents / hooks / MCP 引用）。
+- **收录形态**：Plugin bundle（可内含 skills / commands / hooks / MCP 引用）。
 - **补充通道（非公开目录）**：Claude Skills API `POST /v1/skills`（`x-api-key` + beta header）只能把自定义 Skill 上传到**自己的 workspace**，不形成公开目录收录。
 - **缺口 / 下一步**：① 把 Skill 包装成插件包（补 `plugin.json`、README、LICENSE 字段，`claude plugin validate` 通过）；② 由符合计划与角色的 claude.ai 账号在门户提交；③ 等待审核。本轮未做插件打包、未登录门户。
 - **另注**：`anthropics/skills` 是 Anthropic 官方示例仓，README 仅说明「看到优秀 Partner Skill 会在此高亮」，无开放第三方提交队列。
@@ -87,7 +87,7 @@
 ### 8. MCP Registry（官方）—— 不适用
 
 - **入口**：<https://registry.modelcontextprotocol.io>；快速上手 <https://modelcontextprotocol.io/registry/quickstart>。
-- **收录形态**：MCP Server 元数据目录（`server.json` + npm / PyPI / NuGet / OCI / MCPB 包，或公开远程端点）；**不收录 Agent Skill**。
+- **收录形态**：MCP Server 元数据目录（`server.json` + npm / PyPI / NuGet / OCI / MCPB 包，或公开远程端点）；**不收录 Skill**。
 - **提交机制（仅备查）**：`mcp-publisher` CLI → `login github`（设备码 OAuth）→ `publish`；GitHub 认证下命名空间须为 `io.github.<username>/*`；包类型有归属校验（npm 用 `package.json` 的 `mcpName` 等）。
 - **判定**：当前发布物是 Skill，形态不符，**不适用**。若后续把注册表查询能力包成一个 MCP Server，再评估此通道。
 

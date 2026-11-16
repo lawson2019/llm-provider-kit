@@ -24,27 +24,18 @@ export function getProviderEndpoints(provider) {
 
 export function createRegistry(data) {
   const providers = data?.providers ?? [];
-  const agents = data?.agents ?? [];
   const byId = new Map(providers.map((p) => [p.id, p]));
   const byAlias = new Map(
     providers.flatMap((p) => (p.aliases ?? []).map((alias) => [alias, p])),
   );
-  const agentsById = new Map(agents.map((a) => [a.id, a]));
 
   return {
     providers,
-    agents,
     getProvider(id) {
       return byId.get(id) ?? byAlias.get(id) ?? null;
     },
-    getAgent(id) {
-      return agentsById.get(id) ?? null;
-    },
     listProviders(filter = {}) {
       return filterProviders(providers, filter);
-    },
-    listAgents(filter = {}) {
-      return filterAgents(agents, filter);
     },
     stats() {
       return providerStats(providers);
@@ -106,31 +97,6 @@ export function filterProviders(providers, filter = {}) {
       .join(' ')
       .toLowerCase();
 
-    return haystack.includes(q);
-  });
-}
-
-export function filterAgents(agents, filter = {}) {
-  const q = filter.q?.trim().toLowerCase();
-  return agents.filter((agent) => {
-    if (filter.kind && agent.kind !== filter.kind) return false;
-    if (filter.protocol && !(agent.protocols ?? []).includes(filter.protocol)) return false;
-    if (filter.transport && !(agent.transports ?? []).includes(filter.transport)) return false;
-    if (filter.surface && !(agent.surfaces ?? []).includes(filter.surface)) return false;
-    if (!q) return true;
-    const haystack = [
-      agent.id,
-      agent.name,
-      agent.vendor,
-      ...(agent.transports ?? []),
-      ...(agent.protocols ?? []),
-      ...(agent.surfaces ?? []),
-      agent.runtime?.binary,
-      ...(agent.notes ?? []),
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase();
     return haystack.includes(q);
   });
 }

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.7.0
+
+### Changed
+
+- **收敛为 Provider-only（breaking）**：注销第二数据域（运行时清单），Demo 移除对应页签、统计、详情与深链；`src/`、`bin/`、`types/`、`scripts/` 只保留 Provider 读取、校验与导出路径。
+- 默认 `README.md` 改为简体中文；英文版迁至 `README.en.md`，日 / 韩 / 西 / 法四份同步改为只描述 Provider。
+- Demo 介绍区统计改为「Provider / 接入点」两块，提示词改为 manifest 先行、只拉 providers / tiers / schema。
+- `manifest.json` 更新为 0.7.0、108 Provider / 142 接入点，`agentPrompt` 改为 `providerPrompt`。
+
+### Removed
+
+- `data/agents.json` 及 `package.json` 对应 `exports` 入口。
+- 运行时清单相关的类型声明、`createRegistry` 字段、查询函数、CLI `agents` 命令、Schema 校验器与词汇。
+- Pages / build-demo / validate 工作流中的运行时清单路径与命令。
+- 旧 `docs/release-0.6.0.md`，以 `docs/release-0.7.0.md` 替代。
+
 ## 0.6.0
 
 ### Changed

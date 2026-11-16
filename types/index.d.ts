@@ -1,5 +1,5 @@
 export type ProviderKind = 'api' | 'gateway' | 'local' | 'session';
-export type ProviderCategory = 'global' | 'china' | 'aggregator' | 'local' | 'agent';
+export type ProviderCategory = 'global' | 'china' | 'aggregator' | 'local';
 export type AuthMode = 'api-key' | 'oauth' | 'device-code' | 'browser-cookie' | 'local-session' | 'none';
 export type AuthScheme =
   | 'bearer'
@@ -33,10 +33,6 @@ export type RiskVariant =
   | 'local-session'
   | 'deprecated'
   | 'unsupported';
-export type AgentTransport = 'stdio' | 'http' | 'ssh' | 'desktop' | 'none';
-export type AgentProtocol = 'acp' | 'mcp' | 'jsonl' | 'rest' | 'pty' | 'native';
-export type AgentBackendMode = 'acp' | 'stdio-adapter' | 'native' | 'none';
-export type AgentSurface = 'catalog' | 'detect' | 'run' | 'configure' | 'generate';
 
 export interface SelectOption {
   label: string;
@@ -180,59 +176,16 @@ export interface Provider {
   tags?: string[];
 }
 
-export interface AgentRuntime {
-  binary?: string;
-  versionArgs?: string[];
-  spawnArgs?: string[];
-  backendMode?: AgentBackendMode;
-}
-
-export interface AgentConfigure {
-  paths?: Partial<Record<'linux' | 'darwin' | 'win32', string[]>>;
-  recipe?: string;
-}
-
-export interface AgentEntry {
-  id: string;
-  name: string;
-  vendor?: string;
-  kind: 'cli' | 'desktop' | 'runtime' | 'panel';
-  transports: AgentTransport[];
-  protocols: AgentProtocol[];
-  install?: { npm?: string; docs?: string };
-  session?: {
-    persistent: boolean;
-    resumeAfterRestart: boolean;
-    credential: 'none' | 'oauth' | 'jwt-session' | 'api-key';
-  };
-  runtime?: AgentRuntime;
-  configure?: AgentConfigure;
-  providerAlias?: string;
-  surfaces?: AgentSurface[];
-  quota?: { type: string; note?: string };
-  notes?: string[];
-  links?: Array<{ label: string; url: string }>;
-}
-
 export interface RegistryData {
   schemaVersion: number;
   updatedAt: string;
   providers: Provider[];
 }
 
-export interface AgentsData {
-  schemaVersion: number;
-  updatedAt: string;
-  agents: AgentEntry[];
-}
-
 export interface Registry {
   providers: Provider[];
-  agents: AgentEntry[];
   getProvider(id: string): Provider | null;
-  getAgent(id: string): AgentEntry | null;
   listProviders(filter?: ProviderFilter): Provider[];
-  listAgents(filter?: AgentFilter): AgentEntry[];
   stats(): RegistryStats;
 }
 
@@ -246,14 +199,6 @@ export interface ProviderFilter {
   quota?: QuotaType | BillingMode;
   billing?: BillingMode;
   protocol?: Protocol;
-}
-
-export interface AgentFilter {
-  q?: string;
-  kind?: AgentEntry['kind'];
-  protocol?: AgentProtocol;
-  transport?: AgentTransport;
-  surface?: AgentSurface;
 }
 
 export interface RegistryStats {
@@ -294,12 +239,10 @@ export declare function inferBillingMode(provider: Provider): BillingMode;
 
 export declare function createRegistry(data: {
   providers: Provider[];
-  agents?: AgentEntry[];
 }): Registry;
 
 export declare function getProviderEndpoints(provider: Provider): ProviderEndpoint[];
 export declare function filterProviders(providers: Provider[], filter?: ProviderFilter): Provider[];
-export declare function filterAgents(agents: AgentEntry[], filter?: AgentFilter): AgentEntry[];
 export declare function providerStats(providers: Provider[]): RegistryStats;
 export declare function getQuotaWarning(provider: Provider): QuotaWarning | null;
 
@@ -352,7 +295,3 @@ export declare const FIELD_GROUPS: Record<FieldGroup, string>;
 export declare const QUOTA_TYPES: Record<QuotaType, string>;
 export declare const RISK_LEVELS: Record<RiskLevel, string>;
 export declare const RISK_VARIANTS: Record<RiskVariant, string>;
-export declare const AGENT_TRANSPORTS: Record<AgentTransport, string>;
-export declare const AGENT_PROTOCOLS: Record<AgentProtocol, string>;
-export declare const AGENT_BACKEND_MODES: Record<AgentBackendMode, string>;
-export declare const AGENT_SURFACES: AgentSurface[];

@@ -1,16 +1,16 @@
-# 安装与引用指南 — llm-provider-kit 0.6.0
+# 安装与引用指南 — llm-provider-kit 0.7.0
 
 仓库：<https://github.com/lawson2019/llm-provider-kit>（public，默认分支 `main`）
 Skill 目录：`skills/llm-provider-kit/`（已在 `main` 上，Pages 与 raw 均可直接读取）
 兼容旧入口：`skills/provider-registry-builder/`（脚本转发到根 `scripts/scaffold.mjs`，保留兼容）。
 
-> 远端基线（2026-11-16 只读核验）：`skills/llm-provider-kit/` 已在 `main` 上，raw 与 Pages 地址均实测 200，本文方法 a / b / c 中的链接当前全部可用。版本以 `main` 最新提交为准；生产使用请钉 Release tag `v0.6.0` 或具体提交 SHA。
+> 远端基线（2026-11-17 只读核验）：`skills/llm-provider-kit/` 已在 `main` 上，raw 与 Pages 地址均实测 200，本文方法 a / b / c 中的链接当前全部可用。版本以 `main` 最新提交为准；生产使用请钉具体提交 SHA（Release 标签以仓库 Releases 页为准）。
 
 ---
 
-## 方式 a：直接让 Agent 读 raw SKILL.md（不克隆仓库）
+## 方式 a：直接让 AI 编程助手读 raw SKILL.md（不克隆仓库）
 
-Agent 只需要指令与元数据时，把 raw `SKILL.md` 地址交给它读取；脚本与数据按需从公开 URL 拉取。
+只需要指令与元数据时，把 raw `SKILL.md` 地址交给编程助手读取；脚本与数据按需从公开 URL 拉取。
 
 ```text
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md
@@ -26,7 +26,6 @@ https://raw.githubusercontent.com/lawson2019/llm-provider-kit/<SHA>/skills/llm-p
 
 ```text
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json
-https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/schemas/provider.schema.json
 ```
@@ -55,14 +54,14 @@ cd llm-provider-kit
 git sparse-checkout set skills/llm-provider-kit data
 ```
 
-### 各 Agent 的 skills 目录对照
+### 各客户端的 skills 目录对照
 
 `SKILL.md` 放在下列任一标准位置即可被对应客户端发现（目录名与 frontmatter `name` 保持一致）：
 
-| Agent / 客户端 | 目录 |
+| 客户端 | 目录 |
 |---|---|
 | Claude Code | `.claude/skills/<name>/` |
-| 通用 Agent 约定 | `.agents/skills/<name>/`、`skills/<name>/` |
+| 通用约定 | `skills/<name>/` |
 | Continue | `.continue/skills/<name>/` |
 | Windsurf | `.windsurf/skills/<name>/` |
 | Cursor / Codex / OpenCode / Copilot / Gemini CLI 等 | 对应各自 skills 目录；跨端安装可用 `npx skills add`（见下） |
@@ -71,14 +70,14 @@ git sparse-checkout set skills/llm-provider-kit data
 
 ```bash
 npx skills add lawson2019/llm-provider-kit
-# 选择具体 Skill 与目标 Agent：
-npx skills add lawson2019/llm-provider-kit --skill llm-provider-kit -a claude-code
+# 指定 Skill（目标客户端按 CLI 提示选择）：
+npx skills add lawson2019/llm-provider-kit --skill llm-provider-kit
 ```
 
 ### 复制后验收
 
 1. 目录内含 `SKILL.md`，frontmatter 有 `name: llm-provider-kit` 与一行 `description`；
-2. 数据条数与基线一致：`providers` 108、`agents` 7、tiers `starter` 12 / `mainstream` 37 / `full` 108；
+2. 数据条数与基线一致：`providers` 108、接入点 142、tiers `starter` 12 / `mainstream` 37 / `full` 108；
 3. 仓库根目录跑 `node bin/cli.mjs validate` 通过；
 4. 未带入任何真实 Key / JWT / Cookie。
 
@@ -91,8 +90,6 @@ npx skills add lawson2019/llm-provider-kit --skill llm-provider-kit -a claude-co
 mkdir -p ./registry-data
 curl -fsSL -o ./registry-data/providers.json \
   https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json
-curl -fsSL -o ./registry-data/agents.json \
-  https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json
 curl -fsSL -o ./registry-data/tiers.json \
   https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json
 
@@ -120,10 +117,10 @@ import { getFormFields, resolveEndpoint, buildRequestConfig } from 'llm-provider
 
 ## 兼容旧入口
 
-旧 Skill `provider-registry-builder` 的指令与脚本仍在 `skills/provider-registry-builder/`，其 `scripts/scaffold.mjs` 转发到根 `scripts/scaffold.mjs`。新接入请以 `llm-provider-kit` 为准；旧引用在 0.6.0 仍可用，后续版本可能移除。
+旧 Skill `provider-registry-builder` 的指令与脚本仍在 `skills/provider-registry-builder/`，其 `scripts/scaffold.mjs` 转发到根 `scripts/scaffold.mjs`。新接入请以 `llm-provider-kit` 为准；旧引用在 0.7.0 仍可用，后续版本可能移除。
 
 ## 常见问题
 
-- **raw 链接 404**：`skills/llm-provider-kit/` 已在 `main` 上；若仍 404，通常是路径拼错或钉住的 SHA 早于该目录合入——改用 `main` 或 `v0.6.0` 再取一次。
+- **raw 链接 404**：`skills/llm-provider-kit/` 已在 `main` 上；若仍 404，通常是路径拼错或钉住的 SHA 早于该目录合入——改用 `main` 或某个已知提交 SHA 再取一次。
 - **条数对不上**：main-ref 可能命中边缘缓存；改用提交 SHA 取数，或本地跑 `node bin/cli.mjs validate` 核对。
 - **需要鉴权吗**：读取公开仓库与公开数据 URL 不需要账号或 Key；提交 / 发布到各目录才需要对应平台授权（见 `platforms.md`）。

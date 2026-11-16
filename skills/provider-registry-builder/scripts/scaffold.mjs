@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Skill-local wrapper：定位仓库根目录，再把参数透传给根目录生成器。
- * 这样 Agent 可以直接从 skill 目录执行，不必先找到仓库根。
+ * 这样 AI 编程助手可以直接从 skill 目录执行，不必先找到仓库根。
  */
 import { spawnSync } from 'node:child_process';
 import { dirname, resolve } from 'node:path';

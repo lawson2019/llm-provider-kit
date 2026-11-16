@@ -1,20 +1,20 @@
 # llm-provider-kit
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · **Français**
+[English](README.en.md) · [简体中文](README.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · **Français**
 
-Registre de métadonnées de fournisseurs LLM et d'agents runtime, fourni en JSON brut, sans dépendances d'exécution, sous licence MIT. Il s'adresse à toute personne qui ajoute un écran de configuration des fournisseurs à une application d'IA, un panneau d'agents ou une passerelle : **108 fournisseurs, 7 agents runtime et 142 endpoints**.
+Registre de métadonnées de fournisseurs LLM, fourni en JSON brut, sans dépendances d'exécution, sous licence MIT. Il s'adresse à toute personne qui ajoute un écran de configuration des fournisseurs à une application d'IA, un assistant de programmation ou une passerelle : **108 fournisseurs et 142 endpoints**.
 
-Chaque entrée de fournisseur porte ses propres endpoints, son schéma d'authentification, ses champs de formulaire et ses métadonnées de quota, avec des indicateurs de risque lorsque cela est pertinent. Les sept agents runtime portent leurs propres métadonnées d'installation, de session et de configuration.
+Chaque entrée de fournisseur porte ses propres endpoints, son schéma d'authentification, ses champs de formulaire et ses métadonnées de quota, avec des indicateurs de risque lorsque cela est pertinent.
 
 ## Demo
 
 Démo en ligne (English / 中文) : <https://lawson2019.github.io/llm-provider-kit/>
 
-![Interface de configuration des fournisseurs](docs/preview.png)
+![Interface de configuration des fournisseurs](docs/preview.svg)
 
-## Donnez ceci à votre agent
+## Donnez ceci à votre assistant de programmation
 
-Collez le prompt ci-dessous dans n'importe quel agent de code pour générer une interface de configuration des fournisseurs pour votre projet. Aucun clone du dépôt n'est requis.
+Collez le prompt ci-dessous dans n'importe quel assistant de programmation pour générer une interface de configuration des fournisseurs pour votre projet. Aucun clone du dépôt n'est requis.
 
 ```text
 Vous ajoutez une interface de configuration de fournisseurs LLM à mon projet. Ne clonez aucun dépôt ; ne récupérez que les URL publiques ci-dessous.
@@ -27,7 +27,6 @@ Vous ajoutez une interface de configuration de fournisseurs LLM à mon projet. N
 
 3. Récupérez les données du registre listées dans le manifest :
    - Fournisseurs : https://lawson2019.github.io/llm-provider-kit/data/providers.json
-   - Agents runtime : https://lawson2019.github.io/llm-provider-kit/data/agents.json
    - Niveaux : https://lawson2019.github.io/llm-provider-kit/data/tiers.json
    - Schéma : https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
    Si une URL Pages échoue, utilisez https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<chemin-relatif>.
@@ -40,9 +39,9 @@ Vous ajoutez une interface de configuration de fournisseurs LLM à mon projet. N
    - Sélection d'endpoints par fournisseur, en utilisant uniquement les endpoints et champs définis par le registre (protocole, baseURL, chemin, facturation et tout champ spécifique au fournisseur) ; n'ajoutez pas de sélecteurs de plan ou de région non définis par le registre.
    - En-têtes d'authentification dérivés du registre, les règles au niveau de l'endpoint prévalant sur le schéma au niveau du fournisseur.
    - Un aperçu de la requête avec les secrets masqués.
-   - Des liens profonds utilisant ?provider=<id> et ?agent=<id>, les identifiants provenant uniquement de providers.json et agents.json.
+   - Des liens profonds utilisant ?provider=<id>, les identifiants provenant uniquement de providers.json.
 
-6. Affichez uniquement les champs définis par chaque entrée — n'inventez pas de fournisseurs, d'agents, d'endpoints, de niveaux, de champs ni de libellés de statut. Avant de terminer, vérifiez les comptes de fournisseurs, d'agents et d'endpoints contre le manifest ; en cas d'écart, arrêtez-vous et signalez la discordance au lieu de combler les lacunes par devinette.
+6. Affichez uniquement les champs définis par chaque entrée — n'inventez pas de fournisseurs, d'endpoints, de niveaux, de champs ni de libellés de statut. Avant de terminer, vérifiez les comptes de fournisseurs et d'endpoints contre le manifest ; en cas d'écart, arrêtez-vous et signalez la discordance au lieu de combler les lacunes par devinette.
 ```
 
 ## Ce que vous obtenez
@@ -53,7 +52,7 @@ L'interface générée prend en charge cinq stacks — **React · Vue · Svelte 
 - **Niveaux** : Starter (12), Mainstream (37) et Full (les 108).
 - **En-têtes d'authentification** : identifiants ajoutés selon le schéma d'authentification du registre.
 - **Aperçu de la requête** : l'URL et les en-têtes assemblés, secrets masqués.
-- **Liens profonds** : ouverture d'un fournisseur ou d'un agent précis via `?provider=` / `?agent=`.
+- **Liens profonds** : ouverture d'un fournisseur précis via `?provider=`.
 
 ## Liens
 
@@ -61,7 +60,6 @@ L'interface générée prend en charge cinq stacks — **React · Vue · Svelte 
 - [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json)
 - [llms.txt](https://lawson2019.github.io/llm-provider-kit/llms.txt)
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
-- [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)
 - [provider.schema.json](https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json)
 - [SKILL.md](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md)

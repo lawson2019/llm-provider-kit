@@ -65,7 +65,7 @@
   html[data-theme="dark"] .btn.primary { color: #06201c; }
   .btn.primary:hover { color: #fff; filter: brightness(1.04); }
   html[data-theme="dark"] .btn.primary:hover { color: #06201c; }
-  .intro-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .intro-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .stat-box { min-width: 0; padding: 12px 10px; border: 1px solid var(--line); border-radius: 10px;
     background: var(--panel-2); text-align: center; }
   .stat-box strong { display: block; color: var(--accent); font-size: 22px; line-height: 1.1; letter-spacing: -.02em; }
@@ -179,9 +179,6 @@
   .notes ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; }
   .notes li { margin: 3px 0; }
   .empty { padding: 40px 20px; text-align: center; color: var(--muted); }
-  .agent-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; background: var(--panel-2); }
-  .agent-card h3 { margin: 0 0 4px; font-size: 15px; }
-  .agent-card .proto { display: flex; gap: 5px; flex-wrap: wrap; margin: 7px 0; }
   .proto span { font-size: 11px; border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; color: var(--muted); }
   .kv { display: grid; grid-template-columns: 92px 1fr; gap: 4px 10px; font-size: 12.5px; margin-top: 8px; }
   .kv dt { color: var(--muted); }
@@ -194,7 +191,7 @@
     .intro { grid-template-columns: 1fr; gap: 16px; padding: 18px 16px; }
     .intro h2 { font-size: 22px; }
     .lede { font-size: 11.8px; }
-    .intro-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .intro-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .stat-box { padding: 9px 6px; }
     .stat-box strong { font-size: 19px; }
     main { grid-template-columns: minmax(0, 1fr); }
@@ -239,7 +236,6 @@
   </div>
   <div class="intro-stats" aria-label="Registry statistics">
     <div class="stat-box"><strong id="introProviders">—</strong><span id="introProvidersLabel"></span></div>
-    <div class="stat-box"><strong id="introAgents">—</strong><span id="introAgentsLabel"></span></div>
     <div class="stat-box"><strong id="introEndpoints">—</strong><span id="introEndpointsLabel"></span></div>
   </div>
   <div class="intro-meta">
@@ -249,10 +245,6 @@
 </section>
 
 <section class="toolbar">
-  <div class="seg" id="modeSeg">
-    <button data-mode="providers" class="on" id="tabProviders"></button>
-    <button data-mode="agents" id="tabAgents"></button>
-  </div>
   <input class="search" id="search" placeholder="">
   <div class="chips" id="chips"></div>
 </section>
@@ -288,30 +280,27 @@ const I18N = {
     metaDesc: 'AI Provider 的配置元数据：baseURL、鉴权头、多接入点、表单字段与请求预览。无运行时依赖，MIT。',
     ogDesc: '一份可校验、可直接渲染配置表单的 AI Provider 配置注册表。',
     subtitle: '可校验、可直接渲染配置表单的 Provider 元数据 · schema v2',
-    stats: '{n} 个 Provider / {m} 个 Agent',
+    stats: '{n} 个 Provider / {e} 个接入点',
     introEyebrow: 'OPEN PROVIDER REGISTRY · SCHEMA V2',
     introTitle: '一份注册表，生成任意项目的 Provider 配置界面。',
-    introLede: '收录 {p} 个 Provider、{a} 个 Agent 运行时、{e} 个接入点。端点、鉴权、表单和请求预览都由数据推导；字段不写死，密钥不保存。',
+    introLede: '收录 {p} 个 Provider、{e} 个接入点。端点、鉴权、表单和请求预览都由数据推导；字段不写死，密钥不保存。',
     introBrowse: '浏览 Provider',
-    introCopy: '复制 Agent 提示词',
+    introCopy: '复制配置提示词',
     introCopied: '已复制',
     introSkill: '查看 Skill',
     introProviders: 'Provider',
-    introAgents: 'Agent 运行时',
     introEndpoints: '接入点',
     introUpdated: '数据更新：{date}',
     introNote: '公开只读 · 不需要 API Key',
     themeTitle: '切换深浅色',
     langSwitchTo: '切换为 English',
     tabProviders: 'Provider',
-    tabAgents: 'Agent',
-    searchPlaceholder: '搜索 id / 名称 / 别名，例如 kimi、acp、local…',
+    searchPlaceholder: '搜索 id / 名称 / 别名，例如 kimi、openrouter、local…',
     chipAll: '全部 {n}',
     catGlobal: '海外',
     catChina: '国内',
     catAggregator: '聚合',
     catLocal: '本地',
-    catAgent: '会话 / Agent',
     kindApi: '直连 API',
     kindGateway: '聚合网关',
     kindLocal: '本地运行时',
@@ -321,10 +310,8 @@ const I18N = {
     groupModel: '模型',
     groupRuntime: '运行时 / 会话',
     groupAdvanced: '高级',
-    emptyAgent: '没有匹配的 Agent',
     emptyProvider: '没有匹配的 Provider',
     emptyDetailProvider: '选择左侧的 Provider 查看可渲染的配置表单',
-    emptyDetailAgent: '选择左侧的 Agent / 运行时',
     billingBadge: '计费：{mode}',
     endpointCount: '{n} 个接入点',
     show: '显示',
@@ -349,24 +336,6 @@ const I18N = {
     defaultTag: '默认',
     oauthDetail: '　登录发起：{initiate}　轮询：{poll}',
     riskTitle: '风险 {level} / {variant}',
-    kvType: '类型',
-    kvTransport: '传输',
-    kvProtocol: '应用协议',
-    kvBackendMode: '后端模式',
-    kvBinary: '可执行文件',
-    kvInstall: '安装',
-    kvConfigPaths: '配置路径',
-    kvSurfaces: '能力面',
-    kvPersistent: '持久会话',
-    kvResume: '重启恢复',
-    kvCredential: '凭证',
-    kvQuota: '额度',
-    yes: '是',
-    no: '否',
-    transportBadge: '传输：{t}',
-    agentNotesTitle: '说明',
-    agentBanner: '这里列的是 Agent / 运行时，不是模型供应商。它们负责执行任务；模型额度仍由上面 Provider 的配置决定。',
-    pathSep: '；',
     footLeft: 'LLM Provider Kit · 数据来自 {link} · MIT',
     footRight: '接入前请按厂商官方文档复核端点、鉴权与计费。',
     listSep: '、',
@@ -376,30 +345,27 @@ const I18N = {
     metaDesc: 'Configuration metadata for AI providers: baseURL, auth headers, multiple endpoints, form fields and request preview. No runtime dependencies, MIT.',
     ogDesc: 'A verifiable AI provider registry that renders configuration forms directly.',
     subtitle: 'Verifiable provider metadata that renders configuration forms · schema v2',
-    stats: '{n} Providers / {m} Agents',
+    stats: '{n} Providers / {e} endpoints',
     introEyebrow: 'OPEN PROVIDER REGISTRY · SCHEMA V2',
     introTitle: 'One registry. A provider setup screen for any project.',
-    introLede: '108 providers, 7 agent runtimes, 142 endpoints. Endpoints, auth headers, form fields, and request previews are derived from data — no hardcoded fields, no stored keys.',
+    introLede: '{p} providers and {e} endpoints. Endpoints, auth headers, form fields, and request previews are derived from data — no hardcoded fields, no stored keys.',
     introBrowse: 'Browse providers',
-    introCopy: 'Copy Agent prompt',
+    introCopy: 'Copy setup prompt',
     introCopied: 'Copied',
     introSkill: 'Read the Skill',
     introProviders: 'Providers',
-    introAgents: 'Agent runtimes',
     introEndpoints: 'Endpoints',
     introUpdated: 'Updated {date}',
     introNote: 'Public read-only · no API key required',
     themeTitle: 'Toggle light/dark theme',
     langSwitchTo: 'Switch to 中文',
     tabProviders: 'Providers',
-    tabAgents: 'Agents',
-    searchPlaceholder: 'Search id / name / alias, e.g. kimi, acp, local…',
+    searchPlaceholder: 'Search id / name / alias, e.g. kimi, openrouter, local…',
     chipAll: 'All {n}',
     catGlobal: 'Global',
     catChina: 'China',
     catAggregator: 'Aggregator',
     catLocal: 'Local',
-    catAgent: 'Session / Agent',
     kindApi: 'Direct API',
     kindGateway: 'Aggregator Gateway',
     kindLocal: 'Local Runtime',
@@ -409,10 +375,8 @@ const I18N = {
     groupModel: 'Model',
     groupRuntime: 'Runtime / Session',
     groupAdvanced: 'Advanced',
-    emptyAgent: 'No matching agents',
     emptyProvider: 'No matching providers',
     emptyDetailProvider: 'Select a provider on the left to view the configurable form',
-    emptyDetailAgent: 'Select an agent / runtime on the left',
     billingBadge: 'billing: {mode}',
     endpointCount: '{n} endpoints',
     show: 'Show',
@@ -437,41 +401,37 @@ const I18N = {
     defaultTag: 'Default',
     oauthDetail: '  Initiate: {initiate}  Poll: {poll}',
     riskTitle: 'Risk {level} / {variant}',
-    kvType: 'Type',
-    kvTransport: 'Transport',
-    kvProtocol: 'Protocol',
-    kvBackendMode: 'Backend mode',
-    kvBinary: 'Binary',
-    kvInstall: 'Install',
-    kvConfigPaths: 'Config paths',
-    kvSurfaces: 'Surfaces',
-    kvPersistent: 'Persistent session',
-    kvResume: 'Resume after restart',
-    kvCredential: 'Credential',
-    kvQuota: 'Quota',
-    yes: 'Yes',
-    no: 'No',
-    transportBadge: 'transport: {t}',
-    agentNotesTitle: 'Notes',
-    agentBanner: 'These are agents / runtimes, not model providers. They execute tasks; model quota is still governed by the provider configuration above.',
-    pathSep: '; ',
     footLeft: 'LLM Provider Kit · Data from {link} · MIT',
     footRight: 'Before integrating, verify endpoints, auth and billing against the vendor\u2019s official docs.',
     listSep: ', ',
   },
 };
 
-const AGENT_PROMPT = `You are adding an LLM provider configuration UI to my project. Do NOT clone any repository.
+const PROVIDER_PROMPT = `You are adding an LLM provider configuration UI to my project. Do NOT clone any repository; fetch only the public URLs below.
 
-1. Read the manifest first — it carries the version, record counts, and canonical resource URLs:
+1. Read the manifest first — it carries the current version, record counts, and canonical resource URLs. Treat it as the baseline, with Pages as primary and raw.githubusercontent.com as fallback:
    https://lawson2019.github.io/llm-provider-kit/manifest.json
 
 2. Read the Skill guide for field mapping, auth-header rules, endpoint resolution, secret masking, and request-preview rules:
    https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md
 
-3. Fetch providers, agents, tiers, and schema from the manifest's resources.
+3. Fetch the registry data listed in the manifest:
+   - Providers: https://lawson2019.github.io/llm-provider-kit/data/providers.json
+   - Tiers: https://lawson2019.github.io/llm-provider-kit/data/tiers.json
+   - Schema: https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
+   If a Pages URL fails, use https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<relative-path>.
+
 4. Detect my project's stack — React, Vue, Svelte, vanilla JS, or static HTML — and generate a matching provider configuration screen.
-5. Use only endpoints and fields the registry defines; do not add plan or region selectors it does not define. Never invent providers, agents, or endpoints, and never save or send API keys.`;
+
+5. The screen must include:
+   - A searchable provider picker across the full registry.
+   - A key/secret input that is never saved or transmitted anywhere.
+   - Endpoint selection per provider, using only the endpoints and fields the registry defines (protocol, baseURL, path, billing, and any provider-specific field); do not add plan or region selectors the registry does not define.
+   - Auth headers derived from the registry, honoring endpoint-level overrides of the provider-level auth scheme.
+   - A request preview with secrets masked.
+   - Deep links via ?provider=<id>, using only IDs that appear in providers.json.
+
+6. Render only fields defined in the registry — do not invent providers, endpoints, tiers, fields, or status labels. Before finishing, check the provider and endpoint counts against the manifest; if they differ, stop and report the mismatch instead of filling the gaps. Never save, transmit, or log secrets.`;
 
 let lang = detectLang();
 
@@ -490,15 +450,15 @@ function countLabel(key, n) {
 function applyLangState() {
   const url = new URL(location.href);
   url.searchParams.set('lang', lang);
-  // 保留 ?provider= / ?agent= 等既有深链参数，仅更新 lang。
+  // 保留 ?provider= 等既有深链参数，仅更新 lang。
   history.replaceState(null, '', url.pathname + url.search);
   try { localStorage.setItem(LANG_KEY, lang); } catch { /* 隐私模式下忽略 */ }
   document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
 }
 
 const CATEGORY_LABEL = {
-  zh: { global: I18N.zh.catGlobal, china: I18N.zh.catChina, aggregator: I18N.zh.catAggregator, local: I18N.zh.catLocal, agent: I18N.zh.catAgent },
-  en: { global: I18N.en.catGlobal, china: I18N.en.catChina, aggregator: I18N.en.catAggregator, local: I18N.en.catLocal, agent: I18N.en.catAgent },
+  zh: { global: I18N.zh.catGlobal, china: I18N.zh.catChina, aggregator: I18N.zh.catAggregator, local: I18N.zh.catLocal },
+  en: { global: I18N.en.catGlobal, china: I18N.en.catChina, aggregator: I18N.en.catAggregator, local: I18N.en.catLocal },
 };
 const KIND_LABEL = {
   zh: { api: I18N.zh.kindApi, gateway: I18N.zh.kindGateway, local: I18N.zh.kindLocal, session: I18N.zh.kindSession },
@@ -549,11 +509,9 @@ const FOOT_LINK_HTML = '<a href="https://github.com/lawson2019/llm-provider-kit/
 const DEMO_PARAMS = new URLSearchParams(location.search);
 
 const state = {
-  mode: DEMO_PARAMS.get('agent') ? 'agents' : 'providers',
   category: '',
   query: '',
   selectedProvider: DEMO_PARAMS.get('provider') ?? DATA.providers?.[0]?.id ?? null,
-  selectedAgent: DEMO_PARAMS.get('agent') ?? DATA.agents?.[0]?.id ?? null,
   values: {},
   showAdvanced: false,
   errors: {},
@@ -622,7 +580,6 @@ function currentProviders() {
 function renderChips() {
   const chips = document.getElementById('chips');
   chips.replaceChildren();
-  chips.style.display = state.mode === 'agents' ? 'none' : 'flex';
   const all = el('button', `chip${state.category === '' ? ' on' : ''}`, t('chipAll', { n: DATA.providers.length }));
   all.onclick = () => { state.category = ''; renderChips(); renderList(); renderDetail(); };
   chips.appendChild(all);
@@ -648,37 +605,6 @@ function providerBadges(p) {
 function renderList() {
   const list = document.getElementById('list');
   list.replaceChildren();
-
-  if (state.mode === 'agents') {
-    const agents = (DATA.agents ?? []).filter((agent) => {
-      if (!state.query) return true;
-      const hay = [agent.id, agent.name, agent.vendor, ...(agent.transports ?? []), ...(agent.protocols ?? []), ...(agent.notes ?? [])]
-        .join(' ').toLowerCase();
-      return hay.includes(state.query.toLowerCase());
-    });
-    if (!agents.some((a) => a.id === state.selectedAgent)) {
-      state.selectedAgent = agents[0]?.id ?? null;
-    }
-    if (agents.length === 0) {
-      list.appendChild(el('div', 'empty', t('emptyAgent')));
-      return;
-    }
-    for (const agent of agents) {
-      const btn = el('button', `item${state.selectedAgent === agent.id ? ' on' : ''}`);
-      const body = el('div', 'body');
-      body.appendChild(el('div', 'name', agent.name));
-      const meta = el('div', 'meta');
-      meta.appendChild(el('span', '', (agent.transports ?? (agent.transport ? [agent.transport] : [])).join('+') || agent.kind));
-      meta.appendChild(el('span', '', (agent.protocols ?? []).join(' · ') || '—'));
-      if (agent.runtime?.backendMode) meta.appendChild(el('span', '', agent.runtime.backendMode));
-      body.appendChild(meta);
-      const badge = el('span', 'badge', agent.vendor ?? '');
-      btn.append(body, badge);
-      btn.onclick = () => { state.selectedAgent = agent.id; renderList(); renderDetail(); };
-      list.appendChild(btn);
-    }
-    return;
-  }
 
   const providers = currentProviders();
   if (providers.length === 0) {
@@ -1159,73 +1085,8 @@ function renderProviderDetail() {
   detail.appendChild(panel);
 }
 
-function renderAgentDetail() {
-  const detail = document.getElementById('detail');
-  detail.replaceChildren();
-  const agent = (DATA.agents ?? []).find((a) => a.id === state.selectedAgent);
-  if (!agent) {
-    detail.appendChild(el('div', 'empty', t('emptyDetailAgent')));
-    return;
-  }
-  const panel = el('div', 'detail');
-  const h = el('div', 'd-head');
-  const title = el('div', 'd-title');
-  title.appendChild(el('h2', '', agent.name));
-  title.appendChild(el('div', 'd-id', `${agent.id} · ${agent.vendor ?? ''}`));
-  h.appendChild(title);
-  if (agent.links?.[0]) {
-    const link = el('a', 'd-link', `${agent.links[0].label} ↗`);
-    link.href = agent.links[0].url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    h.appendChild(link);
-  }
-  panel.appendChild(h);
-
-  const proto = el('div', 'proto');
-  for (const tr of agent.transports ?? (agent.transport ? [agent.transport] : [])) proto.appendChild(el('span', '', t('transportBadge', { t: tr })));
-  for (const p of agent.protocols ?? []) proto.appendChild(el('span', '', p));
-  panel.appendChild(proto);
-
-  const kv = el('div', 'kv');
-  const row = (k, v) => {
-    kv.appendChild(el('dt', '', k));
-    kv.appendChild(el('dd', '', v));
-  };
-  row(t('kvType'), agent.kind);
-  row(t('kvTransport'), (agent.transports ?? (agent.transport ? [agent.transport] : [])).join(' + ') || '—');
-  row(t('kvProtocol'), (agent.protocols ?? []).join(' · ') || '—');
-  row(t('kvBackendMode'), agent.runtime?.backendMode ?? '—');
-  row(t('kvBinary'), agent.runtime?.binary ?? '—');
-  row(t('kvInstall'), agent.install?.npm ? `npm i -g ${agent.install.npm}` : agent.install?.docs ?? '—');
-  const paths = agent.configure?.paths;
-  row(t('kvConfigPaths'), paths ? Object.entries(paths).map(([platform, list]) => `${platform}: ${list.join(', ')}`).join(t('pathSep')) : '—');
-  row(t('kvSurfaces'), (agent.surfaces ?? []).join(' · ') || '—');
-  row(t('kvPersistent'), agent.session?.persistent ? t('yes') : t('no'));
-  row(t('kvResume'), agent.session?.resumeAfterRestart ? t('yes') : t('no'));
-  row(t('kvCredential'), agent.session?.credential ?? '—');
-  row(t('kvQuota'), agent.quota?.note ?? agent.quota?.type ?? '—');
-  panel.appendChild(kv);
-
-  const notes = el('div', 'notes');
-  const title2 = el('div', 'section-title');
-  title2.appendChild(el('h3', '', t('agentNotesTitle')));
-  notes.appendChild(title2);
-  const ul = el('ul');
-  for (const n of agent.notes ?? []) ul.appendChild(el('li', '', n));
-  notes.appendChild(ul);
-  panel.appendChild(notes);
-
-  const banner = el('div', 'banner');
-  banner.textContent = t('agentBanner');
-  panel.insertBefore(banner, panel.querySelector('.proto'));
-
-  detail.appendChild(panel);
-}
-
 function renderDetail() {
-  if (state.mode === 'providers') renderProviderDetail();
-  else renderAgentDetail();
+  renderProviderDetail();
 }
 
 function applyStaticTexts() {
@@ -1240,23 +1101,18 @@ function applyStaticTexts() {
   document.getElementById('introTitle').textContent = t('introTitle');
   document.getElementById('introLede').textContent = t('introLede', {
     p: DATA.providers.length,
-    a: DATA.agents.length,
     e: endpoints,
   });
   document.getElementById('introBrowse').textContent = t('introBrowse');
   document.getElementById('introCopy').textContent = t('introCopy');
   document.getElementById('introSkill').textContent = t('introSkill');
   document.getElementById('introProviders').textContent = DATA.providers.length;
-  document.getElementById('introAgents').textContent = DATA.agents.length;
   document.getElementById('introEndpoints').textContent = endpoints;
   document.getElementById('introProvidersLabel').textContent = t('introProviders');
-  document.getElementById('introAgentsLabel').textContent = t('introAgents');
   document.getElementById('introEndpointsLabel').textContent = t('introEndpoints');
   document.getElementById('introUpdated').textContent = t('introUpdated', { date: DATA.updatedAt });
   document.getElementById('introNote').textContent = t('introNote');
   document.getElementById('search').placeholder = t('searchPlaceholder');
-  document.getElementById('tabProviders').textContent = t('tabProviders');
-  document.getElementById('tabAgents').textContent = t('tabAgents');
   document.getElementById('themeBtn').title = t('themeTitle');
   const langBtn = document.getElementById('langBtn');
   langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
@@ -1267,7 +1123,8 @@ function applyStaticTexts() {
 
 function renderAll() {
   applyStaticTexts();
-  document.getElementById('stats').textContent = t('stats', { n: DATA.providers.length, m: DATA.agents.length });
+  const endpoints = DATA.providers.reduce((n, provider) => n + (provider.endpoints?.length ?? 0), 0);
+  document.getElementById('stats').textContent = t('stats', { n: DATA.providers.length, e: endpoints });
   renderChips();
   renderList();
   renderDetail();
@@ -1278,17 +1135,6 @@ document.getElementById('search').addEventListener('input', (e) => {
   renderList();
   renderDetail();
 });
-document.getElementById('modeSeg').addEventListener('click', (e) => {
-  const mode = e.target.dataset?.mode;
-  if (!mode) return;
-  state.mode = mode;
-  state.errors = {};
-  document.querySelectorAll('#modeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
-  renderChips();
-  renderList();
-  renderDetail();
-});
-document.querySelectorAll('#modeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === state.mode));
 document.getElementById('themeBtn').addEventListener('click', () => {
   const root = document.documentElement;
   const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -1304,15 +1150,15 @@ document.getElementById('langBtn').addEventListener('click', () => {
 });
 
 let copyResetTimer;
-async function copyAgentPrompt() {
+async function copyProviderPrompt() {
   const button = document.getElementById('introCopy');
   let copied = false;
   try {
-    await navigator.clipboard.writeText(AGENT_PROMPT);
+    await navigator.clipboard.writeText(PROVIDER_PROMPT);
     copied = true;
   } catch {
     const area = document.createElement('textarea');
-    area.value = AGENT_PROMPT;
+    area.value = PROVIDER_PROMPT;
     area.setAttribute('readonly', '');
     area.style.position = 'fixed';
     area.style.opacity = '0';
@@ -1331,7 +1177,7 @@ document.getElementById('introBrowse').addEventListener('click', () => {
   document.querySelector('.toolbar').scrollIntoView({ behavior: 'smooth', block: 'start' });
   document.getElementById('search').focus();
 });
-document.getElementById('introCopy').addEventListener('click', copyAgentPrompt);
+document.getElementById('introCopy').addEventListener('click', copyProviderPrompt);
 
 applyLangState();
 renderAll();

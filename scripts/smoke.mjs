@@ -20,9 +20,8 @@ const { registry } = await loadRegistry();
 const tiersData = JSON.parse(readFileSync(new URL('../data/tiers.json', import.meta.url), 'utf8'));
 const { resolveTierProviders } = await import('../src/tiers.mjs');
 
-// Provider 总数以当前注册表为准，不写死；Agent 清单冻结为 7 条。
+// Provider 总数以当前注册表为准，不写死。
 assert.ok(registry.providers.length > 0, 'Provider 注册表不能为空');
-assert.equal(registry.agents.length, 7, 'Agent 数量应为 7');
 
 // Z.ai：标准 API / Coding Plan OpenAI / Coding Plan Anthropic 三个接入面。
 const zai = registry.getProvider('zai');
@@ -67,17 +66,6 @@ assert.equal(resolveEndpoint(ark, { endpoint: 'coding' }).baseURL, 'https://ark.
 assert.equal(resolveEndpoint(ark, { endpoint: 'agent' }).baseURL, 'https://ark.cn-beijing.volces.com/api/plan/v3');
 assert.equal(registry.getProvider('volcengine-coding-plan').id, 'volcengine-ark');
 assert.equal(registry.getProvider('volcengine-agent-plan').id, 'volcengine-ark');
-
-// Agent manifest：transport 和 protocol 分开。
-const claude = registry.getAgent('claude-code');
-assert.deepEqual(claude.transports, ['stdio']);
-assert.deepEqual(claude.protocols, ['mcp']);
-assert.equal(claude.runtime.backendMode, 'stdio-adapter');
-assert.equal(claude.configure.paths.linux[0], '.claude/settings.json');
-
-const herdr = registry.getAgent('herdr');
-assert.deepEqual(herdr.transports, ['ssh', 'http']);
-assert.deepEqual(herdr.protocols, ['pty', 'rest']);
 
 // ============ 导入条目全量契约（v0.3.1） ============
 const imported = registry.providers.filter((p) => p.tags?.includes('imported'));
@@ -189,4 +177,17 @@ for (const tier of tiersData.tiers) {
 }
 assert.equal(resolveTierProviders(registry.providers, tiersData, 'full').length, registry.providers.length);
 
-console.log(`smoke ok: ${registry.providers.length} providers / ${registry.agents.length} agents / ${imported.length} imported`);
+// 11) 对外计数口径：manifest / llms.txt 必须与数据实测一致，且不再暴露运行时清单
+const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
+const llms = readFileSync(new URL('../llms.txt', import.meta.url), 'utf8');
+const endpointCount = registry.providers.reduce((sum, p) => sum + p.endpoints.length, 0);
+assert.equal(manifest.counts.providers, registry.providers.length, 'manifest Provider 计数');
+assert.equal(manifest.counts.endpoints, endpointCount, 'manifest 接入点计数');
+assert.equal(manifest.counts.agents, undefined, 'manifest 不应再有运行时清单计数');
+assert.equal(manifest.resources.agents, undefined, 'manifest 不应再有运行时清单资源');
+assert.equal(manifest.fallbacks.agents, undefined, 'manifest 不应再有运行时清单回退地址');
+assert.ok(llms.includes(`${registry.providers.length} providers`), 'llms.txt Provider 计数');
+assert.ok(llms.includes(`${endpointCount} endpoints`), 'llms.txt 接入点计数');
+assert.ok(!llms.includes('agents.json'), 'llms.txt 不应再指向运行时清单');
+
+console.log(`smoke ok: ${registry.providers.length} providers / ${imported.length} imported`);

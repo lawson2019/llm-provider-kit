@@ -1,20 +1,20 @@
 # llm-provider-kit
 
-[English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **Español** · [Français](README.fr.md)
+[English](README.en.md) · [简体中文](README.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **Español** · [Français](README.fr.md)
 
-Registro de metadatos de proveedores de LLM y entornos de ejecución de agentes, distribuido como JSON en bruto, sin dependencias en tiempo de ejecución y con licencia MIT. Está pensado para quien vaya a añadir una pantalla de configuración de proveedores a una app de IA, un panel de agentes o una pasarela: **108 proveedores, 7 entornos de ejecución de agentes y 142 endpoints**.
+Registro de metadatos de proveedores de LLM, distribuido como JSON en bruto, sin dependencias en tiempo de ejecución y con licencia MIT. Está pensado para quien vaya a añadir una pantalla de configuración de proveedores a una app de IA, un asistente de programación o una pasarela: **108 proveedores y 142 endpoints**.
 
-Cada entrada de proveedor incluye sus propios endpoints, esquema de autenticación, campos de formulario y metadatos de cuota, con avisos de riesgo cuando procede. Los siete entornos de ejecución de agentes incluyen sus propios metadatos de instalación, sesión y configuración.
+Cada entrada de proveedor incluye sus propios endpoints, esquema de autenticación, campos de formulario y metadatos de cuota, con avisos de riesgo cuando procede.
 
 ## Demo
 
 Demo en vivo (English / 中文): <https://lawson2019.github.io/llm-provider-kit/>
 
-![Interfaz de configuración de proveedores](docs/preview.png)
+![Interfaz de configuración de proveedores](docs/preview.svg)
 
-## Dáselo a tu agente
+## Dáselo a tu asistente de programación
 
-Pega el siguiente prompt en cualquier agente de programación para generar una interfaz de configuración de proveedores para tu proyecto. No es necesario clonar el repositorio.
+Pega el siguiente prompt en cualquier asistente de programación para generar una interfaz de configuración de proveedores para tu proyecto. No es necesario clonar el repositorio.
 
 ```text
 Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto. No clones ningún repositorio; obtén solo las direcciones públicas que se indican a continuación.
@@ -27,7 +27,6 @@ Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto
 
 3. Obtén los datos del registro que figuran en el manifest:
    - Proveedores: https://lawson2019.github.io/llm-provider-kit/data/providers.json
-   - Entornos de ejecución de agentes: https://lawson2019.github.io/llm-provider-kit/data/agents.json
    - Niveles: https://lawson2019.github.io/llm-provider-kit/data/tiers.json
    - Esquema: https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
    Si una dirección de Pages no funciona, usa https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<ruta-relativa>.
@@ -40,9 +39,9 @@ Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto
    - Selección de endpoints por proveedor, usando solo los endpoints y campos definidos por el registro (protocolo, baseURL, ruta, facturación y cualquier campo específico del proveedor); no añadas selectores de plan o región que el registro no defina.
    - Cabeceras de autenticación derivadas del registro, con las reglas a nivel de endpoint prevaleciendo sobre el esquema a nivel de proveedor.
    - Una vista previa de la solicitud con los secretos enmascarados.
-   - Enlaces profundos con ?provider=<id> y ?agent=<id>, cuyos identificadores se toman únicamente de providers.json y agents.json.
+   - Enlaces profundos con ?provider=<id>, cuyos identificadores se toman únicamente de providers.json.
 
-6. Renderiza solo los campos que define cada entrada — no inventes proveedores, agentes, endpoints, niveles, campos ni etiquetas de estado. Antes de terminar, comprueba el recuento de proveedores, agentes y endpoints contra el manifest; si no coinciden, para el proceso y reporta la discrepancia en lugar de rellenar los huecos por adivinación.
+6. Renderiza solo los campos que define cada entrada — no inventes proveedores, endpoints, niveles, campos ni etiquetas de estado. Antes de terminar, comprueba el recuento de proveedores y endpoints contra el manifest; si no coinciden, para el proceso y reporta la discrepancia en lugar de rellenar los huecos por adivinación.
 ```
 
 ## Qué obtienes
@@ -53,7 +52,7 @@ La interfaz generada admite cinco stacks — **React · Vue · Svelte · vanilla
 - **Niveles**: Starter (12), Mainstream (37) y Full (los 108).
 - **Cabeceras de autenticación**: credenciales añadidas según el esquema de autenticación del registro.
 - **Vista previa de la solicitud**: la URL y las cabeceras ensambladas, con los secretos enmascarados.
-- **Enlaces profundos**: abre un proveedor o agente concreto mediante `?provider=` / `?agent=`.
+- **Enlaces profundos**: abre un proveedor concreto mediante `?provider=`.
 
 ## Enlaces
 
@@ -61,7 +60,6 @@ La interfaz generada admite cinco stacks — **React · Vue · Svelte · vanilla
 - [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json)
 - [llms.txt](https://lawson2019.github.io/llm-provider-kit/llms.txt)
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
-- [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)
 - [provider.schema.json](https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json)
 - [SKILL.md](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md)

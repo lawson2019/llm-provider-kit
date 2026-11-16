@@ -22,7 +22,6 @@ export const CATEGORIES = {
   china: '国内厂商',
   aggregator: '聚合 / 中转',
   local: '本地运行时',
-  agent: 'Agent / 桌面会话',
 };
 
 /** 凭证获取方式。它回答「Key 从哪来」，不回答「放在哪个 header」。 */
@@ -49,7 +48,7 @@ export const AUTH_TYPES = {
 
 export const BILLING_MODES = {
   payg: '按量计费 / API Key 余额',
-  subscription: '订阅制（Coding Plan、Agent Plan、桌面会员等）',
+  subscription: '订阅制（Coding Plan、桌面会员等）',
   free: '免费 / 本地自托管',
   mixed: '混合（免费额度 + 付费额度）',
   unknown: '计费方式未确认',
@@ -108,32 +107,6 @@ export const RISK_VARIANTS = {
   deprecated: '已废弃 / 即将下线',
   'unsupported': '非官方支持 / 社区桥接',
 };
-
-export const AGENT_TRANSPORTS = {
-  stdio: '标准输入输出（本地进程）',
-  http: 'HTTP / WebSocket 远程连接',
-  ssh: 'SSH 远程终端',
-  desktop: '桌面客户端',
-  none: '无运行通道（纯面板 / 目录项）',
-};
-
-export const AGENT_PROTOCOLS = {
-  acp: 'Agent Client Protocol（编辑器 / 客户端 ↔ Agent）',
-  mcp: 'Model Context Protocol（工具 / 资源）',
-  jsonl: 'JSONL 事件流',
-  rest: 'REST 管理接口',
-  pty: '伪终端 / 原始终端',
-  native: '厂商私有协议',
-};
-
-export const AGENT_BACKEND_MODES = {
-  acp: '原生 ACP 后端',
-  'stdio-adapter': 'legacy stdio 适配器（不等于原生 ACP）',
-  native: '厂商私有后端',
-  none: '不启动 Agent 进程',
-};
-
-export const AGENT_SURFACES = ['catalog', 'detect', 'run', 'configure', 'generate'];
 
 export const CAPABILITY_KEYS = [
   'streaming',
@@ -685,7 +658,7 @@ export function validateProvider(provider, index = 0, options = {}) {
 }
 
 /**
- * 校验整个注册表（providers + agents 可分别传入）。
+ * 校验 Provider 注册表。
  */
 export function validateRegistry(raw) {
   const errors = [];
@@ -733,136 +706,6 @@ export function validateRegistry(raw) {
         externalIds.set(key, provider.id);
       }
     }
-  });
-
-  return { errors, warnings };
-}
-
-/**
- * 校验 agents.json（Agent / 运行时清单）。
- */
-export function validateAgents(raw) {
-  const errors = [];
-  const warnings = [];
-
-  if (!isObject(raw)) return { errors: ['agents 注册表根节点必须是对象'], warnings };
-  if (![1, 2].includes(raw.schemaVersion)) {
-    errors.push('agents schemaVersion 只支持 1 / 2');
-  }
-  if (!Array.isArray(raw.agents) || raw.agents.length === 0) {
-    errors.push('agents 必须是非空数组');
-    return { errors, warnings };
-  }
-
-  const v2 = raw.schemaVersion >= 2;
-  const ids = new Set();
-  const kinds = new Set(['cli', 'desktop', 'runtime', 'panel']);
-  const legacyProtocols = new Set(['acp', 'mcp', 'stdio', 'http', 'ssh']);
-
-  raw.agents.forEach((agent, index) => {
-    const at = `agents[${index}]`;
-    if (!isObject(agent)) {
-      errors.push(`${at} 不是对象`);
-      return;
-    }
-    if (!isNonEmptyString(agent.id) || !ID_RE.test(agent.id)) {
-      errors.push(`${at}.id 必须是小写 kebab-case`);
-    } else if (ids.has(agent.id)) {
-      errors.push(`agent id 重复：${agent.id}`);
-    } else {
-      ids.add(agent.id);
-    }
-    if (!isNonEmptyString(agent.name)) errors.push(`${at}.name 必填`);
-    if (!kinds.has(agent.kind)) errors.push(`${at}.kind 必须是 ${[...kinds].join(' / ')}`);
-
-    // transports：v2 必填；兼容单数 transport。
-    if (v2 || agent.transports !== undefined || agent.transport !== undefined) {
-      const transports = agent.transports ?? (agent.transport ? [agent.transport] : null);
-      if (!Array.isArray(transports) || transports.length === 0) {
-        errors.push(`${at}.transports 必须是非空数组`);
-      } else {
-        for (const transport of transports) {
-          if (!Object.hasOwn(AGENT_TRANSPORTS, transport)) {
-            errors.push(`${at}.transports 含未知传输：${transport}`);
-          }
-        }
-      }
-    }
-
-    // protocols：只放应用层协议，不再混 stdio/http/ssh。
-    if (!Array.isArray(agent.protocols)) {
-      errors.push(`${at}.protocols 必须是数组`);
-    } else if (agent.protocols.length === 0 && !v2) {
-      warnings.push(`${at}.protocols 为空：确认该 Agent 确实不对外暴露协议`);
-    } else {
-      for (const protocol of agent.protocols) {
-        if (v2 && !Object.hasOwn(AGENT_PROTOCOLS, protocol)) {
-          if (legacyProtocols.has(protocol)) {
-            errors.push(`${at}.protocols 里的 "${protocol}" 是传输层，应放到 transports`);
-          } else {
-            warnings.push(`${at}.protocols 含未知协议：${protocol}`);
-          }
-        } else if (!v2 && !legacyProtocols.has(protocol) && !Object.hasOwn(AGENT_PROTOCOLS, protocol)) {
-          warnings.push(`${at}.protocols 含未知协议：${protocol}`);
-        }
-      }
-    }
-
-    if (agent.runtime !== undefined) {
-      if (!isObject(agent.runtime)) {
-        errors.push(`${at}.runtime 必须是对象`);
-      } else {
-        if (agent.runtime.binary !== undefined && !isNonEmptyString(agent.runtime.binary)) {
-          errors.push(`${at}.runtime.binary 必须是非空字符串`);
-        }
-        for (const key of ['versionArgs', 'spawnArgs']) {
-          if (agent.runtime[key] !== undefined) {
-            if (!Array.isArray(agent.runtime[key]) || !agent.runtime[key].every((v) => typeof v === 'string')) {
-              errors.push(`${at}.runtime.${key} 必须是字符串数组`);
-            }
-          }
-        }
-        if (agent.runtime.backendMode !== undefined && !Object.hasOwn(AGENT_BACKEND_MODES, agent.runtime.backendMode)) {
-          errors.push(`${at}.runtime.backendMode 必须是 ${Object.keys(AGENT_BACKEND_MODES).join(' / ')}`);
-        }
-      }
-    }
-
-    if (agent.configure !== undefined) {
-      if (!isObject(agent.configure)) {
-        errors.push(`${at}.configure 必须是对象`);
-      } else {
-        if (agent.configure.paths !== undefined) {
-          if (!isObject(agent.configure.paths)) {
-            errors.push(`${at}.configure.paths 必须是对象`);
-          } else {
-            for (const [platform, paths] of Object.entries(agent.configure.paths)) {
-              if (!['linux', 'darwin', 'win32'].includes(platform)) {
-                errors.push(`${at}.configure.paths.${platform} 只支持 linux / darwin / win32`);
-              }
-              if (!Array.isArray(paths) || !paths.every((v) => typeof v === 'string' && v.length > 0)) {
-                errors.push(`${at}.configure.paths.${platform} 必须是字符串数组`);
-              }
-            }
-          }
-        }
-        if (agent.configure.recipe !== undefined && !isNonEmptyString(agent.configure.recipe)) {
-          errors.push(`${at}.configure.recipe 必须是非空字符串`);
-        }
-      }
-    }
-
-    if (agent.providerAlias !== undefined && !isNonEmptyString(agent.providerAlias)) {
-      errors.push(`${at}.providerAlias 必须是非空字符串`);
-    }
-
-    if (agent.surfaces !== undefined) {
-      if (!Array.isArray(agent.surfaces) || !agent.surfaces.every((s) => AGENT_SURFACES.includes(s))) {
-        errors.push(`${at}.surfaces 必须是 ${AGENT_SURFACES.join(' / ')} 的子集`);
-      }
-    }
-
-    if (!Array.isArray(agent.notes)) warnings.push(`${at}.notes 建议填写（会话 / 额度注意事项）`);
   });
 
   return { errors, warnings };

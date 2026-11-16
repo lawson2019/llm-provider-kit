@@ -8,8 +8,7 @@
 - 修正 baseURL、鉴权方式、请求头、路径、默认参数；
 - 补充字段（例如 Azure 的 deployment、Bedrock 的 region、OpenRouter 的 referer）；
 - 修正过期条目；更新审计日期 `verifiedAt`；
-- 修正文档、Demo、CLI、校验规则；
-- 新增 Agent 运行时条目（CLI / 桌面 / 运行时 / 控制面板）。
+- 修正文档、Demo、CLI、校验规则。
 
 ## 不要提交
 

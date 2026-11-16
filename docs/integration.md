@@ -233,18 +233,17 @@ const groups = computed(() => groupFormFields(getFormFields(props.provider)));
 </script>
 ```
 
-## 10. 接到 T3 Code / ACP 网关
+## 10. 接到编程助手或网关
 
-配置页产出的是「Provider 描述 + 用户填的值」。真正注入给 Agent 时，通常还要转换一次：
+配置页产出的是「Provider 描述 + 用户填的值」。真正注入给客户端时，通常还要转换一次：
 
 - **环境变量**：`ANTHROPIC_BASE_URL`、`OPENAI_BASE_URL`、`OPENAI_API_KEY`；
-- **CLI 参数**：部分 Agent 支持 `--base-url` / `--api-key`；
-- **ACP Provider 配置**：把 `baseURL` + `endpoint.protocol` + header 写进 Provider 实例；
+- **CLI 参数**：部分客户端支持 `--base-url` / `--api-key`；
 - **网关（Magpie / LiteLLM / OmniRoute）**：把 `baseURL` 与鉴权重定向到网关地址，密钥交给网关保管。
 
-注意：Anthropic Messages 与 OpenAI Chat 的请求体结构不同，不能只换 baseURL。`endpoint.protocol` 要一起透传，由 Agent / 网关选择正确的适配器。
+注意：Anthropic Messages 与 OpenAI Chat 的请求体结构不同，不能只换 baseURL。`endpoint.protocol` 要一起透传，由客户端 / 网关选择正确的适配器。
 
-建议转换层单独实现，不要把这些环境变量名塞进注册表：**同一个 Provider 在不同 Agent 里的注入方式不一样**，注册表只负责「Provider 本身是什么」。
+建议转换层单独实现，不要把这些环境变量名塞进注册表：**同一个 Provider 在不同客户端里的注入方式不一样**，注册表只负责「Provider 本身是什么」。
 
 ## 11. 常见坑
 

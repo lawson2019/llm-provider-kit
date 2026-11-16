@@ -236,7 +236,7 @@
         "name": { "type": "string", "minLength": 1 },
         "aliases": { "type": "array", "items": { "type": "string" } },
         "kind": { "enum": ["api", "gateway", "local", "session"] },
-        "category": { "enum": ["global", "china", "aggregator", "local", "agent"] },
+        "category": { "enum": ["global", "china", "aggregator", "local"] },
         "authType": {
           "enum": [
             "bearer",

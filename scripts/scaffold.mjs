@@ -37,7 +37,7 @@ if (args.includes('--help') || args.includes('-h')) {
   --out     新目录或空目录；非空目录会被拒绝
   --name    带构建链项目的 package 名称，默认 provider-key-page
   --data    自定义 providers.json 路径（可指向刚从公开 URL 下载的快照）；
-            同目录下若有 tiers.json / agents.json 会一并使用
+            同目录下若有 tiers.json 会一并使用
   --tiers   自定义 tiers.json 路径（覆盖 --data 同目录推断）
 
 stack 说明：
@@ -87,10 +87,8 @@ const resolveIfExists = (base, fileName, fallback) => {
 const tiersFile = tiersPathOption
   ? resolve(process.cwd(), tiersPathOption)
   : resolveIfExists(dataDir, 'tiers.json', join(ROOT, 'data/tiers.json'));
-const agentsFile = resolveIfExists(dataDir, 'agents.json', join(ROOT, 'data/agents.json'));
 
 const tiersData = readJson(tiersFile);
-const agentsData = existsSync(agentsFile) ? readJson(agentsFile) : { agents: [] };
 
 const { getTierDefinition, resolveTierProviders } = await import(join(ROOT, 'src/tiers.mjs'));
 
@@ -118,7 +116,6 @@ const providerPayload = {
   schemaVersion: providersData.schemaVersion,
   updatedAt: providersData.updatedAt,
   providers,
-  agents: agentsData.agents ?? [],
 };
 const unsupported = providers.filter((p) => p.risk?.variant === 'unsupported').length;
 const tierMeta = {
@@ -205,7 +202,6 @@ function bundleRegistry(srcDir) {
 const Kit = {
   createRegistry,
   filterProviders,
-  filterAgents,
   providerStats,
   getQuotaWarning,
   getEndpoints,

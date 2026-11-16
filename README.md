@@ -1,75 +1,73 @@
 # llm-provider-kit
 
-**English** · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md)
+[English](README.en.md) · **简体中文** · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md)
 
-A metadata registry for LLM providers and agent runtimes, shipped as plain JSON with no runtime dependencies, MIT licensed. It is for anyone adding a provider configuration screen to an AI app, an agent panel, or a gateway: **108 providers, 7 agent runtimes, and 142 endpoints**.
+一份以纯 JSON 提供、无运行时依赖的 **LLM Provider** 元数据注册表，MIT 协议。适合要给 AI 应用、编程助手或模型网关加上 Provider 配置界面的开发者：**108 个 Provider、142 个接入点**。
 
-Each provider entry carries its own endpoints, auth scheme, form fields, and quota metadata, with risk flags where relevant. The seven agent runtimes carry their own install, session, and configuration metadata.
+每个 Provider 条目收录自己的接入点、鉴权方式、表单字段与额度元信息，并按需标注风险标记。
 
 ## Demo
 
-Live demo (English / 中文): <https://lawson2019.github.io/llm-provider-kit/>
+在线 Demo（English / 中文）：<https://lawson2019.github.io/llm-provider-kit/>
 
-![Provider configuration UI](docs/preview.png)
+![Provider 配置界面](docs/preview.svg)
 
-## Give this to your Agent
+## 交给 AI 编程助手
 
-Paste the prompt below into any coding agent to generate a provider configuration UI for your project. No repository clone required.
+把下面这段提示词贴给任意编程助手，即可为你的项目生成 Provider 配置界面，无需克隆仓库。
 
 ```text
-You are adding an LLM provider configuration UI to my project. Do NOT clone any repository; fetch only the public URLs below.
+你要为我的项目添加一个 LLM Provider 配置界面。不要克隆任何仓库，只从下面的公开地址取数。
 
-1. Read the manifest first. It gives the current version, record counts, and the canonical resource URLs — use it as the baseline, with the Pages URLs as primary and raw.githubusercontent.com as fallback:
+1. 先读 manifest：它给出当前版本、条目计数与规范资源地址，作为基线（Pages 地址优先，raw.githubusercontent.com 为回退）：
    - https://lawson2019.github.io/llm-provider-kit/manifest.json
 
-2. Read the Skill guide for field mapping, auth-header rules, endpoint resolution, secret masking, and request-preview rules:
+2. 读 Skill 指南，了解字段映射、鉴权头规则、接入点解析、密钥脱敏与请求预览规则：
    - https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md
 
-3. Fetch the registry data listed in the manifest:
-   - Providers: https://lawson2019.github.io/llm-provider-kit/data/providers.json
-   - Agent runtimes: https://lawson2019.github.io/llm-provider-kit/data/agents.json
-   - Tiers: https://lawson2019.github.io/llm-provider-kit/data/tiers.json
-   - Schema: https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
-   If a Pages URL fails, use https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<relative-path>.
+3. 按 manifest 中列出的地址拉取注册表数据：
+   - Provider 清单：https://lawson2019.github.io/llm-provider-kit/data/providers.json
+   - 分层清单：https://lawson2019.github.io/llm-provider-kit/data/tiers.json
+   - 结构定义：https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
+   若 Pages 地址不可用，改用 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<相对路径>。
 
-4. Detect my project's stack — React, Vue, Svelte, vanilla JS, or static HTML — and generate a matching provider configuration screen.
+4. 判断我项目所使用的技术栈（React、Vue、Svelte、Vanilla JS 或静态 HTML），生成与之匹配的 Provider 配置界面。
 
-5. The screen must include:
-   - A searchable picker to switch between providers.
-   - A key/secret input that is never saved or sent anywhere.
-   - Endpoint selection per provider, using only the endpoints and fields the registry defines (protocol, baseURL, path, billing, and any provider-specific field); do not add plan or region selectors the registry does not define.
-   - Auth headers derived from the registry, with endpoint-level rules overriding the provider-level scheme.
-   - A request preview with secrets masked.
-   - Deep links using ?provider=<id> and ?agent=<id>, with IDs taken only from providers.json and agents.json.
+5. 界面需包含：
+   - 可搜索、可切换的 Provider 选择器。
+   - Key / 密钥输入框，不保存、不外发。
+   - 按 Provider 选择接入点，仅使用注册表定义的端点与字段（协议、baseURL、路径、计费方式，以及该 Provider 自定义字段）；不要添加注册表未定义的套餐 / 区域选择器。
+   - 依据注册表推导鉴权请求头，接入点级规则优先于 Provider 级。
+   - 脱敏后的请求预览。
+   - 通过 ?provider=<id> 直达深链，id 只能取自 providers.json。
 
-6. Render only the fields each entry defines — do not invent providers, agents, endpoints, tiers, fields, or status labels. Before you finish, check the provider, agent, and endpoint counts against the manifest; if they differ, stop and report the mismatch instead of filling the gaps.
+6. 只渲染各条目自己定义的字段，不要编造 Provider、接入点、分层、字段或状态标签。完成前把 Provider 与接入点计数与 manifest 基线核对；若不一致，停下并报告差异，不要靠猜测补齐。
 ```
 
-## What you get
+## 能生成什么
 
-The generated UI supports five stacks — **React · Vue · Svelte · vanilla JS · static HTML** — and includes:
+生成的界面支持五种技术栈——**React · Vue · Svelte · Vanilla JS · 静态 HTML**——包含：
 
-- **Provider switching**: a searchable picker across the full registry.
-- **Tiers**: Starter (12), Mainstream (37), and Full (all 108).
-- **Auth headers**: credentials attached per the registry's auth scheme.
-- **Request preview**: the assembled URL and headers, secrets masked.
-- **Deep links**: open a specific provider or agent via `?provider=` / `?agent=`.
+- **Provider 切换**：覆盖全量注册表的可搜索选择器。
+- **分层**：Starter（12）、Mainstream（37）、Full（全部 108）。
+- **鉴权请求头**：按注册表登记的鉴权方式携带凭证。
+- **请求预览**：拼装后的 URL 与请求头，密钥脱敏。
+- **深链**：通过 `?provider=` 直达指定 Provider。
 
-## Links
+## 链接
 
-- [GitHub repository](https://github.com/lawson2019/llm-provider-kit)
+- [GitHub 仓库](https://github.com/lawson2019/llm-provider-kit)
 - [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json)
 - [llms.txt](https://lawson2019.github.io/llm-provider-kit/llms.txt)
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
-- [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)
 - [provider.schema.json](https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json)
 - [SKILL.md](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md)
-- [Skill directory](skills/llm-provider-kit)
-- [Install & usage](docs/install.md)
-- [Contributing](docs/contributing.md)
-- [License](LICENSE)
+- [Skill 目录](skills/llm-provider-kit)
+- [安装与使用](docs/install.md)
+- [贡献指南](docs/contributing.md)
+- [许可证](LICENSE)
 
-## License
+## 许可证
 
-MIT. Brand names and logos belong to their respective owners.
+MIT。品牌名称与 Logo 归各自所有者。
