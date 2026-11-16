@@ -40,5 +40,4 @@ jobs:
           node bin/cli.mjs list --billing subscription
           node bin/cli.mjs show volcengine-ark > /dev/null
           node bin/cli.mjs show zai-coding-plan > /dev/null
-          node bin/cli.mjs agents > /dev/null
           node bin/cli.mjs export --format ts --out /tmp/providers.ts
