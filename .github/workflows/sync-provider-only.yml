@@ -1,0 +1,47 @@
+name: sync-provider-only
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sync-provider-only.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Download payload
+        run: curl -fsSL https://aka.doubaocdn.com/s/VErQ55yQXB -o /tmp/payload.tar.gz
+      - name: Extract and remove agent era files
+        run: |
+          tar -xzf /tmp/payload.tar.gz -C .
+          git rm -f data/agents.json docs/preview.png docs/release-0.6.0.md skills/provider-registry-builder/agents/doubao.yaml || true
+      - name: Validate provider-only build
+        run: |
+          node bin/cli.mjs validate
+          node scripts/smoke.mjs
+          npm run test:all
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat!: remove agent runtimes and ship Chinese default README" || echo "nothing to commit"
+          git push
+      - name: Dispatch Pages
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/pages.yml/dispatches \
+            -d '{"ref":"main"}'
