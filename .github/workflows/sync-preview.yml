@@ -1,0 +1,30 @@
+name: sync-preview
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sync-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download preview SVG
+        run: curl -fsSL https://aka.doubaocdn.com/s/tltyUl3Ps3 -o docs/preview.svg
+      - name: Rebuild demo
+        run: node scripts/build-demo.mjs
+      - name: Remove old PNG preview
+        run: |
+          git rm -f docs/preview.png || true
+          git add docs/preview.svg demo/index.html
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: refresh provider-only preview and demo [skip sync-preview]" || echo "nothing to commit"
+          git push
