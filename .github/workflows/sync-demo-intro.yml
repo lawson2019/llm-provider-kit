@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 20
       - name: Download payload
-        run: curl -fsSL https://aka.doubaocdn.com/s/PxB2BOV7iQ -o /tmp/payload.tar.gz
+        run: curl -fsSL https://aka.doubaocdn.com/s/5nYsLtULUG -o /tmp/payload.tar.gz
       - name: Extract demo animation assets
         run: tar -xzf /tmp/payload.tar.gz -C .
       - name: Validate and rebuild
@@ -33,7 +33,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add demo/template.html demo/index.html demo/demo-intro.gif
-          git commit -m "feat: add 8-second provider kit intro animation" || echo "nothing to commit"
+          git commit -m "feat: refine 8-second provider kit intro animation" || echo "nothing to commit"
           git push
       - name: Dispatch Pages
         run: |
