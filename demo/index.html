@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>LLM Provider Kit · Provider 配置页</title>
-<meta name="description" content="AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。">
+<meta name="description" content="AI Provider 的配置元数据：baseURL、鉴权头、多接入点、表单字段与请求预览。无运行时依赖，MIT。">
 <meta property="og:title" content="LLM Provider Kit">
 <meta property="og:description" content="一份可校验、可直接渲染配置表单的 AI Provider 配置注册表。">
 <meta property="og:type" content="website">
@@ -47,6 +47,31 @@
   }
   button, input, select, textarea { font: inherit; color: inherit; }
   button { cursor: pointer; }
+  .intro { max-width: 1280px; margin: 0 auto 16px; padding: 22px 28px;
+    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); gap: 24px;
+    align-items: center; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow); }
+  .intro-copy { min-width: 0; }
+  .eyebrow { margin: 0 0 8px; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .intro h2 { margin: 0; max-width: 760px; font-size: 25px; line-height: 1.22; letter-spacing: -.02em; }
+  .lede { margin: 9px 0 0; max-width: 760px; color: var(--muted); font-size: 12.5px; line-height: 1.65; }
+  .intro-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 32px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--panel); color: var(--muted); font-size: 12px; text-decoration: none; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  html[data-theme="dark"] .btn.primary { color: #06201c; }
+  .btn.primary:hover { color: #fff; filter: brightness(1.04); }
+  html[data-theme="dark"] .btn.primary:hover { color: #06201c; }
+  .intro-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .stat-box { min-width: 0; padding: 12px 10px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel-2); text-align: center; }
+  .stat-box strong { display: block; color: var(--accent); font-size: 22px; line-height: 1.1; letter-spacing: -.02em; }
+  .stat-box span { display: block; margin-top: 4px; color: var(--muted); font-size: 10.5px; line-height: 1.3; }
+  .intro-meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 16px;
+    color: var(--muted); font-size: 10.5px; border-top: 1px solid var(--line); padding-top: 10px; margin-top: 2px; }
   .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px;
     padding: 20px 28px 14px; max-width: 1280px; margin: 0 auto; }
   .brand { display: flex; align-items: center; gap: 12px; }
@@ -166,6 +191,11 @@
   .foot a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--line); }
   .foot a:hover { color: var(--accent); border-color: var(--accent); }
   @media (max-width: 900px) {
+    .intro { grid-template-columns: 1fr; gap: 16px; padding: 18px 16px; }
+    .intro h2 { font-size: 22px; }
+    .intro-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat-box { padding: 9px 6px; }
+    .stat-box strong { font-size: 19px; }
     main { grid-template-columns: 1fr; }
     .list { max-height: 260px; }
     .topbar { padding: 16px 16px 10px; }
@@ -189,6 +219,28 @@
     <button class="icon-btn" id="themeBtn" title="切换深浅色">◐</button>
   </div>
 </header>
+
+<section class="intro" aria-labelledby="introTitle">
+  <div class="intro-copy">
+    <p class="eyebrow" id="introEyebrow"></p>
+    <h2 id="introTitle"></h2>
+    <p class="lede" id="introLede"></p>
+    <div class="intro-actions">
+      <button class="btn primary" id="introBrowse" type="button"></button>
+      <button class="btn" id="introCopy" type="button" aria-live="polite"></button>
+      <a class="btn" id="introSkill" href="https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+  <div class="intro-stats" aria-label="Registry statistics">
+    <div class="stat-box"><strong id="introProviders">—</strong><span id="introProvidersLabel"></span></div>
+    <div class="stat-box"><strong id="introAgents">—</strong><span id="introAgentsLabel"></span></div>
+    <div class="stat-box"><strong id="introEndpoints">—</strong><span id="introEndpointsLabel"></span></div>
+  </div>
+  <div class="intro-meta">
+    <span id="introUpdated"></span>
+    <span id="introNote"></span>
+  </div>
+</section>
 
 <section class="toolbar">
   <div class="seg" id="modeSeg">
@@ -227,10 +279,22 @@ function detectLang() {
 const I18N = {
   zh: {
     title: 'LLM Provider Kit · Provider 配置页',
-    metaDesc: 'AI Provider 的配置元数据：baseURL、鉴权头、多接入面、表单字段与请求预览。零依赖，MIT。',
+    metaDesc: 'AI Provider 的配置元数据：baseURL、鉴权头、多接入点、表单字段与请求预览。无运行时依赖，MIT。',
     ogDesc: '一份可校验、可直接渲染配置表单的 AI Provider 配置注册表。',
     subtitle: '可校验、可直接渲染配置表单的 Provider 元数据 · schema v2',
     stats: '{n} 个 Provider / {m} 个 Agent',
+    introEyebrow: 'OPEN PROVIDER REGISTRY · SCHEMA V2',
+    introTitle: '一份注册表，生成任意项目的 Provider 配置界面。',
+    introLede: '收录 {p} 个 Provider、{a} 个 Agent 运行时、{e} 个接入点。端点、鉴权、表单和请求预览都由数据推导；字段不写死，密钥不保存。',
+    introBrowse: '浏览 Provider',
+    introCopy: '复制 Agent 提示词',
+    introCopied: '已复制',
+    introSkill: '查看 Skill',
+    introProviders: 'Provider',
+    introAgents: 'Agent 运行时',
+    introEndpoints: '接入点',
+    introUpdated: '数据更新：{date}',
+    introNote: '公开只读 · 不需要 API Key',
     themeTitle: '切换深浅色',
     langSwitchTo: '切换为 English',
     tabProviders: 'Provider',
@@ -256,7 +320,7 @@ const I18N = {
     emptyDetailProvider: '选择左侧的 Provider 查看可渲染的配置表单',
     emptyDetailAgent: '选择左侧的 Agent / 运行时',
     billingBadge: '计费：{mode}',
-    endpointCount: '{n} 个接入面',
+    endpointCount: '{n} 个接入点',
     show: '显示',
     hide: '隐藏',
     advHide: '▾ 收起高级项',
@@ -275,7 +339,7 @@ const I18N = {
     current: '当前：{desc}',
     docsLink: '官方文档 ↗',
     detailDesc: 'Base URL：{base}　鉴权：{auth}　计费：{billing}',
-    endpointsTitle: '接入面（{n}）',
+    endpointsTitle: '接入点（{n}）',
     defaultTag: '默认',
     oauthDetail: '　登录发起：{initiate}　轮询：{poll}',
     riskTitle: '风险 {level} / {variant}',
@@ -303,10 +367,22 @@ const I18N = {
   },
   en: {
     title: 'LLM Provider Kit · Provider Registry',
-    metaDesc: 'Configuration metadata for AI providers: baseURL, auth headers, multiple endpoints, form fields and request preview. Zero dependencies, MIT.',
+    metaDesc: 'Configuration metadata for AI providers: baseURL, auth headers, multiple endpoints, form fields and request preview. No runtime dependencies, MIT.',
     ogDesc: 'A verifiable AI provider registry that renders configuration forms directly.',
     subtitle: 'Verifiable provider metadata that renders configuration forms · schema v2',
     stats: '{n} Providers / {m} Agents',
+    introEyebrow: 'OPEN PROVIDER REGISTRY · SCHEMA V2',
+    introTitle: 'One registry. A provider setup screen for any project.',
+    introLede: '108 providers, 7 agent runtimes, 142 endpoints. Endpoints, auth headers, form fields, and request previews are derived from data — no hardcoded fields, no stored keys.',
+    introBrowse: 'Browse providers',
+    introCopy: 'Copy Agent prompt',
+    introCopied: 'Copied',
+    introSkill: 'Read the Skill',
+    introProviders: 'Providers',
+    introAgents: 'Agent runtimes',
+    introEndpoints: 'Endpoints',
+    introUpdated: 'Updated {date}',
+    introNote: 'Public read-only · no API key required',
     themeTitle: 'Toggle light/dark theme',
     langSwitchTo: 'Switch to 中文',
     tabProviders: 'Providers',
@@ -378,6 +454,18 @@ const I18N = {
     listSep: ', ',
   },
 };
+
+const AGENT_PROMPT = `You are adding an LLM provider configuration UI to my project. Do NOT clone any repository.
+
+1. Read the manifest first — it carries the version, record counts, and canonical resource URLs:
+   https://lawson2019.github.io/llm-provider-kit/manifest.json
+
+2. Read the Skill guide for field mapping, auth-header rules, endpoint resolution, secret masking, and request-preview rules:
+   https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md
+
+3. Fetch providers, agents, tiers, and schema from the manifest's resources.
+4. Detect my project's stack — React, Vue, Svelte, vanilla JS, or static HTML — and generate a matching provider configuration screen.
+5. Use only endpoints and fields the registry defines; do not add plan or region selectors it does not define. Never invent providers, agents, or endpoints, and never save or send API keys.`;
 
 let lang = detectLang();
 
@@ -1141,6 +1229,25 @@ function applyStaticTexts() {
   const ogDesc = document.querySelector('meta[property="og:description"]');
   if (ogDesc) ogDesc.content = t('ogDesc');
   document.getElementById('subtitle').textContent = t('subtitle');
+  const endpoints = DATA.providers.reduce((n, provider) => n + (provider.endpoints?.length ?? 0), 0);
+  document.getElementById('introEyebrow').textContent = t('introEyebrow');
+  document.getElementById('introTitle').textContent = t('introTitle');
+  document.getElementById('introLede').textContent = t('introLede', {
+    p: DATA.providers.length,
+    a: DATA.agents.length,
+    e: endpoints,
+  });
+  document.getElementById('introBrowse').textContent = t('introBrowse');
+  document.getElementById('introCopy').textContent = t('introCopy');
+  document.getElementById('introSkill').textContent = t('introSkill');
+  document.getElementById('introProviders').textContent = DATA.providers.length;
+  document.getElementById('introAgents').textContent = DATA.agents.length;
+  document.getElementById('introEndpoints').textContent = endpoints;
+  document.getElementById('introProvidersLabel').textContent = t('introProviders');
+  document.getElementById('introAgentsLabel').textContent = t('introAgents');
+  document.getElementById('introEndpointsLabel').textContent = t('introEndpoints');
+  document.getElementById('introUpdated').textContent = t('introUpdated', { date: DATA.updatedAt });
+  document.getElementById('introNote').textContent = t('introNote');
   document.getElementById('search').placeholder = t('searchPlaceholder');
   document.getElementById('tabProviders').textContent = t('tabProviders');
   document.getElementById('tabAgents').textContent = t('tabAgents');
@@ -1189,6 +1296,36 @@ document.getElementById('langBtn').addEventListener('click', () => {
   applyLangState();
   renderAll();
 });
+
+let copyResetTimer;
+async function copyAgentPrompt() {
+  const button = document.getElementById('introCopy');
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(AGENT_PROMPT);
+    copied = true;
+  } catch {
+    const area = document.createElement('textarea');
+    area.value = AGENT_PROMPT;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    try { copied = document.execCommand('copy'); } catch { copied = false; }
+    area.remove();
+  }
+  if (!copied) return;
+  clearTimeout(copyResetTimer);
+  button.textContent = t('introCopied');
+  copyResetTimer = setTimeout(() => { button.textContent = t('introCopy'); }, 1800);
+}
+
+document.getElementById('introBrowse').addEventListener('click', () => {
+  document.querySelector('.toolbar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('search').focus();
+});
+document.getElementById('introCopy').addEventListener('click', copyAgentPrompt);
 
 applyLangState();
 renderAll();
