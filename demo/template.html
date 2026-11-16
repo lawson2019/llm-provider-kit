@@ -91,6 +91,14 @@
   .repo-link:hover { border-color: var(--accent); color: var(--accent); }
   .lang-btn { font-family: inherit; }
   .lang-btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .tour { max-width: 960px; margin: 0 auto 16px; padding: 0 28px; }
+  .tour-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 10px; }
+  .tour-head .eyebrow { margin-bottom: 5px; }
+  .tour h3 { margin: 0; font-size: 16px; line-height: 1.3; letter-spacing: -.01em; }
+  .tour-note { margin: 0 0 2px; color: var(--muted); font-size: 10.5px; white-space: nowrap; }
+  .tour-figure { margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius);
+    background: var(--panel); box-shadow: var(--shadow); }
+  .tour img { display: block; width: 100%; height: auto; }
   .toolbar { max-width: 1280px; margin: 0 auto; padding: 0 28px 14px; display: flex;
     flex-wrap: wrap; gap: 10px; align-items: center; }
   .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
@@ -189,6 +197,9 @@
   .foot a:hover { color: var(--accent); border-color: var(--accent); }
   @media (max-width: 900px) {
     .intro { grid-template-columns: 1fr; gap: 16px; padding: 18px 16px; }
+    .tour { padding: 0 16px; }
+    .tour-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .tour-note { white-space: normal; }
     .intro h2 { font-size: 22px; }
     .lede { font-size: 11.8px; }
     .intro-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -244,6 +255,19 @@
   </div>
 </section>
 
+<section class="tour" aria-labelledby="tourTitle">
+  <div class="tour-head">
+    <div>
+      <p class="eyebrow" id="tourEyebrow"></p>
+      <h3 id="tourTitle"></h3>
+    </div>
+    <p class="tour-note" id="tourNote"></p>
+  </div>
+  <figure class="tour-figure">
+    <img id="tourImg" src="demo-intro.gif" width="960" height="540" alt="" loading="lazy">
+  </figure>
+</section>
+
 <section class="toolbar">
   <input class="search" id="search" placeholder="">
   <div class="chips" id="chips"></div>
@@ -292,6 +316,10 @@ const I18N = {
     introEndpoints: '接入点',
     introUpdated: '数据更新：{date}',
     introNote: '公开只读 · 不需要 API Key',
+    tourEyebrow: 'QUICK TOUR · 8 SECONDS',
+    tourTitle: '从一条命令，到一张可用的 Provider 配置页。',
+    tourNote: '108 个 Provider · 142 个接入点 · 5 种技术栈',
+    tourAlt: '代码动画：运行脚手架并生成 Provider 配置页',
     themeTitle: '切换深浅色',
     langSwitchTo: '切换为 English',
     tabProviders: 'Provider',
@@ -357,6 +385,10 @@ const I18N = {
     introEndpoints: 'Endpoints',
     introUpdated: 'Updated {date}',
     introNote: 'Public read-only · no API key required',
+    tourEyebrow: 'QUICK TOUR · 8 SECONDS',
+    tourTitle: 'From one command to a working provider setup screen.',
+    tourNote: '108 providers · 142 endpoints · 5 stacks',
+    tourAlt: 'Code animation: run the scaffold and generate a provider setup screen',
     themeTitle: 'Toggle light/dark theme',
     langSwitchTo: 'Switch to 中文',
     tabProviders: 'Providers',
@@ -1112,6 +1144,10 @@ function applyStaticTexts() {
   document.getElementById('introEndpointsLabel').textContent = t('introEndpoints');
   document.getElementById('introUpdated').textContent = t('introUpdated', { date: DATA.updatedAt });
   document.getElementById('introNote').textContent = t('introNote');
+  document.getElementById('tourEyebrow').textContent = t('tourEyebrow');
+  document.getElementById('tourTitle').textContent = t('tourTitle');
+  document.getElementById('tourNote').textContent = t('tourNote');
+  document.getElementById('tourImg').alt = t('tourAlt');
   document.getElementById('search').placeholder = t('searchPlaceholder');
   document.getElementById('themeBtn').title = t('themeTitle');
   const langBtn = document.getElementById('langBtn');
