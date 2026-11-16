@@ -47,6 +47,8 @@ LLM 프로바이더와 에이전트 런타임을 위한 메타데이터 레지�
 ## 링크
 
 - [GitHub 저장소](https://github.com/lawson2019/llm-provider-kit)
+- [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json)
+- [llms.txt](https://lawson2019.github.io/llm-provider-kit/llms.txt)
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
 - [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)

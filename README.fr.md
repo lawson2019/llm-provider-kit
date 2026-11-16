@@ -47,6 +47,8 @@ L'interface générée prend en charge cinq stacks : **React · Vue · Svelte ·
 ## Liens
 
 - [Dépôt GitHub](https://github.com/lawson2019/llm-provider-kit)
+- [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json)
+- [llms.txt](https://lawson2019.github.io/llm-provider-kit/llms.txt)
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
 - [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)
