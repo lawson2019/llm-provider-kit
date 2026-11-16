@@ -2,7 +2,9 @@
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **Español** · [Français](README.fr.md)
 
-Registro de metadatos de proveedores de LLM y entornos de ejecución de agentes, distribuido como JSON simple, sin dependencias en tiempo de ejecución y con licencia MIT. Está pensado para quien vaya a añadir una pantalla de configuración de proveedores a una app de IA, un panel de agentes o una pasarela: **108 proveedores / 7 agentes**, cada uno con sus endpoints, esquema de autenticación, campos de formulario, notas de cuota y avisos de riesgo cuando procede.
+Registro de metadatos de proveedores de LLM y entornos de ejecución de agentes, distribuido como JSON en bruto, sin dependencias en tiempo de ejecución y con licencia MIT. Está pensado para quien vaya a añadir una pantalla de configuración de proveedores a una app de IA, un panel de agentes o una pasarela: **108 proveedores, 7 entornos de ejecución de agentes y 142 endpoints**.
+
+Cada entrada de proveedor incluye sus propios endpoints, esquema de autenticación, campos de formulario y metadatos de cuota, con avisos de riesgo cuando procede. Los siete entornos de ejecución de agentes incluyen sus propios metadatos de instalación, sesión y configuración.
 
 ## Demo
 
@@ -15,33 +17,42 @@ Demo en vivo (English / 中文): <https://lawson2019.github.io/llm-provider-kit/
 Pega el siguiente prompt en cualquier agente de programación para generar una interfaz de configuración de proveedores para tu proyecto. No es necesario clonar el repositorio.
 
 ```text
-Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto. No clones ningún repositorio.
+Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto. No clones ningún repositorio; obtén solo las direcciones públicas que se indican a continuación.
 
-1. Lee primero estos dos recursos públicos:
-   - Guía del Skill: https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md
-   - Registro de proveedores: https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json
+1. Lee primero el manifest. Proporciona la versión actual, el recuento de registros y las direcciones canónicas de los recursos; úsalo como línea de base, con las direcciones de Pages como principal y raw.githubusercontent.com como respaldo:
+   - https://lawson2019.github.io/llm-provider-kit/manifest.json
 
-2. Detecta el stack tecnológico de mi proyecto — React, Vue, Svelte, vanilla JS o HTML estático — y genera una pantalla de configuración de proveedores que se ajuste a él.
+2. Lee la guía del Skill para el mapeo de campos, las reglas de cabeceras de autenticación, la resolución de endpoints, el enmascarado de secretos y las reglas de vista previa de la solicitud:
+   - https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md
 
-3. La pantalla debe incluir:
-   - Un selector de proveedores con búsqueda y cambio entre proveedores.
+3. Obtén los datos del registro que figuran en el manifest:
+   - Proveedores: https://lawson2019.github.io/llm-provider-kit/data/providers.json
+   - Entornos de ejecución de agentes: https://lawson2019.github.io/llm-provider-kit/data/agents.json
+   - Niveles: https://lawson2019.github.io/llm-provider-kit/data/tiers.json
+   - Esquema: https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json
+   Si una dirección de Pages no funciona, usa https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/<ruta-relativa>.
+
+4. Detecta el stack tecnológico de mi proyecto — React, Vue, Svelte, vanilla JS o HTML estático — y genera una pantalla de configuración de proveedores que se ajuste a él.
+
+5. La pantalla debe incluir:
+   - Un selector con búsqueda para cambiar entre proveedores.
    - Un campo de clave / secreto que nunca se guarda ni se envía a ningún sitio.
-   - Selección de endpoint (plan, región, protocolo) por proveedor.
-   - Cabeceras de autenticación derivadas del registro.
-   - Una vista previa de la solicitud con los secretos ocultados.
-   - Enlaces profundos con los parámetros ?provider= / ?agent=.
+   - Selección de endpoints por proveedor, usando solo los endpoints y campos definidos por el registro (protocolo, baseURL, ruta, facturación y cualquier campo específico del proveedor); no añadas selectores de plan o región que el registro no defina.
+   - Cabeceras de autenticación derivadas del registro, con las reglas a nivel de endpoint prevaleciendo sobre el esquema a nivel de proveedor.
+   - Una vista previa de la solicitud con los secretos enmascarados.
+   - Enlaces profundos con ?provider=<id> y ?agent=<id>, cuyos identificadores se toman únicamente de providers.json y agents.json.
 
-4. Renderiza solo los campos que define cada proveedor — no inventes proveedores, endpoints, niveles ni etiquetas de estado.
+6. Renderiza solo los campos que define cada entrada — no inventes proveedores, agentes, endpoints, niveles, campos ni etiquetas de estado. Antes de terminar, comprueba el recuento de proveedores, agentes y endpoints contra el manifest; si no coinciden, para el proceso y reporta la discrepancia en lugar de rellenar los huecos por adivinación.
 ```
 
 ## Qué obtienes
 
-La interfaz generada admite cinco stacks: **React · Vue · Svelte · vanilla JS · HTML estático**. Incluye:
+La interfaz generada admite cinco stacks — **React · Vue · Svelte · vanilla JS · HTML estático** — e incluye:
 
 - **Cambio de proveedor**: un selector con búsqueda sobre todo el registro.
 - **Niveles**: Starter (12), Mainstream (37) y Full (los 108).
 - **Cabeceras de autenticación**: credenciales añadidas según el esquema de autenticación del registro.
-- **Vista previa de la solicitud**: la URL y las cabeceras ensambladas, con los secretos ocultados.
+- **Vista previa de la solicitud**: la URL y las cabeceras ensambladas, con los secretos enmascarados.
 - **Enlaces profundos**: abre un proveedor o agente concreto mediante `?provider=` / `?agent=`.
 
 ## Enlaces
@@ -52,6 +63,7 @@ La interfaz generada admite cinco stacks: **React · Vue · Svelte · vanilla JS
 - [providers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json)
 - [agents.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json)
 - [tiers.json](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json)
+- [provider.schema.json](https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json)
 - [SKILL.md](https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md)
 - [Directorio del Skill](skills/llm-provider-kit)
 - [Instalación y uso](docs/install.md)
