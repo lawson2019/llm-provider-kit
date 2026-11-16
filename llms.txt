@@ -1,13 +1,12 @@
 # LLM Provider Kit
 
-> Public, read-only metadata registry for LLM providers and agent runtimes: 108 providers, 7 agents, 142 endpoints. No clone, no authentication, no API keys.
+> Public, read-only metadata registry for LLM providers: 108 providers, 142 endpoints. No clone, no authentication, no API keys.
 
 ## Start here
 
 - [manifest.json](https://lawson2019.github.io/llm-provider-kit/manifest.json): version, counts, and all resource URLs.
 - [Skill guide](https://lawson2019.github.io/llm-provider-kit/skills/llm-provider-kit/SKILL.md): how to generate a provider configuration UI for a project.
-- [Provider registry](https://lawson2019.github.io/llm-provider-kit/data/providers.json): 108 providers with endpoints, auth, fields, quota, and risk metadata.
-- [Agent runtimes](https://lawson2019.github.io/llm-provider-kit/data/agents.json): 7 agent/runtime entries.
+- [Provider registry](https://lawson2019.github.io/llm-provider-kit/data/providers.json): 108 providers with endpoints, auth, fields, billing, and risk metadata.
 - [Tiers](https://lawson2019.github.io/llm-provider-kit/data/tiers.json): Starter 12 / Mainstream 37 / Full 108.
 - [Schema](https://lawson2019.github.io/llm-provider-kit/schemas/provider.schema.json): Provider JSON schema.
 - [Live demo](https://lawson2019.github.io/llm-provider-kit/): searchable Chinese/English UI with request preview.
@@ -15,10 +14,10 @@
 ## How to use
 
 1. Read `manifest.json` to discover the current version, counts, and resource URLs; fall back to the raw URLs below if GitHub Pages is unavailable.
-2. Read the Skill guide, then fetch `providers.json`, `agents.json` and `tiers.json`, and validate entries against the schema.
+2. Read the Skill guide, then fetch `providers.json` and `tiers.json`, and validate entries against the schema.
 3. Detect the target project's stack: React, Vue, Svelte, vanilla JS, or static HTML.
 4. Generate the matching provider configuration UI using only fields defined in the registry. Select endpoints only by the dimensions the data defines (protocol, baseURL, path, billing) — do not invent plan or region selectors.
-5. Deep-link with `?provider=<id>` / `?agent=<id>` using IDs listed in `providers.json` and `agents.json`.
+5. Deep-link with `?provider=<id>` using IDs listed in `providers.json`.
 6. Keep API keys local. Never save, transmit, or log secrets.
 
 ## Fallback URLs
@@ -26,7 +25,6 @@
 Use `https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/` + the relative path if GitHub Pages is unavailable:
 
 - `data/providers.json`
-- `data/agents.json`
 - `data/tiers.json`
 - `schemas/provider.schema.json`
 - `skills/llm-provider-kit/SKILL.md`
