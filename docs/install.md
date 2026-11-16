@@ -4,7 +4,7 @@
 Skill 目录：`skills/llm-provider-kit/`（已在 `main` 上，Pages 与 raw 均可直接读取）
 兼容旧入口：`skills/provider-registry-builder/`（脚本转发到根 `scripts/scaffold.mjs`，保留兼容）。
 
-> 远端基线（2026-11-16 只读核验）：main HEAD `41ac2b22958ec3da3ddd111ea080f933753e128c`；远端 `skills/` 下当前仅有 `provider-registry-builder/`。`skills/llm-provider-kit/` 落地前，方法 a / b 中指向该目录的链接会 404，可先用旧目录或等合入后再引用。
+> 远端基线（2026-11-16 只读核验）：`skills/llm-provider-kit/` 已在 `main` 上，raw 与 Pages 地址均实测 200，本文方法 a / b / c 中的链接当前全部可用。版本以 `main` 最新提交为准；生产使用请钉 Release tag `v0.6.0` 或具体提交 SHA。
 
 ---
 
@@ -28,6 +28,7 @@ https://raw.githubusercontent.com/lawson2019/llm-provider-kit/<SHA>/skills/llm-p
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json
 https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json
+https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/schemas/provider.schema.json
 ```
 
 注意：
@@ -123,6 +124,6 @@ import { getFormFields, resolveEndpoint, buildRequestConfig } from 'llm-provider
 
 ## 常见问题
 
-- **raw 链接 404**：确认 `skills/llm-provider-kit/` 已合入 `main`；在此之前请引用 `skills/provider-registry-builder/` 或本地克隆。
+- **raw 链接 404**：`skills/llm-provider-kit/` 已在 `main` 上；若仍 404，通常是路径拼错或钉住的 SHA 早于该目录合入——改用 `main` 或 `v0.6.0` 再取一次。
 - **条数对不上**：main-ref 可能命中边缘缓存；改用提交 SHA 取数，或本地跑 `node bin/cli.mjs validate` 核对。
 - **需要鉴权吗**：读取公开仓库与公开数据 URL 不需要账号或 Key；提交 / 发布到各目录才需要对应平台授权（见 `platforms.md`）。
