@@ -30,10 +30,10 @@ jobs:
         run: |
           mkdir -p _site/data _site/skills/llm-provider-kit _site/schemas
           cp demo/index.html _site/index.html
-          cp docs/preview.png _site/preview.png
+          cp docs/preview.svg _site/preview.svg
           cp manifest.json llms.txt _site/
           cp schemas/provider.schema.json _site/schemas/provider.schema.json
-          cp data/providers.json data/agents.json data/tiers.json _site/data/
+          cp data/providers.json data/tiers.json _site/data/
           cp skills/llm-provider-kit/SKILL.md _site/skills/llm-provider-kit/SKILL.md
           if [ -f skills/llm-provider-kit/reference.md ]; then cp skills/llm-provider-kit/reference.md _site/skills/llm-provider-kit/reference.md; fi
           if [ -f skills/llm-provider-kit/examples/example-prompt.md ]; then mkdir -p _site/skills/llm-provider-kit/examples && cp skills/llm-provider-kit/examples/example-prompt.md _site/skills/llm-provider-kit/examples/example-prompt.md; fi
@@ -45,7 +45,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
           publish_branch: gh-pages
-          commit_message: "deploy: publish demo site"
+          commit_message: "deploy: publish provider-only demo site"
 
       - name: Request Pages build
         run: |
