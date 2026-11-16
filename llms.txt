@@ -14,11 +14,12 @@
 
 ## How to use
 
-1. Read `manifest.json` to discover the current resource URLs and counts.
-2. Read the Skill guide and `providers.json`.
+1. Read `manifest.json` to discover the current version, counts, and resource URLs; fall back to the raw URLs below if GitHub Pages is unavailable.
+2. Read the Skill guide, then fetch `providers.json`, `agents.json` and `tiers.json`, and validate entries against the schema.
 3. Detect the target project's stack: React, Vue, Svelte, vanilla JS, or static HTML.
-4. Generate the matching provider configuration UI using only fields defined in the registry.
-5. Keep API keys local. Never save, transmit, or log secrets.
+4. Generate the matching provider configuration UI using only fields defined in the registry. Select endpoints only by the dimensions the data defines (protocol, baseURL, path, billing) — do not invent plan or region selectors.
+5. Deep-link with `?provider=<id>` / `?agent=<id>` using IDs listed in `providers.json` and `agents.json`.
+6. Keep API keys local. Never save, transmit, or log secrets.
 
 ## Fallback URLs
 
@@ -27,4 +28,5 @@ Use `https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/` + the 
 - `data/providers.json`
 - `data/agents.json`
 - `data/tiers.json`
+- `schemas/provider.schema.json`
 - `skills/llm-provider-kit/SKILL.md`
