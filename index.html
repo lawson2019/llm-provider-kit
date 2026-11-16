@@ -55,7 +55,7 @@
   .eyebrow { margin: 0 0 8px; color: var(--accent); font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
   .intro h2 { margin: 0; max-width: 760px; font-size: 25px; line-height: 1.22; letter-spacing: -.02em; }
-  .lede { margin: 9px 0 0; max-width: 760px; color: var(--muted); font-size: 12.5px; line-height: 1.65; }
+  .lede { margin: 9px 0 0; max-width: 760px; color: var(--muted); font-size: 12.5px; line-height: 1.65; text-wrap: pretty; }
   .intro-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
   .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     min-height: 32px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line);
@@ -108,7 +108,7 @@
   main { max-width: 1280px; margin: 0 auto; padding: 0 28px 40px;
     display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; align-items: start; }
   .list { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-    overflow: hidden; box-shadow: var(--shadow); max-height: calc(100vh - 190px); overflow-y: auto; }
+    overflow: hidden; box-shadow: var(--shadow); max-height: calc(100vh - 190px); overflow-y: auto; min-width: 0; }
   .item { display: flex; gap: 10px; padding: 11px 13px; border-bottom: 1px solid var(--line);
     align-items: center; text-align: left; width: 100%; background: transparent; border-left: 0; border-right: 0; border-top: 0; }
   .item:last-child { border-bottom: 0; }
@@ -130,7 +130,7 @@
   .badge { font-size: 10.5px; padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
   .badge.ses { color: #fff; background: var(--warn); border-color: transparent; }
   .detail { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-    box-shadow: var(--shadow); padding: 22px; min-height: 420px; }
+    box-shadow: var(--shadow); padding: 22px; min-height: 420px; min-width: 0; }
   .d-head { display: flex; gap: 14px; align-items: flex-start; }
   .d-head .logo { width: 46px; height: 46px; border-radius: 12px; }
   .d-head .logo img { width: 32px; height: 32px; }
@@ -193,12 +193,18 @@
   @media (max-width: 900px) {
     .intro { grid-template-columns: 1fr; gap: 16px; padding: 18px 16px; }
     .intro h2 { font-size: 22px; }
+    .lede { font-size: 11.8px; }
     .intro-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .stat-box { padding: 9px 6px; }
     .stat-box strong { font-size: 19px; }
-    main { grid-template-columns: 1fr; }
+    main { grid-template-columns: minmax(0, 1fr); }
     .list { max-height: 260px; }
-    .topbar { padding: 16px 16px 10px; }
+    .topbar { flex-wrap: wrap; align-items: flex-start; gap: 10px; padding: 14px 16px 10px; }
+    .brand { flex: 1 1 100%; min-width: 0; }
+    .top-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 6px; }
+    .top-right .stat { order: 3; }
+    h1 { font-size: 17px; }
+    .sub { font-size: 11.5px; }
     .toolbar, main, .foot { padding-left: 16px; padding-right: 16px; }
   }
 </style>
