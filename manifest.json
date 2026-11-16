@@ -29,9 +29,10 @@
     "providers": "https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/providers.json",
     "agents": "https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/agents.json",
     "tiers": "https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/data/tiers.json",
-    "skill": "https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md"
+    "skill": "https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/skills/llm-provider-kit/SKILL.md",
+    "schema": "https://raw.githubusercontent.com/lawson2019/llm-provider-kit/main/schemas/provider.schema.json"
   },
-  "agentPrompt": "Fetch resources.skill and resources.providers, detect the user's project stack (React, Vue, Svelte, vanilla JS, or static HTML), and generate a matching provider configuration UI. Never store or transmit API keys.",
+  "agentPrompt": "Start from this manifest: read resources.skill, then fetch resources.providers, resources.agents and resources.tiers, validating entries against resources.schema (use the fallbacks when a Pages URL is unavailable). Detect the user's project stack (React, Vue, Svelte, vanilla JS, or static HTML) and generate a matching provider configuration UI that renders only fields defined in the registry. Never store or transmit API keys.",
   "notes": [
     "Public, read-only metadata registry. No API keys are stored or sent.",
     "No repository clone is required; fetch the JSON and SKILL.md URLs directly."
