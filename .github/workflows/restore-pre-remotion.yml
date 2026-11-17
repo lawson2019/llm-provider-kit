@@ -1,0 +1,48 @@
+name: restore-pre-remotion
+
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-pre-remotion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Download pre-Remotion snapshot
+        run: curl -fsSL https://aka.doubaocdn.com/s/t8r7XTVbTZ -o /tmp/restore.tar.gz
+      - name: Restore demo and package
+        run: tar -xzf /tmp/restore.tar.gz -C .
+      - name: Remove Remotion integration
+        run: |
+          rm -rf remotion
+          rm -f demo/demo-intro.mp4
+          git add -A remotion demo package.json
+      - name: Rebuild demo
+        run: |
+          node bin/cli.mjs validate
+          node scripts/smoke.mjs
+          node scripts/build-demo.mjs
+          npm run test:all
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "revert: remove Remotion integration from demo" || echo "nothing to commit"
+          git push
+      - name: Dispatch Pages
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/pages.yml/dispatches \
+            -d '{"ref":"main"}'
