@@ -5,7 +5,7 @@
   "description": "Deterministic Remotion source for the llm-provider-kit intro animation.",
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts Intro ../demo/demo-intro.mp4 --codec=h264 --crf=20",
+    "render": "remotion render src/index.ts Intro ../demo/demo-intro.mp4 --codec=h264 --crf=20 --pixel-format=yuv420p",
     "still": "remotion still src/index.ts Intro"
   },
   "dependencies": {
