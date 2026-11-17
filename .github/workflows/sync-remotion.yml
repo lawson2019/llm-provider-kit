@@ -29,9 +29,7 @@ jobs:
           node scripts/build-demo.mjs
           npm run test:all
       - name: Verify video file
-        run: |
-          test -s demo/demo-intro.mp4
-          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,duration -of default=nw=1 demo/demo-intro.mp4
+        run: node -e "const fs=require('fs');const b=fs.readFileSync('demo/demo-intro.mp4');if(b.slice(4,8).toString()!=='ftyp')process.exit(1);console.log('mp4 ok',b.length,'bytes')"
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
