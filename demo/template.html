@@ -98,7 +98,7 @@
   .tour-note { margin: 0 0 2px; color: var(--muted); font-size: 10.5px; white-space: nowrap; }
   .tour-figure { margin: 0; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius);
     background: var(--panel); box-shadow: var(--shadow); }
-  .tour img { display: block; width: 100%; height: auto; }
+  .tour video { display: block; width: 100%; height: auto; background: #102321; }
   .toolbar { max-width: 1280px; margin: 0 auto; padding: 0 28px 14px; display: flex;
     flex-wrap: wrap; gap: 10px; align-items: center; }
   .seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line);
@@ -264,7 +264,9 @@
     <p class="tour-note" id="tourNote"></p>
   </div>
   <figure class="tour-figure">
-    <img id="tourImg" src="demo-intro.gif" width="960" height="540" alt="" loading="lazy">
+    <video id="tourVideo" poster="demo-intro.gif" width="960" height="540" autoplay loop muted playsinline preload="metadata" aria-label="">
+      <source src="demo-intro.mp4" type="video/mp4">
+    </video>
   </figure>
 </section>
 
@@ -316,7 +318,7 @@ const I18N = {
     introEndpoints: '接入点',
     introUpdated: '数据更新：{date}',
     introNote: '公开只读 · 不需要 API Key',
-    tourEyebrow: 'QUICK TOUR · 8 SECONDS',
+    tourEyebrow: 'QUICK TOUR · REMOTION · 8 SECONDS',
     tourTitle: '从一条命令，到一张可用的 Provider 配置页。',
     tourNote: '108 个 Provider · 142 个接入点 · 5 种技术栈',
     tourAlt: '代码动画：运行脚手架并生成 Provider 配置页',
@@ -385,7 +387,7 @@ const I18N = {
     introEndpoints: 'Endpoints',
     introUpdated: 'Updated {date}',
     introNote: 'Public read-only · no API key required',
-    tourEyebrow: 'QUICK TOUR · 8 SECONDS',
+    tourEyebrow: 'QUICK TOUR · REMOTION · 8 SECONDS',
     tourTitle: 'From one command to a working provider setup screen.',
     tourNote: '108 providers · 142 endpoints · 5 stacks',
     tourAlt: 'Code animation: run the scaffold and generate a provider setup screen',
@@ -1147,7 +1149,7 @@ function applyStaticTexts() {
   document.getElementById('tourEyebrow').textContent = t('tourEyebrow');
   document.getElementById('tourTitle').textContent = t('tourTitle');
   document.getElementById('tourNote').textContent = t('tourNote');
-  document.getElementById('tourImg').alt = t('tourAlt');
+  document.getElementById('tourVideo').setAttribute('aria-label', t('tourAlt'));
   document.getElementById('search').placeholder = t('searchPlaceholder');
   document.getElementById('themeBtn').title = t('themeTitle');
   const langBtn = document.getElementById('langBtn');
