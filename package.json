@@ -46,8 +46,7 @@
     "scaffold": "node scripts/scaffold.mjs",
     "test:scaffold": "node scripts/test-scaffold.mjs",
     "test:demo": "node scripts/test-demo-config.mjs",
-    "test:all": "npm test && npm run test:demo && npm run test:scaffold",
-    "render:intro": "cd remotion && npm run render"
+    "test:all": "npm test && npm run test:demo && npm run test:scaffold"
   },
   "keywords": [
     "ai",
