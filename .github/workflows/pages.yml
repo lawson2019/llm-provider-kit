@@ -32,6 +32,7 @@ jobs:
           cp demo/index.html _site/index.html
           cp demo/demo-intro.gif _site/demo-intro.gif
           cp docs/preview.svg _site/preview.svg
+          cp docs/x-card.png _site/x-card.png
           cp manifest.json llms.txt _site/
           cp schemas/provider.schema.json _site/schemas/provider.schema.json
           cp data/providers.json data/tiers.json _site/data/
