@@ -31,7 +31,6 @@ jobs:
           mkdir -p _site/data _site/skills/llm-provider-kit _site/schemas
           cp demo/index.html _site/index.html
           cp demo/demo-intro.gif _site/demo-intro.gif
-          cp demo/demo-intro.mp4 _site/demo-intro.mp4
           cp docs/preview.svg _site/preview.svg
           cp manifest.json llms.txt _site/
           cp schemas/provider.schema.json _site/schemas/provider.schema.json
