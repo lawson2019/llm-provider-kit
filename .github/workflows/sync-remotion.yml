@@ -1,0 +1,48 @@
+name: sync-remotion
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sync-remotion.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Download payload
+        run: curl -fsSL https://aka.doubaocdn.com/s/K3YbFfGQnp -o /tmp/payload.tar.gz
+      - name: Extract Remotion source and demo assets
+        run: tar -xzf /tmp/payload.tar.gz -C .
+      - name: Validate and rebuild demo
+        run: |
+          node bin/cli.mjs validate
+          node scripts/smoke.mjs
+          node scripts/build-demo.mjs
+          npm run test:all
+      - name: Verify video file
+        run: |
+          test -s demo/demo-intro.mp4
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,duration -of default=nw=1 demo/demo-intro.mp4
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add remotion demo package.json
+          git commit -m "feat: render demo intro with Remotion" || echo "nothing to commit"
+          git push
+      - name: Dispatch Pages
+        run: |
+          curl -fsS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/pages.yml/dispatches \
+            -d '{"ref":"main"}'
