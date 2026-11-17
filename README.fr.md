@@ -35,7 +35,11 @@ Vous ajoutez une interface de configuration de fournisseurs LLM à mon projet. N
 
 5. L'écran doit inclure :
    - Un sélecteur avec recherche et basculement entre fournisseurs.
-   - Un champ de clé / secret qui n'est jamais enregistré ni envoyé.
+   - Trois modes de périmètre de fournisseurs : courants (niveau Starter), tous et personnalisé avec cases à cocher ; les identifiants personnalisés doivent provenir de providers.json.
+   - Panneau compact de configuration d’exécution : Base URL, API Key et Model ID ; si probe.modelsUrl existe, lister les modèles et en choisir un, avec saisie manuelle en secours.
+   - Modèle personnalisé : enregistrer un Model ID et un nom d’affichage facultatif ; seules les métadonnées du modèle sont stockées localement, jamais la clé. L’entrée enregistrée rejoint le sélecteur de modèles.
+   - Un champ de clé / secret qui n'est jamais enregistré ni journalisé ; il n'est envoyé au fournisseur sélectionné que lorsque l'utilisateur clique explicitement sur « Lister les modèles ».
+   - Icônes de fournisseur optionnelles avec un interrupteur pour les masquer.
    - Sélection d'endpoints par fournisseur, en utilisant uniquement les endpoints et champs définis par le registre (protocole, baseURL, chemin, facturation et tout champ spécifique au fournisseur) ; n'ajoutez pas de sélecteurs de plan ou de région non définis par le registre.
    - En-têtes d'authentification dérivés du registre, les règles au niveau de l'endpoint prévalant sur le schéma au niveau du fournisseur.
    - Un aperçu de la requête avec les secrets masqués.
@@ -48,7 +52,7 @@ Vous ajoutez une interface de configuration de fournisseurs LLM à mon projet. N
 
 L'interface générée prend en charge cinq stacks — **React · Vue · Svelte · vanilla JS · HTML statique** — et comprend :
 
-- **Changement de fournisseur** : un sélecteur avec recherche sur l'ensemble du registre.
+- **Configuration rapide** : Base URL, API Key, Model ID, liste des modèles, modèles personnalisés et interrupteur d'icônes.
 - **Niveaux** : Starter (12), Mainstream (37) et Full (les 108).
 - **En-têtes d'authentification** : identifiants ajoutés selon le schéma d'authentification du registre.
 - **Aperçu de la requête** : l'URL et les en-têtes assemblés, secrets masqués.

@@ -106,6 +106,11 @@
   .seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 8px; color: var(--muted); }
   .seg button.on { background: var(--accent); color: #fff; }
   html[data-theme="dark"] .seg button.on { color: #06201c; }
+  .scope-bar { width: 100%; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .scope-label { color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .scope-bar .seg { flex-wrap: wrap; }
+  .scope-bar .seg button { padding: 5px 11px; font-size: 12px; }
+  .scope-bar .seg button[data-scope="custom"]:not(.on) { border: 1px dashed var(--line); }
   .search { flex: 1; min-width: 220px; padding: 9px 12px; border-radius: 10px;
     border: 1px solid var(--line); background: var(--panel); outline: none; }
   .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -113,6 +118,41 @@
   .chip { border: 1px solid var(--line); background: var(--panel); color: var(--muted);
     padding: 4px 11px; border-radius: 999px; font-size: 12px; }
   .chip.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .picker-overlay { position: fixed; inset: 0; z-index: 100; display: none;
+    align-items: center; justify-content: center; padding: 18px;
+    background: rgba(14, 18, 16, .48); backdrop-filter: blur(3px); }
+  .picker-overlay.on { display: flex; }
+  .picker-modal { width: min(920px, 100%); max-height: min(780px, 92vh); display: flex;
+    flex-direction: column; background: var(--panel); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .picker-head { display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 14px; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
+  .picker-head h3 { margin: 0; font-size: 17px; }
+  .picker-head p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+  .picker-close { border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+    width: 30px; height: 30px; border-radius: 8px; flex: none; }
+  .picker-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    padding: 12px 18px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
+  .picker-tools input { flex: 1; min-width: 180px; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel); outline: none; }
+  .picker-tools input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .picker-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px;
+    padding: 12px 18px; overflow: auto; min-height: 120px; flex: 1; }
+  .picker-item { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 8px 10px;
+    border: 1px solid var(--line); border-radius: 9px; background: var(--panel); cursor: pointer; }
+  .picker-item:hover { border-color: var(--accent); }
+  .picker-item:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .picker-item input { width: auto; flex: none; accent-color: var(--accent); }
+  .picker-item .body { min-width: 0; flex: 1; }
+  .picker-item .name { font-size: 12.5px; font-weight: 600; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; }
+  .picker-item .meta { margin-top: 1px; font-size: 11px; }
+  .picker-empty { grid-column: 1 / -1; padding: 26px 12px; text-align: center; color: var(--muted); font-size: 12px; }
+  .picker-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 18px; border-top: 1px solid var(--line); background: var(--panel-2); }
+  .picker-foot .count { color: var(--muted); font-size: 12px; }
+  .picker-foot .acts { display: flex; gap: 8px; }
+  .picker-foot .btn[disabled] { opacity: .45; cursor: not-allowed; }
   main { max-width: 1280px; margin: 0 auto; padding: 0 28px 40px;
     display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 18px; align-items: start; }
   .list { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
@@ -173,6 +213,48 @@
   .help { color: var(--muted); font-size: 11.5px; margin-top: 4px; }
   .switch { display: flex; align-items: center; gap: 8px; }
   .switch input { width: auto; }
+  .quick { margin: 14px 0 4px; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--panel-2); overflow: hidden; }
+  .quick-head { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .quick-head h3 { margin: 0; font-size: 13px; }
+  .quick-hint { color: var(--muted); font-size: 11px; text-align: right; }
+  .quick-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 12px; }
+  .quick-field { min-width: 0; }
+  .quick-field label { display: flex; align-items: center; gap: 6px; margin-bottom: 5px;
+    color: var(--muted); font-size: 11.5px; font-weight: 600; }
+  .quick-field input, .quick-field select { width: 100%; padding: 8px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--panel); outline: none; }
+  .quick-field input:focus, .quick-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .quick-field input[readonly] { color: var(--muted); background: var(--panel-2); }
+  .quick-row { display: flex; gap: 6px; align-items: center; }
+  .quick-row input { min-width: 0; }
+  .quick-row .btn { white-space: nowrap; }
+  .quick-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+    padding: 0 12px 12px; }
+  .quick-foot .quick-models { width: auto; min-width: 180px; max-width: 340px; padding: 7px 9px;
+    border-radius: 8px; border: 1px solid var(--line); background: var(--panel); }
+  .quick-status { min-width: 0; flex: 1; color: var(--muted); font-size: 11.5px; }
+  .quick-status.ok { color: var(--accent); }
+  .quick-status.err { color: var(--danger); }
+  .quick-switch { display: flex; align-items: center; gap: 7px; color: var(--muted);
+    font-size: 11.5px; white-space: nowrap; }
+  .quick-switch input { width: auto; accent-color: var(--accent); }
+  .quick-custom-link { margin-top: 6px; padding: 0; border: 0; background: transparent;
+    color: var(--accent); font-size: 11.5px; text-align: left; }
+  .quick-custom-editor { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto;
+    gap: 6px; margin-top: 8px; padding: 8px; border: 1px dashed var(--line); border-radius: 8px;
+    background: var(--panel); }
+  .quick-custom-editor input { min-width: 0; padding: 7px 9px; border-radius: 7px;
+    border: 1px solid var(--line); background: var(--panel-2); }
+  .quick-custom-editor input.bad { border-color: var(--danger); }
+  .quick-custom-editor .acts { display: flex; gap: 5px; }
+  .quick-custom-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+  .custom-chip { display: inline-flex; align-items: center; gap: 3px; max-width: 100%;
+    border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 2px 4px 2px 8px; }
+  .custom-chip button { border: 0; background: transparent; color: var(--muted); font-size: 11.5px; padding: 0 4px; }
+  .custom-chip .x { color: var(--danger); font-weight: 700; }
+  .custom-chip .tag { border: 0; padding: 0; color: var(--accent); font-size: 10px; }
   .adv-toggle { border: 0; background: transparent; color: var(--muted); font-size: 12px; padding: 2px 0; }
   .output { margin-top: 20px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   .output-head { display: flex; justify-content: space-between; align-items: center;
@@ -214,6 +296,13 @@
     h1 { font-size: 17px; }
     .sub { font-size: 11.5px; }
     .toolbar, main, .foot { padding-left: 16px; padding-right: 16px; }
+    .quick-grid { grid-template-columns: 1fr; }
+    .quick-custom-editor { grid-template-columns: 1fr; }
+    .picker-overlay { padding: 10px; }
+    .picker-modal { max-height: 94vh; }
+    .picker-list { grid-template-columns: 1fr; padding: 10px 12px; }
+    .picker-tools, .picker-head, .picker-foot { padding-left: 12px; padding-right: 12px; }
+    .picker-foot { align-items: flex-start; flex-direction: column; }
   }
 </style>
 </head>
@@ -269,6 +358,10 @@
 </section>
 
 <section class="toolbar">
+  <div class="scope-bar">
+    <span class="scope-label" id="scopeLabel"></span>
+    <div class="seg" id="scopeSeg" role="group" aria-labelledby="scopeLabel"></div>
+  </div>
   <input class="search" id="search" placeholder="">
   <div class="chips" id="chips"></div>
 </section>
@@ -281,6 +374,31 @@
   <span id="footLeft"></span>
   <span id="footRight"></span>
 </footer>
+
+<div class="picker-overlay" id="pickerOverlay" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+  <div class="picker-modal">
+    <div class="picker-head">
+      <div>
+        <h3 id="pickerTitle"></h3>
+        <p id="pickerHint"></p>
+      </div>
+      <button class="picker-close" id="pickerClose" type="button" aria-label="Close">×</button>
+    </div>
+    <div class="picker-tools">
+      <input id="pickerSearch" type="search" autocomplete="off">
+      <button class="mini" id="pickerSelectAll" type="button"></button>
+      <button class="mini" id="pickerClear" type="button"></button>
+    </div>
+    <div class="picker-list" id="pickerList"></div>
+    <div class="picker-foot">
+      <span class="count" id="pickerSelected"></span>
+      <div class="acts">
+        <button class="btn" id="pickerCancel" type="button"></button>
+        <button class="btn primary" id="pickerApply" type="button"></button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 const DATA = /*__REGISTRY__*/ {};
@@ -324,7 +442,26 @@ const I18N = {
     langSwitchTo: '切换为 English',
     tabProviders: 'Provider',
     searchPlaceholder: '搜索 id / 名称 / 别名，例如 kimi、openrouter、local…',
+    scopeLabel: '供应商范围',
+    scopeCommon: '常用 {n}',
+    scopeAll: '全部 {n}',
+    scopeCustom: '自定义 {n}',
+    scopeCommonHint: 'Starter 分层：最常见的一批 Provider',
+    scopeAllHint: '完整注册表：所有 Provider',
+    scopeCustomHint: '勾选要显示的 Provider',
+    pickerTitle: '自定义供应商',
+    pickerHint: '只改变页面显示范围，不会修改注册表数据。',
+    pickerSearch: '搜索 id / 名称 / 分类…',
+    pickerSelectAll: '全选当前',
+    pickerClear: '清空',
+    pickerSelected: '已选 {n} 个',
+    pickerApply: '应用（{n}）',
+    pickerCancel: '取消',
+    pickerEmpty: '没有匹配的供应商',
+    emptyCustom: '还没有勾选供应商',
+    emptyCustomAction: '去选择',
     chipAll: '全部 {n}',
+    chipScopeAll: '当前 {n}',
     catGlobal: '海外',
     catChina: '国内',
     catAggregator: '聚合',
@@ -346,6 +483,33 @@ const I18N = {
     hide: '隐藏',
     advHide: '▾ 收起高级项',
     advShow: '▸ 显示高级项（{n}）',
+    quickTitle: '快速运行配置',
+    quickHint: '只用于本地预览；不写入配置、不保存。',
+    quickBase: 'Base URL',
+    quickKey: 'API Key',
+    quickModel: 'Model ID',
+    quickNoKey: '该 Provider 不需要 Key',
+    quickKeyNote: '点击“拉取模型列表”时才会发送给该 Provider；不保存、不写入日志。',
+    quickTemplateBase: 'Base URL 由上方字段模板生成',
+    listModels: '拉取模型列表',
+    modelsLoading: '正在拉取模型列表…',
+    modelsLoaded: '已获取 {n} 个模型',
+    modelsEmpty: '接口没有返回可用模型',
+    modelsUnsupported: '该 Provider 没有公开的模型列表接口，请手动填写 Model ID。',
+    modelsHint: '按注册表的 probe.modelsUrl 拉取；仅在此处使用 Key。',
+    modelsSelect: '选择模型',
+    modelsFailed: '无法直接拉取（可能是浏览器 CORS 限制，或 Key / URL 无效）；可手动填写 Model ID。',
+    showIcons: '显示 Provider 图标',
+    iconsHint: '关闭后不渲染 logo，适合纯文本配置页。',
+    quickCustom: '＋ 自定义模型',
+    quickCustomHint: '列表里没有的模型可补一条；只保存 Model ID / 显示名，不保存 Key。',
+    customId: 'Model ID',
+    customLabel: '显示名称（可选）',
+    customSave: '保存并使用',
+    customCancel: '取消',
+    customInvalid: '请填写 Model ID',
+    customRemove: '删除',
+    customTag: '自定义',
     outputTitle: '生成的请求配置（密钥已脱敏）',
     validateBtn: '校验配置',
     copyBtn: '复制脱敏 JSON',
@@ -393,7 +557,26 @@ const I18N = {
     langSwitchTo: 'Switch to 中文',
     tabProviders: 'Providers',
     searchPlaceholder: 'Search id / name / alias, e.g. kimi, openrouter, local…',
+    scopeLabel: 'Provider scope',
+    scopeCommon: 'Common {n}',
+    scopeAll: 'All {n}',
+    scopeCustom: 'Custom {n}',
+    scopeCommonHint: 'Starter tier: the most common providers',
+    scopeAllHint: 'Full registry: every provider',
+    scopeCustomHint: 'Check the providers you want to show',
+    pickerTitle: 'Custom providers',
+    pickerHint: 'Changes the visible scope only; the registry data is untouched.',
+    pickerSearch: 'Search id / name / category…',
+    pickerSelectAll: 'Select visible',
+    pickerClear: 'Clear',
+    pickerSelected: '{n} selected',
+    pickerApply: 'Apply ({n})',
+    pickerCancel: 'Cancel',
+    pickerEmpty: 'No matching providers',
+    emptyCustom: 'No providers selected yet',
+    emptyCustomAction: 'Choose providers',
     chipAll: 'All {n}',
+    chipScopeAll: 'In scope {n}',
     catGlobal: 'Global',
     catChina: 'China',
     catAggregator: 'Aggregator',
@@ -415,6 +598,33 @@ const I18N = {
     hide: 'Hide',
     advHide: '▾ Hide advanced',
     advShow: '▸ Show advanced ({n})',
+    quickTitle: 'Quick runtime config',
+    quickHint: 'Local preview only; not saved or written to config.',
+    quickBase: 'Base URL',
+    quickKey: 'API Key',
+    quickModel: 'Model ID',
+    quickNoKey: 'This provider does not need a key',
+    quickKeyNote: 'Only sent to this provider when you click “List models”; never saved or logged.',
+    quickTemplateBase: 'Base URL is generated from the fields above',
+    listModels: 'List models',
+    modelsLoading: 'Fetching models…',
+    modelsLoaded: '{n} models loaded',
+    modelsEmpty: 'The endpoint returned no usable models',
+    modelsUnsupported: 'This provider has no public model-list endpoint; enter a Model ID manually.',
+    modelsHint: 'Uses probe.modelsUrl from the registry; the key is only used here.',
+    modelsSelect: 'Select a model',
+    modelsFailed: 'Could not fetch directly (browser CORS, or invalid key / URL). Enter a Model ID manually.',
+    showIcons: 'Show provider icons',
+    iconsHint: 'Turn off to skip logos for a plain-text config screen.',
+    quickCustom: '+ Custom model',
+    quickCustomHint: 'Add a model missing from the list; stores only model ID / label, never the key.',
+    customId: 'Model ID',
+    customLabel: 'Display name (optional)',
+    customSave: 'Save and use',
+    customCancel: 'Cancel',
+    customInvalid: 'Enter a Model ID',
+    customRemove: 'Remove',
+    customTag: 'Custom',
     outputTitle: 'Generated request config (credentials masked)',
     validateBtn: 'Validate config',
     copyBtn: 'Copy masked JSON',
@@ -456,14 +666,17 @@ const PROVIDER_PROMPT = `You are adding an LLM provider configuration UI to my p
 4. Detect my project's stack — React, Vue, Svelte, vanilla JS, or static HTML — and generate a matching provider configuration screen.
 
 5. The screen must include:
-   - A searchable provider picker across the full registry.
-   - A key/secret input that is never saved or transmitted anywhere.
+   - A provider scope selector with three modes: common (the starter tier), all, and custom with checkboxes; custom selections must use only provider IDs from providers.json and may be deep-linked with ?scope=custom&providers=<comma-separated-ids>.
+   - A searchable provider picker across the selected scope.
+   - A compact runtime panel with Base URL, API Key, and Model ID. When the provider entry has probe.modelsUrl, add a "List models" action that calls that URL with the endpoint auth and lets the user choose a model; keep manual Model ID entry. Add a "Custom model" action that saves a Model ID plus optional display name into the model picker; persist only this model metadata locally, never the key.
+   - A key/secret input that is never saved or logged; it is only sent to the selected provider when the user explicitly clicks "List models".
+   - Optional provider icons with a toggle to hide them.
    - Endpoint selection per provider, using only the endpoints and fields the registry defines (protocol, baseURL, path, billing, and any provider-specific field); do not add plan or region selectors the registry does not define.
    - Auth headers derived from the registry, honoring endpoint-level overrides of the provider-level auth scheme.
    - A request preview with secrets masked.
    - Deep links via ?provider=<id>, using only IDs that appear in providers.json.
 
-6. Render only fields defined in the registry — do not invent providers, endpoints, tiers, fields, or status labels. Before finishing, check the provider and endpoint counts against the manifest; if they differ, stop and report the mismatch instead of filling the gaps. Never save, transmit, or log secrets.`;
+6. Render only fields defined in the registry — do not invent providers, endpoints, models, tiers, fields, or status labels. Before finishing, check the provider and endpoint counts against the manifest; if they differ, stop and report the mismatch instead of filling the gaps. Never save or log secrets; transmit a key only to the selected provider when the user explicitly lists models.`;
 
 let lang = detectLang();
 
@@ -540,14 +753,47 @@ const FOOT_LINK_HTML = '<a href="https://github.com/lawson2019/llm-provider-kit/
 
 const DEMO_PARAMS = new URLSearchParams(location.search);
 
+const ALL_PROVIDER_IDS = (DATA.providers ?? []).map((p) => p.id);
+const STARTER_TIER = (DATA.tiers ?? []).find((tier) => tier.id === 'starter');
+const COMMON_PROVIDER_IDS = STARTER_TIER?.providerIds?.length
+  ? STARTER_TIER.providerIds.filter((id) => ALL_PROVIDER_IDS.includes(id))
+  : ALL_PROVIDER_IDS.slice(0, 12);
+
+const requestedProvider = DEMO_PARAMS.get('provider');
+const requestedScope = DEMO_PARAMS.get('scope');
+const initialScope = ['common', 'all', 'custom'].includes(requestedScope)
+  ? requestedScope
+  : (requestedProvider && !COMMON_PROVIDER_IDS.includes(requestedProvider) ? 'all' : 'common');
+const requestedProviders = (DEMO_PARAMS.get('providers') ?? '')
+  .split(',')
+  .map((id) => id.trim())
+  .filter((id) => ALL_PROVIDER_IDS.includes(id));
+const initialCustomIds = initialScope === 'custom'
+  ? requestedProviders
+  : (requestedProviders.length ? requestedProviders : COMMON_PROVIDER_IDS);
+
 const state = {
+  scope: initialScope,
+  customIds: new Set(initialCustomIds),
   category: '',
   query: '',
-  selectedProvider: DEMO_PARAMS.get('provider') ?? DATA.providers?.[0]?.id ?? null,
+  selectedProvider: requestedProvider ?? (initialScope === 'custom'
+    ? (initialCustomIds[0] ?? null)
+    : (COMMON_PROVIDER_IDS[0] ?? ALL_PROVIDER_IDS[0] ?? null)),
   values: {},
   showAdvanced: false,
   errors: {},
+  showIcons: DEMO_PARAMS.get('icons') === null ? true : DEMO_PARAMS.get('icons') !== '0',
+  modelCache: {},
+  customModels: {},
+  customOpen: {},
 };
+
+const CUSTOM_MODELS_KEY = 'lpk-custom-models';
+try {
+  const stored = JSON.parse(localStorage.getItem(CUSTOM_MODELS_KEY) || '{}');
+  if (stored && typeof stored === 'object' && !Array.isArray(stored)) state.customModels = stored;
+} catch { /* 隐私模式下忽略 */ }
 
 for (const p of DATA.providers ?? []) {
   const v = {};
@@ -594,9 +840,68 @@ function logoNode(provider, big = false) {
   return wrap;
 }
 
+function providerIdsForScope(scope = state.scope) {
+  if (scope === 'all') return new Set(ALL_PROVIDER_IDS);
+  if (scope === 'custom') return new Set(state.customIds);
+  return new Set(COMMON_PROVIDER_IDS);
+}
+
+function scopedProviders() {
+  const ids = providerIdsForScope();
+  return (DATA.providers ?? []).filter((p) => ids.has(p.id));
+}
+
+function syncUrl() {
+  const url = new URL(location.href);
+  url.searchParams.set('scope', state.scope);
+  if (state.scope === 'custom') {
+    const ids = [...state.customIds];
+    if (ids.length) url.searchParams.set('providers', ids.join(','));
+    else url.searchParams.delete('providers');
+  } else {
+    url.searchParams.delete('providers');
+  }
+  if (state.showIcons) url.searchParams.delete('icons');
+  else url.searchParams.set('icons', '0');
+  history.replaceState(null, '', url.pathname + url.search);
+}
+
+function renderScope() {
+  const label = document.getElementById('scopeLabel');
+  if (label) label.textContent = t('scopeLabel');
+  const seg = document.getElementById('scopeSeg');
+  if (!seg) return;
+  seg.replaceChildren();
+
+  const modes = [
+    ['common', t('scopeCommon', { n: COMMON_PROVIDER_IDS.length }), t('scopeCommonHint')],
+    ['all', t('scopeAll', { n: ALL_PROVIDER_IDS.length }), t('scopeAllHint')],
+    ['custom', t('scopeCustom', { n: state.customIds.size }), t('scopeCustomHint')],
+  ];
+  for (const [scope, text, hint] of modes) {
+    const btn = el('button', state.scope === scope ? 'on' : '', text);
+    btn.type = 'button';
+    btn.dataset.scope = scope;
+    btn.title = hint;
+    btn.setAttribute('aria-pressed', String(state.scope === scope));
+    btn.onclick = () => {
+      if (scope === 'custom') {
+        openPicker();
+        return;
+      }
+      state.scope = scope;
+      syncUrl();
+      renderAll();
+    };
+    seg.appendChild(btn);
+  }
+}
+
 function currentProviders() {
   if (!DATA.providers) return [];
+  const scopeIds = providerIdsForScope();
   return DATA.providers.filter((p) => {
+    if (!scopeIds.has(p.id)) return false;
     if (state.category && p.category !== state.category) return false;
     if (!state.query) return true;
     const hay = [
@@ -612,11 +917,13 @@ function currentProviders() {
 function renderChips() {
   const chips = document.getElementById('chips');
   chips.replaceChildren();
-  const all = el('button', `chip${state.category === '' ? ' on' : ''}`, t('chipAll', { n: DATA.providers.length }));
+  const scopeProviders = scopedProviders();
+  const allLabel = state.scope === 'all' ? t('chipAll', { n: scopeProviders.length }) : t('chipScopeAll', { n: scopeProviders.length });
+  const all = el('button', `chip${state.category === '' ? ' on' : ''}`, allLabel);
   all.onclick = () => { state.category = ''; renderChips(); renderList(); renderDetail(); };
   chips.appendChild(all);
   for (const [key, label] of Object.entries(CATEGORY_LABEL[lang])) {
-    const count = DATA.providers.filter((p) => p.category === key).length;
+    const count = scopeProviders.filter((p) => p.category === key).length;
     if (!count) continue;
     const chip = el('button', `chip${state.category === key ? ' on' : ''}`, `${label} ${count}`);
     chip.onclick = () => { state.category = state.category === key ? '' : key; renderChips(); renderList(); renderDetail(); };
@@ -640,7 +947,18 @@ function renderList() {
 
   const providers = currentProviders();
   if (providers.length === 0) {
-    list.appendChild(el('div', 'empty', t('emptyProvider')));
+    const empty = el('div', 'empty');
+    if (state.scope === 'custom' && state.customIds.size === 0) {
+      empty.appendChild(document.createTextNode(t('emptyCustom')));
+      const choose = el('button', 'btn primary', t('emptyCustomAction'));
+      choose.type = 'button';
+      choose.style.marginTop = '10px';
+      choose.onclick = openPicker;
+      empty.appendChild(choose);
+    } else {
+      empty.textContent = t('emptyProvider');
+    }
+    list.appendChild(empty);
     return;
   }
   if (!providers.some((p) => p.id === state.selectedProvider)) {
@@ -648,7 +966,7 @@ function renderList() {
   }
   for (const p of providers) {
     const btn = el('button', `item${state.selectedProvider === p.id ? ' on' : ''}`);
-    btn.appendChild(logoNode(p));
+    if (state.showIcons) btn.appendChild(logoNode(p));
     const body = el('div', 'body');
     body.appendChild(el('div', 'name', p.name));
     const meta = el('div', 'meta');
@@ -663,6 +981,89 @@ function renderList() {
 
 function currentProvider() {
   return (DATA.providers ?? []).find((p) => p.id === state.selectedProvider) ?? null;
+}
+
+let pickerDraft = new Set();
+let pickerQuery = '';
+
+function filteredPickerProviders() {
+  const q = pickerQuery.trim().toLowerCase();
+  if (!q) return DATA.providers ?? [];
+  return (DATA.providers ?? []).filter((p) => {
+    const hay = [p.id, p.name, ...(p.aliases ?? []), p.category, p.kind].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+}
+
+function renderPicker() {
+  const list = document.getElementById('pickerList');
+  if (!list) return;
+  list.replaceChildren();
+
+  const matches = filteredPickerProviders();
+  if (!matches.length) {
+    list.appendChild(el('div', 'picker-empty', t('pickerEmpty')));
+  } else {
+    for (const provider of matches) {
+      const item = el('label', 'picker-item');
+      const cb = el('input');
+      cb.type = 'checkbox';
+      cb.checked = pickerDraft.has(provider.id);
+      cb.onchange = () => {
+        if (cb.checked) pickerDraft.add(provider.id);
+        else pickerDraft.delete(provider.id);
+        renderPicker();
+      };
+      item.appendChild(cb);
+      const body = el('div', 'body');
+      body.appendChild(el('div', 'name', provider.name));
+      body.appendChild(el('div', 'meta', `${provider.id} · ${catLabel(provider.category)}`));
+      item.appendChild(body);
+      list.appendChild(item);
+    }
+  }
+
+  const selected = document.getElementById('pickerSelected');
+  if (selected) selected.textContent = t('pickerSelected', { n: pickerDraft.size });
+  const apply = document.getElementById('pickerApply');
+  if (apply) {
+    apply.disabled = pickerDraft.size === 0;
+    apply.textContent = t('pickerApply', { n: pickerDraft.size });
+  }
+  const allBtn = document.getElementById('pickerSelectAll');
+  if (allBtn) allBtn.textContent = t('pickerSelectAll');
+  const clearBtn = document.getElementById('pickerClear');
+  if (clearBtn) clearBtn.textContent = t('pickerClear');
+}
+
+function openPicker() {
+  pickerDraft = new Set(state.customIds);
+  pickerQuery = '';
+  const search = document.getElementById('pickerSearch');
+  if (search) search.value = '';
+  const title = document.getElementById('pickerTitle');
+  if (title) title.textContent = t('pickerTitle');
+  const hint = document.getElementById('pickerHint');
+  if (hint) hint.textContent = t('pickerHint');
+  const cancel = document.getElementById('pickerCancel');
+  if (cancel) cancel.textContent = t('pickerCancel');
+  const overlay = document.getElementById('pickerOverlay');
+  if (overlay) overlay.classList.add('on');
+  renderPicker();
+}
+
+function closePicker() {
+  const overlay = document.getElementById('pickerOverlay');
+  if (overlay) overlay.classList.remove('on');
+}
+
+function applyPicker() {
+  if (pickerDraft.size === 0) return;
+  state.customIds = new Set(pickerDraft);
+  state.scope = 'custom';
+  closePicker();
+  syncUrl();
+  renderAll();
 }
 
 function fieldControl(field, value, onChange, hasError) {
@@ -703,6 +1104,7 @@ function fieldControl(field, value, onChange, hasError) {
     input.spellcheck = false;
   }
 
+  input.dataset.fieldKey = field.key;
   if (hasError) input.classList.add('bad');
   input.addEventListener('input', () => {
     const v = field.type === 'boolean' ? input.checked : input.value;
@@ -725,6 +1127,410 @@ function fieldControl(field, value, onChange, hasError) {
     wrap.appendChild(peek);
   }
   return wrap;
+}
+
+function secretField(provider) {
+  return (provider.formFields ?? []).find((field) => field.secret === true) ?? null;
+}
+
+function hasModelField(provider) {
+  return (provider.formFields ?? []).some((field) => field.key === 'model');
+}
+
+function baseURLFor(provider, values) {
+  const endpoint = resolveEndpoint(provider, values);
+  let base = values.baseURL || endpoint?.baseURL || provider.baseURL || '';
+  if (provider.baseURLTemplate) base = interpolate(provider.baseURLTemplate, values);
+  else if (String(base).includes('{')) base = interpolate(base, values);
+  return String(base ?? '').replace(/\/+$/, '');
+}
+
+function modelsURLFor(provider, values) {
+  const raw = provider.probe?.modelsUrl;
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  const base = baseURLFor(provider, values);
+  if (!base || base.includes('{')) return '';
+  return `${base}${raw.startsWith('/') ? '' : '/'}${raw}`;
+}
+
+function buildModelsRequest(provider, values) {
+  const modelsURL = modelsURLFor(provider, values);
+  if (!modelsURL) return { error: 'no-models-url' };
+
+  const endpoint = resolveEndpoint(provider, values);
+  const auth = provider.auth ?? {};
+  const endpointAuth = endpoint?.auth ?? {};
+  const scheme = endpointAuth.scheme ?? auth.scheme ?? provider.authType;
+  const headerName = endpointAuth.headerName ?? auth.headerName;
+  const queryName = endpointAuth.queryName ?? auth.queryName;
+  const secret = secretField(provider);
+  const credential = secret ? String(values[secret.key] ?? '') : '';
+  const headers = { Accept: 'application/json' };
+  const query = {};
+
+  if (scheme === 'aws-sigv4' || scheme === 'jwt-session' || scheme === 'cookie') {
+    return { error: 'unsupported-auth' };
+  }
+
+  switch (scheme) {
+    case 'bearer':
+      if (credential) headers.Authorization = `Bearer ${credential}`;
+      break;
+    case 'api-key-header':
+      if (credential) headers[headerName ?? 'x-api-key'] = credential;
+      break;
+    case 'query-param':
+      if (credential) query[queryName ?? 'key'] = credential;
+      break;
+    case 'azure-api-key':
+      if (credential) headers['api-key'] = credential;
+      query['api-version'] = values.apiVersion || '2024-10-21';
+      break;
+    case 'none':
+      break;
+  }
+
+  for (const [name, value] of Object.entries(auth.extraHeaders ?? {})) {
+    const resolved = interpolate(value, values);
+    if (!resolved.includes('{')) headers[name] = resolved;
+  }
+  for (const [name, value] of Object.entries(endpoint?.headers ?? {})) {
+    const resolved = interpolate(value, values);
+    if (!resolved.includes('{')) headers[name] = resolved;
+  }
+
+  let url = modelsURL;
+  if (Object.keys(query).length) {
+    const parsed = new URL(modelsURL);
+    for (const [key, value] of Object.entries(query)) parsed.searchParams.set(key, value);
+    url = parsed.toString();
+  }
+  return { url, headers, method: provider.probe?.method ?? 'GET' };
+}
+
+function parseModels(payload) {
+  const raw = Array.isArray(payload)
+    ? payload
+    : payload?.data ?? payload?.models ?? payload?.result ?? [];
+  if (!Array.isArray(raw)) return [];
+  const seen = new Set();
+  const models = [];
+  for (const item of raw) {
+    const value = typeof item === 'string'
+      ? item
+      : item?.id ?? item?.name ?? item?.model ?? item?.slug;
+    if (!value) continue;
+    const id = String(value).replace(/^models\//, '').trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    models.push(id);
+  }
+  return models.sort((a, b) => a.localeCompare(b));
+}
+
+function syncFieldInputs(provider, values) {
+  for (const input of document.querySelectorAll('.detail [data-field-key]')) {
+    const value = values[input.dataset.fieldKey];
+    if (value === undefined || value === null) continue;
+    if (input.type === 'checkbox') input.checked = Boolean(value);
+    else if (input.value !== String(value)) input.value = String(value);
+  }
+}
+
+async function loadModels(provider, values) {
+  const status = document.querySelector('.quick-status');
+  const request = buildModelsRequest(provider, values);
+  if (request.error === 'no-models-url') {
+    state.modelCache[provider.id] = { error: 'unsupported' };
+    renderDetail();
+    return;
+  }
+  if (request.error === 'unsupported-auth') {
+    state.modelCache[provider.id] = { error: 'unsupported-auth' };
+    renderDetail();
+    return;
+  }
+
+  if (status) {
+    status.className = 'quick-status';
+    status.textContent = t('modelsLoading');
+  }
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    let response;
+    try {
+      response = await fetch(request.url, {
+        method: request.method,
+        headers: request.headers,
+        signal: controller.signal,
+        cache: 'no-store',
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    const models = parseModels(payload);
+    if (!models.length) throw new Error('empty');
+    state.modelCache[provider.id] = { models, at: Date.now() };
+  } catch {
+    state.modelCache[provider.id] = { error: 'failed' };
+  }
+  renderDetail();
+}
+
+function customModelsFor(provider) {
+  const list = state.customModels[provider.id];
+  return Array.isArray(list)
+    ? list.filter((item) => item && typeof item.id === 'string' && item.id.trim())
+    : [];
+}
+
+function persistCustomModels() {
+  try { localStorage.setItem(CUSTOM_MODELS_KEY, JSON.stringify(state.customModels)); } catch { /* 隐私模式下忽略 */ }
+}
+
+function setModelValue(provider, values, id, label = '', custom = false) {
+  values.model = id;
+  values.modelLabel = label;
+  values.customModel = custom;
+  const input = document.querySelector('.quick-field input[data-field-key="model"]');
+  if (input) input.value = id;
+  syncFieldInputs(provider, values);
+  refreshOutput(provider, values);
+}
+
+function renderQuickConfig(provider, values) {
+  const box = el('div', 'quick');
+  const head = el('div', 'quick-head');
+  head.appendChild(el('h3', '', t('quickTitle')));
+  head.appendChild(el('span', 'quick-hint', t('quickHint')));
+  box.appendChild(head);
+
+  const grid = el('div', 'quick-grid');
+
+  const baseField = el('div', 'quick-field');
+  const baseLabel = el('label', '', t('quickBase'));
+  const base = el('input');
+  base.type = 'url';
+  base.value = baseURLFor(provider, values);
+  base.placeholder = 'https://api.example.com/v1';
+  base.autocomplete = 'off';
+  base.spellcheck = false;
+  base.dataset.fieldKey = 'baseURL';
+  if (provider.baseURLTemplate) {
+    base.readOnly = true;
+    base.title = t('quickTemplateBase');
+  }
+  base.addEventListener('input', () => {
+    if (provider.baseURLTemplate) return;
+    values.baseURL = base.value.trim();
+    syncFieldInputs(provider, values);
+    refreshOutput(provider, values);
+  });
+  baseField.append(baseLabel, base);
+  if (provider.baseURLTemplate) baseField.appendChild(el('div', 'help', t('quickTemplateBase')));
+  else if (base.value) baseField.appendChild(el('div', 'help', base.value));
+  grid.appendChild(baseField);
+
+  const keyField = el('div', 'quick-field');
+  const keyLabel = el('label', '', t('quickKey'));
+  const secret = secretField(provider);
+  if (secret) {
+    const key = el('input');
+    key.type = 'password';
+    key.value = values[secret.key] ?? secret.default ?? '';
+    key.placeholder = secret.placeholder ?? 'sk-...';
+    key.autocomplete = 'off';
+    key.spellcheck = false;
+    key.dataset.fieldKey = secret.key;
+    key.addEventListener('input', () => {
+      values[secret.key] = key.value;
+      syncFieldInputs(provider, values);
+      refreshOutput(provider, values);
+    });
+    const row = el('div', 'quick-row');
+    row.appendChild(key);
+    const peek = el('button', 'btn', t('show'));
+    peek.type = 'button';
+    peek.onclick = () => {
+      const showing = key.type === 'text';
+      key.type = showing ? 'password' : 'text';
+      peek.textContent = showing ? t('show') : t('hide');
+    };
+    row.appendChild(peek);
+    keyField.append(keyLabel, row);
+  } else {
+    const empty = el('input');
+    empty.type = 'text';
+    empty.disabled = true;
+    empty.placeholder = t('quickNoKey');
+    keyField.append(keyLabel, empty);
+  }
+  keyField.appendChild(el('div', 'help', t('quickKeyNote')));
+  grid.appendChild(keyField);
+
+  const modelField = el('div', 'quick-field');
+  const modelLabel = el('label', '', t('quickModel'));
+  const modelInput = el('input');
+  modelInput.type = 'text';
+  modelInput.value = values.model ?? '';
+  modelInput.placeholder = 'gpt-4o-mini / claude-sonnet-4-5';
+  modelInput.autocomplete = 'off';
+  modelInput.spellcheck = false;
+  modelInput.dataset.fieldKey = 'model';
+  modelInput.addEventListener('input', () => {
+    values.model = modelInput.value.trim();
+    values.customModel = true;
+    values.modelLabel = '';
+    syncFieldInputs(provider, values);
+    refreshOutput(provider, values);
+  });
+  const modelRow = el('div', 'quick-row');
+  modelRow.appendChild(modelInput);
+  const list = el('button', 'btn', t('listModels'));
+  list.type = 'button';
+  if (!provider.probe?.modelsUrl) list.disabled = true;
+  list.onclick = () => loadModels(provider, values);
+  modelRow.appendChild(list);
+  modelField.append(modelLabel, modelRow);
+  if (!hasModelField(provider)) modelField.appendChild(el('div', 'help', t('modelsHint')));
+
+  const customToggle = el('button', 'quick-custom-link', t('quickCustom'));
+  customToggle.type = 'button';
+  customToggle.title = t('quickCustomHint');
+  customToggle.onclick = () => {
+    state.customOpen[provider.id] = !state.customOpen[provider.id];
+    renderDetail();
+  };
+  modelField.appendChild(customToggle);
+
+  const customModels = customModelsFor(provider);
+  if (state.customOpen[provider.id]) {
+    const editor = el('div', 'quick-custom-editor');
+    const idInput = el('input');
+    idInput.type = 'text';
+    idInput.value = values.customModel ? (values.model ?? '') : '';
+    idInput.placeholder = t('customId');
+    idInput.autocomplete = 'off';
+    idInput.spellcheck = false;
+    const labelInput = el('input');
+    labelInput.type = 'text';
+    labelInput.value = values.customModel ? (values.modelLabel ?? '') : '';
+    labelInput.placeholder = t('customLabel');
+    labelInput.autocomplete = 'off';
+    const acts = el('div', 'acts');
+    const save = el('button', 'btn primary', t('customSave'));
+    save.type = 'button';
+    const cancel = el('button', 'btn', t('customCancel'));
+    cancel.type = 'button';
+    save.onclick = () => {
+      const id = idInput.value.trim();
+      if (!id) {
+        idInput.classList.add('bad');
+        idInput.placeholder = t('customInvalid');
+        idInput.focus();
+        return;
+      }
+      const label = labelInput.value.trim();
+      const list = customModelsFor(provider).filter((item) => item.id !== id);
+      list.push({ id, label });
+      state.customModels[provider.id] = list;
+      persistCustomModels();
+      state.customOpen[provider.id] = false;
+      setModelValue(provider, values, id, label, true);
+      renderDetail();
+    };
+    cancel.onclick = () => {
+      state.customOpen[provider.id] = false;
+      renderDetail();
+    };
+    acts.append(save, cancel);
+    editor.append(idInput, labelInput, acts);
+    modelField.appendChild(editor);
+  }
+
+  if (customModels.length) {
+    const chips = el('div', 'quick-custom-list');
+    for (const item of customModels) {
+      const chip = el('span', 'custom-chip');
+      const use = el('button', '', `${item.id}${item.label ? ` · ${item.label}` : ''}`);
+      use.type = 'button';
+      use.title = t('customTag');
+      use.onclick = () => setModelValue(provider, values, item.id, item.label, true);
+      const remove = el('button', 'x', '×');
+      remove.type = 'button';
+      remove.title = t('customRemove');
+      remove.onclick = () => {
+        state.customModels[provider.id] = customModelsFor(provider).filter((entry) => entry.id !== item.id);
+        persistCustomModels();
+        renderDetail();
+      };
+      chip.append(use, el('span', 'tag', t('customTag')), remove);
+      chips.appendChild(chip);
+    }
+    modelField.appendChild(chips);
+  }
+  grid.appendChild(modelField);
+
+  box.appendChild(grid);
+
+  const foot = el('div', 'quick-foot');
+  const cache = state.modelCache[provider.id];
+  const customIds = new Set(customModels.map((item) => item.id));
+  const allModelIds = [...new Set([
+    ...(cache?.models ?? []),
+    ...customModels.map((item) => item.id),
+  ])];
+  if (allModelIds.length) {
+    const select = el('select', 'quick-models');
+    const placeholder = el('option', '', t('modelsSelect'));
+    placeholder.value = '';
+    select.appendChild(placeholder);
+    for (const id of allModelIds) {
+      const custom = customIds.has(id);
+      const customLabel = customModels.find((item) => item.id === id)?.label;
+      const opt = el('option', '', `${id}${custom ? ` · ${t('customTag')}${customLabel ? ` · ${customLabel}` : ''}` : ''}`);
+      opt.value = id;
+      select.appendChild(opt);
+    }
+    select.value = allModelIds.includes(values.model) ? values.model : '';
+    select.onchange = () => {
+      if (!select.value) return;
+      const custom = customIds.has(select.value);
+      const customLabel = customModels.find((item) => item.id === select.value)?.label ?? '';
+      modelInput.value = select.value;
+      setModelValue(provider, values, select.value, customLabel, custom);
+    };
+    foot.appendChild(select);
+    const loaded = cache?.models?.length ? t('modelsLoaded', { n: cache.models.length }) : `${customModels.length} ${t('customTag')}`;
+    foot.appendChild(el('span', 'quick-status ok', loaded));
+  } else {
+    const status = el('span', `quick-status${cache?.error ? ' err' : ''}`);
+    if (cache?.error === 'failed') status.textContent = t('modelsFailed');
+    else if (cache?.error === 'unsupported') status.textContent = t('modelsUnsupported');
+    else if (cache?.error === 'unsupported-auth') status.textContent = t('modelsUnsupported');
+    else status.textContent = provider.probe?.modelsUrl ? t('modelsHint') : t('modelsUnsupported');
+    foot.appendChild(status);
+  }
+
+  const iconLabel = el('label', 'quick-switch');
+  const icon = el('input');
+  icon.type = 'checkbox';
+  icon.checked = state.showIcons;
+  icon.onchange = () => {
+    state.showIcons = icon.checked;
+    syncUrl();
+    renderList();
+    renderDetail();
+  };
+  iconLabel.append(icon, document.createTextNode(t('showIcons')));
+  iconLabel.title = t('iconsHint');
+  foot.appendChild(iconLabel);
+  box.appendChild(foot);
+  return box;
 }
 
 function renderForm(provider) {
@@ -844,6 +1650,7 @@ function renderGroup(provider, group, fields, values) {
       if (state.errors[field.key] && String(v).trim()) {
         delete state.errors[field.key];
       }
+      syncFieldInputs(provider, values);
       refreshOutput(provider, values);
     }, Boolean(state.errors[field.key]));
     row.appendChild(control);
@@ -1031,6 +1838,8 @@ function buildConfig(provider, values) {
 
   return {
     baseURL,
+    model: values.model ? String(values.model) : null,
+    modelLabel: values.modelLabel ? String(values.modelLabel) : null,
     endpoint: endpoint?.id ?? 'default',
     protocol: endpoint?.protocol ?? 'unknown',
     path,
@@ -1057,7 +1866,7 @@ function renderProviderDetail() {
 
   const panel = el('div', 'detail');
   const head = el('div', 'd-head');
-  head.appendChild(logoNode(provider, true));
+  if (state.showIcons) head.appendChild(logoNode(provider, true));
   const title = el('div', 'd-title');
   title.appendChild(el('h2', '', provider.name));
   title.appendChild(el('div', 'd-id', `${provider.id} · ${catLabel(provider.category)}`));
@@ -1078,6 +1887,7 @@ function renderProviderDetail() {
     billing: provider.billing?.mode ?? provider.quota?.type ?? '—',
   });
   panel.appendChild(desc);
+  panel.appendChild(renderQuickConfig(provider, state.values[provider.id] ?? (state.values[provider.id] = {})));
 
   if (provider.endpoints?.length) {
     const ep = el('div', 'notes');
@@ -1161,15 +1971,39 @@ function renderAll() {
   applyStaticTexts();
   const endpoints = DATA.providers.reduce((n, provider) => n + (provider.endpoints?.length ?? 0), 0);
   document.getElementById('stats').textContent = t('stats', { n: DATA.providers.length, e: endpoints });
+  renderScope();
   renderChips();
   renderList();
   renderDetail();
+  const overlay = document.getElementById('pickerOverlay');
+  if (overlay?.classList.contains('on')) renderPicker();
 }
 
 document.getElementById('search').addEventListener('input', (e) => {
   state.query = e.target.value;
   renderList();
   renderDetail();
+});
+document.getElementById('pickerSearch').addEventListener('input', (e) => {
+  pickerQuery = e.target.value;
+  renderPicker();
+});
+document.getElementById('pickerSelectAll').addEventListener('click', () => {
+  for (const provider of filteredPickerProviders()) pickerDraft.add(provider.id);
+  renderPicker();
+});
+document.getElementById('pickerClear').addEventListener('click', () => {
+  pickerDraft.clear();
+  renderPicker();
+});
+document.getElementById('pickerApply').addEventListener('click', applyPicker);
+document.getElementById('pickerCancel').addEventListener('click', closePicker);
+document.getElementById('pickerClose').addEventListener('click', closePicker);
+document.getElementById('pickerOverlay').addEventListener('click', (event) => {
+  if (event.target.id === 'pickerOverlay') closePicker();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closePicker();
 });
 document.getElementById('themeBtn').addEventListener('click', () => {
   const root = document.documentElement;

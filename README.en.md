@@ -35,7 +35,11 @@ You are adding an LLM provider configuration UI to my project. Do NOT clone any 
 
 5. The screen must include:
    - A searchable picker to switch between providers.
-   - A key/secret input that is never saved or sent anywhere.
+   - Three provider-scope modes: common (starter tier), all, and custom checkboxes; custom IDs must come from providers.json.
+   - A compact runtime panel with Base URL, API Key, and Model ID; when probe.modelsUrl exists, list models and let the user pick one, with manual entry as fallback.
+   - A custom-model action: save a Model ID plus an optional display name; only model metadata is stored locally, never the key, and the saved entry joins the model picker.
+   - A key/secret input that is never saved or logged; it is sent only to the selected provider when the user explicitly lists models.
+   - Optional provider icons with a toggle.
    - Endpoint selection per provider, using only the endpoints and fields the registry defines (protocol, baseURL, path, billing, and any provider-specific field); do not add plan or region selectors the registry does not define.
    - Auth headers derived from the registry, with endpoint-level rules overriding the provider-level scheme.
    - A request preview with secrets masked.
@@ -48,7 +52,7 @@ You are adding an LLM provider configuration UI to my project. Do NOT clone any 
 
 The generated UI supports five stacks — **React · Vue · Svelte · vanilla JS · static HTML** — and includes:
 
-- **Provider switching**: a searchable picker across the full registry.
+- **Quick runtime config**: Base URL, API Key, Model ID, model listing, custom models, and an icon toggle.
 - **Tiers**: Starter (12), Mainstream (37), and Full (all 108).
 - **Auth headers**: credentials attached per the registry's auth scheme.
 - **Request preview**: the assembled URL and headers, secrets masked.

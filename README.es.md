@@ -35,7 +35,11 @@ Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto
 
 5. La pantalla debe incluir:
    - Un selector con búsqueda para cambiar entre proveedores.
-   - Un campo de clave / secreto que nunca se guarda ni se envía a ningún sitio.
+   - Tres modos de alcance de proveedores: comunes (nivel Starter), todos y personalizado con casillas; los ids personalizados deben provenir de providers.json.
+   - Panel compacto de configuración en tiempo de ejecución: Base URL, API Key y Model ID; si existe probe.modelsUrl, permite listar modelos y elegir uno, manteniendo la entrada manual.
+   - Modelo personalizado: guarda un Model ID y un nombre visible opcional; solo se guardan localmente los metadatos del modelo, nunca la clave. La entrada guardada se añade al selector de modelos.
+   - Un campo de clave / secreto que nunca se guarda ni se registra; solo se envía al proveedor seleccionado cuando el usuario pulsa explícitamente «Listar modelos».
+   - Iconos de proveedor opcionales con un interruptor para ocultarlos.
    - Selección de endpoints por proveedor, usando solo los endpoints y campos definidos por el registro (protocolo, baseURL, ruta, facturación y cualquier campo específico del proveedor); no añadas selectores de plan o región que el registro no defina.
    - Cabeceras de autenticación derivadas del registro, con las reglas a nivel de endpoint prevaleciendo sobre el esquema a nivel de proveedor.
    - Una vista previa de la solicitud con los secretos enmascarados.
@@ -48,7 +52,7 @@ Vas a añadir una interfaz de configuración de proveedores de LLM a mi proyecto
 
 La interfaz generada admite cinco stacks — **React · Vue · Svelte · vanilla JS · HTML estático** — e incluye:
 
-- **Cambio de proveedor**: un selector con búsqueda sobre todo el registro.
+- **Configuración rápida**: Base URL, API Key, Model ID, listado de modelos, modelos personalizados e interruptor de iconos.
 - **Niveles**: Starter (12), Mainstream (37) y Full (los 108).
 - **Cabeceras de autenticación**: credenciales añadidas según el esquema de autenticación del registro.
 - **Vista previa de la solicitud**: la URL y las cabeceras ensambladas, con los secretos enmascarados.

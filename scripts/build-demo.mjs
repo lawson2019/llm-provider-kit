@@ -10,6 +10,7 @@ import { getFormFields } from '../src/fields.mjs';
 import { getQuotaWarning, providerStats } from '../src/registry.mjs';
 
 const { registry, providersData } = await loadRegistry();
+const tiersData = JSON.parse(await readFile(path.join(REPO_ROOT, 'data/tiers.json'), 'utf8'));
 
 // 构建时把 favicon 内嵌成 data URI，避免 icon.horse 等外部图源在浏览器里挂起。
 let iconEmbeds = {};
@@ -32,6 +33,7 @@ const payload = {
   updatedAt: providersData.updatedAt,
   stats: providerStats(registry.providers),
   providers,
+  tiers: tiersData.tiers,
 };
 
 const templatePath = path.join(REPO_ROOT, 'demo/template.html');

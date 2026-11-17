@@ -188,6 +188,18 @@ node skills/llm-provider-kit/scripts/scaffold.mjs \
 5. 必填项为空时 `missing` 有对应 key；
 6. 本地仓库根目录跑 `npm run validate`、`npm run test:all`、`npm run build:demo` 均通过。
 
+### 5.4 运行时简单配置（可选但推荐）
+
+生成页可以加一个“快速运行配置”区，只放三项：**Base URL、API Key、Model ID**。
+
+- **Base URL**：优先取 `endpoint.baseURL`，否则取 `provider.baseURL`；`baseURLTemplate` 类 Provider 由字段模板推导，不强行覆盖。
+- **API Key**：与 `fields[]` 中 `secret: true` 的字段同源；不写 localStorage、不写日志、不放进 URL 参数。
+- **Model ID**：与 `model` 字段同源；始终保留手动输入。
+- **拉取模型列表**：仅当 Provider 有 `probe.modelsUrl` 时显示。URL 用当前接入面的 `baseURL + probe.modelsUrl` 拼；鉴权用 `endpoint.auth` 覆盖 `provider.auth` 后生成真实请求头（仅用于这次请求）。兼容 `{data:[{id}]}`、`{models:[{name}]}`、数组和 `id/name/model/slug` 字段。
+- **失败回退**：CORS、401、404、空列表都必须回到手动填写 Model ID，不阻塞配置；不要在错误里回显 Key。
+- **自定义模型**：允许保存 Model ID + 可选显示名；只保存模型元信息（本地存储），不保存 Key；保存后的条目并入模型选择器，并支持删除。
+- **图标**：`icon.url` 或 `icon.slug` 可渲染 Provider 图标，提供“显示图标”开关；关闭后不再请求 icon 资源。
+
 ## 6. 常见坑
 
 - **不要假设所有 Provider 都是 OpenAI 兼容**：`endpoint.protocol` 决定请求面。`anthropic-messages`、`gemini-native`、`native` 各有自己的路径与报文结构；接入前先看协议，不要把 OpenAI 的 `/chat/completions` 套到所有厂商。
@@ -195,7 +207,7 @@ node skills/llm-provider-kit/scripts/scaffold.mjs \
 - **本地运行时是 localhost 且 Base URL 可编辑**：`kind=local` 的 Provider 没有云端固定端点，表单应允许填写本机地址；预览要提示“本地端点，请确认只在可信网络内可达”。
 - **分层怎么选**：`starter` 给新建项目（最常见的一批）；`mainstream` 给常规项目（主流直连 + 国内大厂 + 常用聚合）；`full` 给长尾 / 高级场景。条数以 `tiers.json` 的 `count` 为准。
 - **会话 / 订阅型不是静态 Key**：`kind=session`、订阅边界、Cookie / OAuth 条目只做状态说明与登录引导，不要渲染成“粘贴 API Key”的表单。
-- **安全边界**：生成页只负责配置 UI 与预览，不转发请求、不持久化密钥；不提交任何真实 Key / JWT / Cookie；敏感值不进入 DOM 文本、复制内容或日志。
+- **安全边界**：生成页只负责配置 UI 与预览；除用户明确点击“拉取模型列表”外不发起网络请求。不持久化密钥，不提交任何真实 Key / JWT / Cookie；敏感值不进入 DOM 文本、复制内容、URL 参数或日志。
 
 ## 7. 参考
 
