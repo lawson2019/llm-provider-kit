@@ -16,9 +16,9 @@
 1. Read `manifest.json` to discover the current version, counts, and resource URLs; fall back to the raw URLs below if GitHub Pages is unavailable.
 2. Read the Skill guide, then fetch `providers.json` and `tiers.json`, and validate entries against the schema.
 3. Detect the target project's stack: React, Vue, Svelte, vanilla JS, or static HTML.
-4. Generate the matching provider configuration UI using only fields defined in the registry. Select endpoints only by the dimensions the data defines (protocol, baseURL, path, billing) — do not invent plan or region selectors.
+4. Generate the matching provider configuration UI using only fields defined in the registry. Offer three provider scopes: common (starter tier), all, and custom checkboxes using only IDs from providers.json. Add a compact runtime panel with Base URL, API key, and Model ID; when probe.modelsUrl exists, list models and let the user pick one, with manual entry as fallback; add custom model entries with an optional display name and store only model metadata. Make provider icons optional. Select endpoints only by the dimensions the data defines (protocol, baseURL, path, billing) — do not invent plan or region selectors.
 5. Deep-link with `?provider=<id>` using IDs listed in `providers.json`.
-6. Keep API keys local. Never save, transmit, or log secrets.
+6. Keep API keys local. Never save or log secrets; send one only to the selected provider when the user explicitly lists models.
 
 ## Fallback URLs
 
