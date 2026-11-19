@@ -671,9 +671,138 @@
     .quick-grid { grid-template-columns: 1fr; }
     .picker-modal { box-shadow: 5px 5px 0 var(--accent); }
   }
-</style>
+.tour-art {
+    min-height: 430px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    align-items: end;
+    padding: 26px 28px 24px;
+    background:
+      linear-gradient(rgba(200,255,101,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,255,101,.045) 1px, transparent 1px),
+      var(--terminal);
+    background-size: 8px 8px, 8px 8px, auto;
+    overflow: hidden;
+  }
+  .tour-art::before {
+    content: "ASCII / PIXELS / 08 SEC";
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    color: rgba(200,255,101,.55);
+    font-size: 8px;
+    letter-spacing: .12em;
+  }
+  .tour-term {
+    align-self: start;
+    width: min(100%, 500px);
+    border: 1px solid rgba(200,255,101,.25);
+    background: rgba(200,255,101,.035);
+    box-shadow: 8px 8px 0 rgba(200,255,101,.12);
+    transform: translateY(12px) rotate(-.5deg);
+  }
+  .tour-term-bar {
+    display: flex; gap: 12px; align-items: center;
+    padding: 8px 11px;
+    border-bottom: 1px dashed rgba(200,255,101,.28);
+    color: rgba(200,255,101,.65);
+    font-size: 9px;
+  }
+  .tour-term-bar span { color: var(--phosphor); letter-spacing: .12em; }
+  .tour-term-bar b { font-weight: 400; letter-spacing: .04em; }
+  .tour-term-body { padding: 13px 13px 8px; }
+  .tour-term-body p {
+    margin: 0 0 3px;
+    color: #d8e9c9;
+    font-size: clamp(10px, 1.08vw, 12.5px);
+    line-height: 1.65;
+    white-space: pre-wrap;
+  }
+  .tour-term-body .prompt { color: var(--phosphor); }
+  .tour-ok { color: var(--phosphor) !important; }
+  .tour-term-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px 10px;
+    border-top: 1px dashed rgba(200,255,101,.25);
+    color: rgba(200,255,101,.6);
+    font-size: 8px;
+    letter-spacing: .1em;
+  }
+  .tour-cursor {
+    display: inline-block; width: .6em; height: 1em;
+    background: var(--phosphor); vertical-align: -.12em;
+    animation: tour-blink 1.1s steps(2, end) infinite;
+  }
+  @keyframes tour-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+  .tour-ui {
+    justify-self: end;
+    width: min(100%, 300px);
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--paper);
+    box-shadow: 8px 8px 0 var(--accent);
+    transform: translateY(14px) rotate(.35deg);
+  }
+  .tour-ui-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 11px;
+    border-bottom: 1px solid var(--ink);
+    background: var(--paper);
+    font-size: 9px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  .tour-ui-head b { background: var(--accent); color: var(--accent-ink); padding: 2px 5px; font-size: 8px; font-weight: 400; }
+  .tour-ui-body { padding: 11px; background: var(--paper); }
+  .tour-ui-label { margin: 8px 0 4px; color: var(--muted); font-size: 8px; letter-spacing: .08em; }
+  .tour-ui-label:first-child { margin-top: 0; }
+  .tour-ui-control {
+    display: flex; justify-content: space-between; gap: 8px;
+    padding: 6px 7px;
+    border: 1px solid var(--ink);
+    background: var(--panel);
+    font-size: 9.5px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .tour-ui-control span { color: var(--accent); }
+  .tour-ui-ready {
+    margin-top: 10px;
+    padding: 7px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 8px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .tour-ui-chips { display: flex; gap: 3px; margin-top: 8px; }
+  .tour-ui-chips span { padding: 2px 4px; border: 1px solid var(--line); color: var(--muted); font-size: 7px; letter-spacing: .04em; }
+  .tour-figure::after { content: "DEMO / ASCII"; }
+
+
+  @media (max-width: 900px) {
+    .icon-btn { font-family: "Arial", "Helvetica", sans-serif; font-size: 14px; }
+  #themeBtn { font-size: 0; line-height: 1; }
+  #themeBtn::before {
+    content: "";
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border: 1px solid var(--ink);
+    background: linear-gradient(90deg, var(--ink) 0 50%, transparent 50% 100%);
+    vertical-align: -2px;
+  }
+  .tour-art { grid-template-columns: 1fr; min-height: 460px; padding: 22px 18px; gap: 16px; }
+    .tour-term { transform: rotate(-.3deg); width: 100%; max-width: 560px; }
+    .tour-ui { justify-self: start; width: min(100%, 330px); transform: translate(14px, 0) rotate(.3deg); }
+  }
+
 
 </style>
+
+
+  
 </head>
 <body>
 <header class="topbar">
@@ -728,7 +857,33 @@
     <p class="tour-note" id="tourNote"></p>
   </div>
   <figure class="tour-figure">
-    <img id="tourImg" src="demo-intro.gif" width="960" height="540" alt="" loading="lazy">
+    <div class="tour-art" role="img" aria-label="ASCII terminal showing the scaffold command and a generated provider settings panel">
+      <div class="tour-term">
+        <div class="tour-term-bar"><span>● ● ●</span><b>~/projects</b></div>
+        <div class="tour-term-body">
+          <p><span class="prompt">$</span> node skills/llm-provider-kit/scripts/scaffold.mjs \</p>
+          <p>&nbsp;&nbsp;--tier starter --stack react \</p>
+          <p>&nbsp;&nbsp;--out ../my-key-page</p>
+          <p class="tour-ok">✓ 108 providers · 142 endpoints</p>
+          <p class="tour-ok">✓ schema v2 validated · 0 runtime deps</p>
+          <p class="tour-ok">→ generated ./my-key-page</p>
+        </div>
+        <div class="tour-term-foot">NO CLONE / NO INSTALL <span class="tour-cursor"></span></div>
+      </div>
+      <div class="tour-ui">
+        <div class="tour-ui-head"><span>Provider settings</span><b>REACT</b></div>
+        <div class="tour-ui-body">
+          <div class="tour-ui-label">PROVIDER</div>
+          <div class="tour-ui-control">OpenAI <span>⌄</span></div>
+          <div class="tour-ui-label">API KEY</div>
+          <div class="tour-ui-control">sk-•••••••••••• <span>◉</span></div>
+          <div class="tour-ui-label">ENDPOINT</div>
+          <div class="tour-ui-control">/v1/chat/completions <span>⌄</span></div>
+          <div class="tour-ui-ready">✓ Ready · key never saved</div>
+          <div class="tour-ui-chips"><span>React</span><span>Vue</span><span>Svelte</span><span>Vanilla</span><span>HTML</span></div>
+        </div>
+      </div>
+    </div>
   </figure>
 </section>
 
@@ -2332,7 +2487,8 @@ function applyStaticTexts() {
   document.getElementById('tourEyebrow').textContent = t('tourEyebrow');
   document.getElementById('tourTitle').textContent = t('tourTitle');
   document.getElementById('tourNote').textContent = t('tourNote');
-  document.getElementById('tourImg').alt = t('tourAlt');
+  const tourArt = document.querySelector('.tour-art');
+  if (tourArt) tourArt.setAttribute('aria-label', t('tourAlt'));
   document.getElementById('search').placeholder = t('searchPlaceholder');
   document.getElementById('themeBtn').title = t('themeTitle');
   const langBtn = document.getElementById('langBtn');
